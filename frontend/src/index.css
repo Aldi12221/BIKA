@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ===== BiKA Design System - Tailwind v4 Theme ===== */
+@theme {
+  --color-primary: #6C63FF;
+  --color-primary-light: #8B83FF;
+  --color-primary-dark: #5249E0;
+  --color-secondary: #00D9FF;
+  --color-secondary-light: #33E1FF;
+  --color-accent: #FF6B9D;
+  --color-success: #00E676;
+  --color-warning: #FFB74D;
+  --color-danger: #FF5252;
+
+  --color-bg-dark: #0B0E1A;
+  --color-bg-body: #0F1123;
+  --color-bg-surface: #161832;
+  --color-bg-card: #1C1F3A;
+  --color-bg-card-hover: #232650;
+  --color-bg-input: #1A1D35;
+
+  --color-text-primary: #E8E8F0;
+  --color-text-secondary: #9A9BBF;
+  --color-text-muted: #6B6D8A;
+  --color-border: #2A2D4A;
+  --color-border-light: #353860;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
