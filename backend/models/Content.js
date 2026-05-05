@@ -10,7 +10,7 @@ const Content = sequelize.define('Content', {
     type: DataTypes.TEXT
   },
   kategori: {
-    type: DataTypes.ENUM('lowongan', 'tutorial', 'usaha'),
+    type: DataTypes.ENUM('lowongan', 'tutorial', 'usaha', 'keuangan'),
     allowNull: false
   },
   gambar: {

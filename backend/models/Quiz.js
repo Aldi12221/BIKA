@@ -12,6 +12,9 @@ const Quiz = sequelize.define('Quiz', {
   kategori: {
     type: DataTypes.ENUM('umum', 'psikotes'),
     defaultValue: 'umum'
+  },
+  link_eksternal: {
+    type: DataTypes.STRING
   }
 });
 

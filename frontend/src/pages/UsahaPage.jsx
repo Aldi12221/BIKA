@@ -1,89 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import api from '../utils/api';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
-
-const chartData = {
-  labels: ['Bln 1', 'Bln 2', 'Bln 3', 'Bln 4', 'Bln 5', 'Bln 6', 'Bln 7', 'Bln 8', 'Bln 9', 'Bln 10', 'Bln 11', 'Bln 12'],
-  datasets: [
-    {
-      label: 'Pendapatan (Rp)',
-      data: [700000, 1200000, 1700000, 2600000, 3500000, 4600000, 5800000, 6900000, 7900000, 9000000, 10300000, 12000000],
-      borderColor: '#2563EB', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#2563EB',
-    },
-    {
-      label: 'Biaya Operasional (Rp)',
-      data: [2300000, 2200000, 2100000, 2200000, 2400000, 2600000, 2800000, 3000000, 3200000, 3400000, 3600000, 3900000],
-      borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#EF4444',
-    },
-  ],
-};
 
 const chartOptions = {
   responsive: true, maintainAspectRatio: false,
   plugins: { legend: { labels: { color: '#64748B', font: { family: 'inherit', weight: '600' } } } },
   scales: {
     x: { ticks: { color: '#64748B', font: { family: 'inherit', weight: '500' } }, grid: { color: '#F1F5F9' } },
-    y: { ticks: { color: '#64748B', font: { family: 'inherit', weight: '500' }, callback: (v) => `Rp ${(v / 1000000).toFixed(1)}jt` }, grid: { color: '#F1F5F9' } },
+    y: { ticks: { color: '#64748B', font: { family: 'inherit', weight: '500' }, callback: (v) => `Rp ${(v / 1000).toFixed(0)}k` }, grid: { color: '#F1F5F9' } },
   },
 };
 
-function Calculator() {
-  const [calcVal, setCalcVal] = useState('0');
-  const [operator, setOperator] = useState(null);
-  const [prevVal, setPrevVal] = useState(null);
-
-  const handleCalc = (val) => {
-    if (val === 'C') {
-      setCalcVal('0');
-      setOperator(null);
-      setPrevVal(null);
-    } else if (['+', '-', '*', '/'].includes(val)) {
-      setOperator(val);
-      setPrevVal(calcVal);
-      setCalcVal('0');
-    } else if (val === '=') {
-      if (operator && prevVal) {
-        try {
-          // eslint-disable-next-line no-eval
-          const res = eval(`${prevVal}${operator}${calcVal}`);
-          setCalcVal(String(res));
-          setOperator(null);
-          setPrevVal(null);
-        } catch {
-          setCalcVal('Err');
-        }
-      }
-    } else {
-      setCalcVal(calcVal === '0' ? val : calcVal + val);
-    }
-  };
-
-  return (
-    <div className="bg-white dark:bg-zinc-900 rounded-[16px] p-3 shadow-inner dark:shadow-black/50 text-left mx-auto max-w-[200px] transition-colors border border-transparent dark:border-zinc-800">
-      <div className="bg-slate-50 dark:bg-black text-right px-3 py-2 rounded-lg mb-3 text-lg font-black text-slate-800 dark:text-slate-100 tracking-wider truncate border border-slate-100 dark:border-zinc-800 shadow-inner transition-colors">
-        {calcVal}
-      </div>
-      <div className="grid grid-cols-4 gap-2 text-xs font-black">
-        {['7', '8', '9', '/'].map(k => <button key={k} onClick={() => handleCalc(k)} className="bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 py-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors border-none cursor-pointer shadow-sm active:scale-95">{k}</button>)}
-        {['4', '5', '6', '*'].map(k => <button key={k} onClick={() => handleCalc(k)} className="bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 py-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors border-none cursor-pointer shadow-sm active:scale-95">{k}</button>)}
-        {['1', '2', '3', '-'].map(k => <button key={k} onClick={() => handleCalc(k)} className="bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 py-2 rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors border-none cursor-pointer shadow-sm active:scale-95">{k}</button>)}
-        {['C', '0', '=', '+'].map(k => <button key={k} onClick={() => handleCalc(k)} className={`${k === '=' ? 'bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' : k === 'C' ? 'bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900' : 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900'} py-2 rounded transition-colors border-none cursor-pointer shadow-sm active:scale-95`}>{k}</button>)}
-      </div>
-    </div>
-  );
-}
-
 export default function UsahaPage() {
   const [usahaItems, setUsahaItems] = useState([]);
+  const [keuanganItems, setKeuanganItems] = useState([]);
+  
+  // Pengelola Keuangan State
+  const [transactions, setTransactions] = useState([]);
+  const [trxForm, setTrxForm] = useState({ jenis: 'pemasukan', nominal: '', keterangan: '', bulan: '1' });
 
   useEffect(() => {
-    api.getContents('usaha').then(d => {
-      if (Array.isArray(d)) setUsahaItems(d);
-    }).catch(console.error);
+    api.getContents('usaha').then(d => { if (Array.isArray(d)) setUsahaItems(d); }).catch(console.error);
+    api.getContents('keuangan').then(d => { if (Array.isArray(d)) setKeuanganItems(d); }).catch(console.error);
   }, []);
+
+  const addTransaction = () => {
+    if (!trxForm.nominal || !trxForm.keterangan) return;
+    setTransactions([...transactions, { ...trxForm, id: Date.now(), nominal: Number(trxForm.nominal) }]);
+    setTrxForm({ ...trxForm, nominal: '', keterangan: '' });
+  };
+  
+  const deleteTransaction = (id) => {
+    setTransactions(transactions.filter(t => t.id !== id));
+  };
+
+  // Kalkulasi data chart
+  const incomeData = Array(12).fill(0);
+  const expenseData = Array(12).fill(0);
+  
+  transactions.forEach(t => {
+    const idx = parseInt(t.bulan) - 1;
+    if (t.jenis === 'pemasukan') incomeData[idx] += t.nominal;
+    else expenseData[idx] += t.nominal;
+  });
+
+  const dynamicChartData = {
+    labels: ['Bln 1', 'Bln 2', 'Bln 3', 'Bln 4', 'Bln 5', 'Bln 6', 'Bln 7', 'Bln 8', 'Bln 9', 'Bln 10', 'Bln 11', 'Bln 12'],
+    datasets: [
+      {
+        label: 'Pendapatan (Rp)',
+        data: incomeData,
+        borderColor: '#2563EB', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#2563EB',
+      },
+      {
+        label: 'Pengeluaran (Rp)',
+        data: expenseData,
+        borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#EF4444',
+      },
+    ],
+  };
 
   return (
     <div className="min-h-screen pb-24 overflow-x-hidden bg-[#F8FAFC] dark:bg-black transition-colors duration-300">
@@ -147,23 +126,78 @@ export default function UsahaPage() {
 
         {/* Tips mengatur keuangan grid */}
         <section>
-          <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips mengatur keuangan</h2>
+          <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips Mengatur Keuangan</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-blue-600 dark:bg-blue-900 rounded-[24px] p-5 text-center shadow-lg shadow-blue-200 dark:shadow-none border border-blue-400 dark:border-blue-800 transition-colors">
-              <h4 className="font-bold text-white text-[13px] mb-4">Calculator calculator</h4>
-              <Calculator />
-            </div>
-            <div className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md transition-all">
-              <h4 className="font-bold text-blue-900 dark:text-blue-400 text-[13px] mb-4">Tips mengatur keuangan</h4>
-              <Calculator />
-            </div>
-            <div className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md transition-all">
-              <h4 className="font-bold text-blue-900 dark:text-blue-400 text-[13px] mb-4">Calculator plannament</h4>
-              <Calculator />
-            </div>
-            <div className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md transition-all">
-              <h4 className="font-bold text-blue-900 dark:text-blue-400 text-[13px] mb-4">Canva profits penderizations</h4>
-              <Calculator />
+            {keuanganItems.length > 0 ? keuanganItems.map((item) => (
+              <div key={item.id} onClick={() => item.link_eksternal && window.open(item.link_eksternal, '_blank')} className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md transition-all cursor-pointer">
+                <h4 className="font-bold text-blue-900 dark:text-blue-400 text-[13px] mb-4">{item.judul}</h4>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium line-clamp-3">{item.deskripsi || 'Baca selengkapnya...'}</p>
+              </div>
+            )) : (
+              <div className="col-span-full py-8 text-center text-slate-500">Belum ada tips keuangan divalidasi.</div>
+            )}
+          </div>
+        </section>
+
+        {/* Pengelola Keuangan Feature */}
+        <section>
+          <div className="bg-white dark:bg-zinc-900 rounded-[36px] p-8 md:p-10 shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-100 dark:border-zinc-800 transition-colors">
+            <h2 className="text-xl font-black text-blue-950 dark:text-white mb-1">Pengelola Keuangan</h2>
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 font-bold mb-6">Catat pemasukan dan pengeluaran usahamu</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Form Input */}
+              <div className="md:col-span-1 space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Jenis</label>
+                  <select value={trxForm.jenis} onChange={e => setTrxForm({...trxForm, jenis: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition-all">
+                    <option value="pemasukan" className="bg-white dark:bg-zinc-900">Pemasukan</option>
+                    <option value="pengeluaran" className="bg-white dark:bg-zinc-900">Pengeluaran</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Bulan ke-</label>
+                  <select value={trxForm.bulan} onChange={e => setTrxForm({...trxForm, bulan: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition-all">
+                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(b => <option key={b} value={b} className="bg-white dark:bg-zinc-900">Bulan {b}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Nominal (Rp)</label>
+                  <input type="number" value={trxForm.nominal} onChange={e => setTrxForm({...trxForm, nominal: e.target.value})} placeholder="0" className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Keterangan</label>
+                  <input type="text" value={trxForm.keterangan} onChange={e => setTrxForm({...trxForm, keterangan: e.target.value})} placeholder="Misal: Penjualan produk" className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all" />
+                </div>
+                <button onClick={addTransaction} className="w-full bg-blue-600 text-white font-bold text-sm py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95">
+                  <FiPlus /> Tambah Data
+                </button>
+              </div>
+
+              {/* List Transaksi */}
+              <div className="md:col-span-2">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">Riwayat Transaksi</h3>
+                <div className="bg-slate-50 dark:bg-black/50 border border-slate-100 dark:border-zinc-800 rounded-2xl h-[380px] overflow-y-auto p-4 space-y-3 shadow-inner">
+                  {transactions.length > 0 ? transactions.map(t => (
+                    <div key={t.id} className="flex items-center justify-between bg-white dark:bg-zinc-900 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-zinc-800 animate-slide-up">
+                      <div>
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-100">{t.keterangan}</p>
+                        <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Bulan ke-{t.bulan}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className={`text-sm font-black ${t.jenis === 'pemasukan' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {t.jenis === 'pemasukan' ? '+' : '-'} Rp {t.nominal.toLocaleString('id-ID')}
+                        </span>
+                        <button onClick={() => deleteTransaction(t.id)} className="text-slate-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30">
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    </div>
+                  )) : (
+                    <div className="h-full flex items-center justify-center text-sm font-medium text-slate-400">Belum ada transaksi dicatat</div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -172,11 +206,11 @@ export default function UsahaPage() {
         <section>
           <div className="bg-gradient-to-r from-blue-50 to-red-50 dark:from-zinc-900 dark:to-zinc-800 rounded-[36px] p-8 md:p-10 shadow-xl shadow-slate-200/40 dark:shadow-black/50 border border-white dark:border-zinc-800 relative overflow-hidden transition-colors">
             <div className="relative z-10">
-              <h2 className="text-xl font-black text-blue-950 dark:text-white mb-1 transition-colors">Kurva pendapatan usaha</h2>
-              <p className="text-[13px] text-slate-500 dark:text-slate-400 font-bold mb-6 tracking-wide transition-colors">Kurva flow pendapatan usaha</p>
+              <h2 className="text-xl font-black text-blue-950 dark:text-white mb-1 transition-colors">Kurva Keuangan Usaha</h2>
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 font-bold mb-6 tracking-wide transition-colors">Visualisasi pemasukan dan pengeluaran per bulan</p>
               <div className="bg-white dark:bg-black rounded-[24px] p-4 border border-slate-100 dark:border-zinc-800 shadow-sm transition-colors">
                 <div className="h-[300px] w-full">
-                  <Line data={chartData} options={chartOptions} />
+                  <Line data={dynamicChartData} options={chartOptions} />
                 </div>
               </div>
             </div>

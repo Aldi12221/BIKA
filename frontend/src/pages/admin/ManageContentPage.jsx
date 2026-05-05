@@ -40,7 +40,7 @@ export default function ManageContentPage() {
   };
 
   const filtered = contents.filter(c => c.judul.toLowerCase().includes(search.toLowerCase()));
-  const cats = ['lowongan', 'tutorial', 'usaha'];
+  const cats = ['lowongan', 'tutorial', 'usaha', 'keuangan'];
 
   return (
     <div className="space-y-6">
