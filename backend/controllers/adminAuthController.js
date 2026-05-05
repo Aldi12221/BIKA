@@ -103,3 +103,25 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// GetAllUsers untuk mengelola pengguna
+exports.getAllUsers = async (req, res) => {
+  try {
+    const { User } = require('../models');
+    const users = await User.findAll({ order: [['createdAt', 'DESC']] });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// DeleteUser untuk mengelola pengguna
+exports.deleteUser = async (req, res) => {
+  try {
+    const { User } = require('../models');
+    await User.destroy({ where: { id: req.params.id } });
+    res.json({ message: 'User berhasil dihapus' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

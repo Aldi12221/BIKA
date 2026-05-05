@@ -1,15 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiGrid, FiFileText, FiHelpCircle, FiLogOut, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiHelpCircle, FiUsers, FiLogOut, FiChevronLeft, FiChevronRight, FiMoon, FiSun } from 'react-icons/fi';
 import { useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { admin, logoutAdmin } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const location = useLocation();
 
   const menuItems = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: <FiGrid size={20} /> },
+    { path: '/admin/users', label: 'Kelola User', icon: <FiUsers size={20} /> },
     { path: '/admin/konten', label: 'Kelola Konten', icon: <FiFileText size={20} /> },
     { path: '/admin/kuis', label: 'Kelola Kuis', icon: <FiHelpCircle size={20} /> },
   ];
@@ -45,11 +48,10 @@ export default function Sidebar() {
           <Link
             key={item.path}
             to={item.path}
-            className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium no-underline transition-all duration-300 ${
-              isActive(item.path)
-                ? 'gradient-primary text-white shadow-lg shadow-primary/25'
-                : 'text-text-secondary hover:text-text-primary hover:bg-bg-card'
-            }`}
+            className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium no-underline transition-all duration-300 ${isActive(item.path)
+              ? 'gradient-primary text-white shadow-lg shadow-primary/25'
+              : 'text-text-secondary hover:text-text-primary hover:bg-bg-card'
+              }`}
             title={collapsed ? item.label : ''}
           >
             {item.icon}
@@ -71,13 +73,22 @@ export default function Sidebar() {
             </div>
           )}
           {!collapsed && (
-            <button
-              onClick={logoutAdmin}
-              className="p-2 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-all bg-transparent border-none cursor-pointer"
-              title="Keluar"
-            >
-              <FiLogOut size={16} />
-            </button>
+            <div className="flex bg-bg-card rounded-lg">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card transition-all bg-transparent border-none cursor-pointer"
+                title={isDarkMode ? "Light Mode" : "Dark Mode"}
+              >
+                {isDarkMode ? <FiSun size={16} /> : <FiMoon size={16} />}
+              </button>
+              <button
+                onClick={logoutAdmin}
+                className="p-2 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-all bg-transparent border-none cursor-pointer"
+                title="Keluar"
+              >
+                <FiLogOut size={16} />
+              </button>
+            </div>
           )}
         </div>
       </div>

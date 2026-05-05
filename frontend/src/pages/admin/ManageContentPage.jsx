@@ -2,22 +2,31 @@ import { useState, useEffect } from 'react';
 import { FiPlus, FiTrash2, FiEdit3, FiX, FiSave, FiSearch } from 'react-icons/fi';
 import api from '../../utils/api';
 
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function ManageContentPage() {
   const [contents, setContents] = useState([]);
   const [kategori, setKategori] = useState('lowongan');
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
-  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: 'lowongan', link_eksternal: '' });
+  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: 'lowongan', link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time' });
   const [search, setSearch] = useState('');
 
   const load = () => {
-    api.getContents(kategori).then(d => Array.isArray(d) && setContents(d)).catch(() => {});
+    api.getContents(kategori).then(d => Array.isArray(d) && setContents(d)).catch(() => { });
   };
 
   useEffect(() => { load(); }, [kategori]);
 
-  const openAdd = () => { setEditItem(null); setForm({ judul: '', deskripsi: '', kategori, link_eksternal: '' }); setShowModal(true); };
-  const openEdit = (item) => { setEditItem(item); setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: item.kategori, link_eksternal: item.link_eksternal || '' }); setShowModal(true); };
+  const openAdd = () => { setEditItem(null); setForm({ judul: '', deskripsi: '', kategori, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time' }); setShowModal(true); };
+  const openEdit = (item) => { setEditItem(item); setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: item.kategori, link_eksternal: item.link_eksternal || '', gambar: item.gambar || '', perusahaan: item.perusahaan || '', lokasi: item.lokasi || '', tipe_pekerjaan: item.tipe_pekerjaan || 'Full-Time' }); setShowModal(true); };
 
   const handleSave = async () => {
     if (editItem) { await api.updateContent(editItem.id, form); }
@@ -91,7 +100,7 @@ export default function ManageContentPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="glass-strong rounded-2xl p-6 w-full max-w-md animate-slide-up">
+          <div className="glass-strong rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto animate-slide-up">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-text-primary">{editItem ? 'Edit Konten' : 'Tambah Konten'}</h2>
               <button onClick={() => setShowModal(false)} className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-bg-card transition-all bg-transparent border-none cursor-pointer"><FiX /></button>
@@ -99,26 +108,63 @@ export default function ManageContentPage() {
             <div className="space-y-4">
               <div>
                 <label className="text-xs text-text-muted mb-1.5 block">Judul</label>
-                <input value={form.judul} onChange={e => setForm({...form, judul: e.target.value})} placeholder="Judul konten"
+                <input value={form.judul} onChange={e => setForm({ ...form, judul: e.target.value })} placeholder="Judul konten"
                   className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               </div>
               <div>
                 <label className="text-xs text-text-muted mb-1.5 block">Deskripsi</label>
-                <textarea value={form.deskripsi} onChange={e => setForm({...form, deskripsi: e.target.value})} rows={3} placeholder="Deskripsi konten"
+                <textarea value={form.deskripsi} onChange={e => setForm({ ...form, deskripsi: e.target.value })} rows={3} placeholder="Deskripsi konten"
                   className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none" />
               </div>
               <div>
                 <label className="text-xs text-text-muted mb-1.5 block">Kategori</label>
-                <select value={form.kategori} onChange={e => setForm({...form, kategori: e.target.value})}
+                <select value={form.kategori} onChange={e => setForm({ ...form, kategori: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
                   {cats.map(c => <option key={c} value={c} className="bg-bg-surface">{c}</option>)}
                 </select>
               </div>
               <div>
                 <label className="text-xs text-text-muted mb-1.5 block">Link Eksternal</label>
-                <input value={form.link_eksternal} onChange={e => setForm({...form, link_eksternal: e.target.value})} placeholder="https://..."
+                <input value={form.link_eksternal} onChange={e => setForm({ ...form, link_eksternal: e.target.value })} placeholder="https://..."
                   className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               </div>
+
+              <div>
+                <label className="text-xs text-text-muted mb-1.5 block">Gambar / Cover / Logo (Opsional)</label>
+                <input type="file" accept="image/*" onChange={async e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const base64 = await readFileAsDataUrl(file);
+                    setForm({ ...form, gambar: base64 });
+                  }
+                }} className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 text-text-muted" />
+                {form.gambar && <div className="mt-2 text-xs text-primary font-medium flex items-center gap-1">✅ Gambar terlampir</div>}
+              </div>
+
+              {form.kategori === 'lowongan' && (
+                <div className="pt-2 border-t border-border mt-2 space-y-4">
+                  <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">Detail Lowongan</h3>
+                  <div>
+                    <label className="text-xs text-text-muted mb-1.5 block">Nama Perusahaan</label>
+                    <input value={form.perusahaan} onChange={e => setForm({ ...form, perusahaan: e.target.value })} placeholder="Misal: Google Indonesia"
+                      className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="text-xs text-text-muted mb-1.5 block">Lokasi</label>
+                      <input value={form.lokasi} onChange={e => setForm({ ...form, lokasi: e.target.value })} placeholder="Misal: Jakarta Selatan"
+                        className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-xs text-text-muted mb-1.5 block">Tipe Pekerjaan</label>
+                      <select value={form.tipe_pekerjaan} onChange={e => setForm({ ...form, tipe_pekerjaan: e.target.value })}
+                        className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
+                        {['Full-Time', 'Part-Time', 'Contract', 'Freelance', 'Magang'].map(t => <option key={t} value={t} className="bg-bg-surface">{t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
               <button onClick={handleSave} className="w-full btn-primary flex items-center justify-center gap-2 text-sm"><FiSave /> Simpan</button>
             </div>
           </div>

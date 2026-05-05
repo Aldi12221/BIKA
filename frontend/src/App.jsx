@@ -17,6 +17,7 @@ import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import ManageContentPage from './pages/admin/ManageContentPage';
 import ManageQuizPage from './pages/admin/ManageQuizPage';
+import ManageUserPage from './pages/admin/ManageUserPage';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID';
 
@@ -39,7 +40,7 @@ function App() {
 
               {/* User Pages */}
               <Route element={<UserRouteGuard />}>
-                <Route path="/" element={<Beranda/>} />
+                <Route path="/" element={<Beranda />} />
                 <Route path="/masa-depan" element={<MasaDepanPage />} />
                 <Route path="/tutorial" element={<TutorialPage />} />
                 <Route path="/usaha" element={<UsahaPage />} />
@@ -50,6 +51,7 @@ function App() {
               {/* Admin Pages */}
               <Route element={<AdminLayout />}>
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                <Route path="/admin/users" element={<ManageUserPage />} />
                 <Route path="/admin/konten" element={<ManageContentPage />} />
                 <Route path="/admin/kuis" element={<ManageQuizPage />} />
               </Route>
