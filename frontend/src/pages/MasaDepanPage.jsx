@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiArrowRight, FiFileText, FiClock, FiSearch, FiChevronDown, FiMapPin, FiBriefcase } from 'react-icons/fi';
+import api from '../utils/api';
 
 export default function MasaDepanPage() {
+  const [lowongans, setLowongans] = useState([]);
+  const [tutorials, setTutorials] = useState([]);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    api.getContents('lowongan').then(d => {
+      if (Array.isArray(d)) setLowongans(d);
+    }).catch(console.error);
+
+    api.getContents('tutorial').then(d => {
+      if (Array.isArray(d)) setTutorials(d.slice(0, 3));
+    }).catch(console.error);
+  }, []);
+
+  const filteredLowongans = lowongans.filter(l =>
+    l.judul.toLowerCase().includes(search.toLowerCase()) ||
+    (l.deskripsi || '').toLowerCase().includes(search.toLowerCase())
+  );
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black overflow-x-hidden transition-colors duration-300 font-sans">
       {/* --- BACKGROUND ORNAMENTS --- */}
@@ -14,11 +33,11 @@ export default function MasaDepanPage() {
           <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
           <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">Portal Karir</span>
         </div>
-        
+
         <h1 className="text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter transition-colors mb-4 uppercase">
           Masa <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500">Depan</span>
         </h1>
-        
+
         <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-medium transition-colors">
           Cari Lowongan <span className="font-light italic">&</span> Siapkan Diri
         </p>
@@ -30,17 +49,19 @@ export default function MasaDepanPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight transition-colors">Lowongan Kerja</h2>
           </div>
-          
+
           {/* Search Bar */}
           <div className="flex flex-col sm:flex-row gap-4 mb-10">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                 <FiSearch className="text-slate-400 text-lg" />
               </div>
-              <input 
-                type="text" 
-                placeholder="Cari posisi, perusahaan, atau kata kunci..." 
-                className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-zinc-800 rounded-2xl pl-12 pr-5 py-4 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all" 
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Cari posisi, perusahaan, atau kata kunci..."
+                className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-zinc-800 rounded-2xl pl-12 pr-5 py-4 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
               />
             </div>
             <button className="bg-blue-600 dark:bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20 whitespace-nowrap">
@@ -89,46 +110,47 @@ export default function MasaDepanPage() {
                 <div className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer hover:text-blue-600 transition-colors group">
                   Daftar Lowongan <FiChevronDown className="group-hover:translate-y-0.5 transition-transform" />
                 </div>
-                <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-zinc-800 px-3 py-1 rounded-full">8 Hasil Ditemukan</span>
+                <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-zinc-800 px-3 py-1 rounded-full">{filteredLowongans.length} Hasil Ditemukan</span>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {[
-                  { title: "Junior UI/UX Designer", company: "Tech Studio Inc.", location: "Jakarta Selatan", type: "Full-Time", time: "2 hari yang lalu", icon: "🎨" },
-                  { title: "Frontend Developer", company: "Bika Solutions", location: "Yogyakarta", type: "Remote", time: "5 hari yang lalu", icon: "💻" },
-                  { title: "Digital Marketing Intern", company: "Creative Agency", location: "Bandung", type: "Magang", time: "1 minggu yang lalu", icon: "📈" },
-                  { title: "Customer Support Representative", company: "Global Tech", location: "Surabaya", type: "Full-Time", time: "2 minggu yang lalu", icon: "🎧" }
-                ].map((job, idx) => (
-                  <div key={idx} className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[24px] p-6 flex flex-col hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/50 hover:-translate-y-1 transition-all duration-300">
-                    <div className="flex items-start gap-4 mb-5">
-                      <div className="w-12 h-12 bg-slate-50 dark:bg-black border border-slate-100 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform">
-                        {job.icon}
+                {filteredLowongans.length > 0 ? filteredLowongans.map((job) => (
+                  <div key={job.id} onClick={() => job.link_eksternal && window.open(job.link_eksternal, '_blank')} className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[24px] p-6 flex flex-col hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-14 h-14 bg-slate-50 dark:bg-black border border-slate-100 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform overflow-hidden shrink-0">
+                        {job.gambar ? <img src={job.gambar} alt="logo" className="w-full h-full object-cover" /> : '💼'}
                       </div>
                       <div className="flex-1 pt-1">
-                        <h4 className="font-black text-[15px] text-slate-900 dark:text-white leading-tight mb-1 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{job.title}</h4>
-                        <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 transition-colors">{job.company}</p>
+                        <h4 className="font-black text-[16px] text-slate-900 dark:text-white leading-tight mb-1 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{job.judul}</h4>
+                        <p className="text-[13px] font-bold text-blue-600 dark:text-blue-400 transition-colors mb-1">{job.perusahaan || 'Mitra Bika'}</p>
                       </div>
                     </div>
-                    
+
+                    <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 transition-colors line-clamp-3 mb-5 leading-relaxed break-words">{job.deskripsi || 'Tidak ada spesifikasi deskripsi detail yang dilampirkan.'}</p>
+
                     <div className="flex items-center gap-3 mb-6">
-                      <span className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-slate-100 dark:border-zinc-800">
-                        <FiMapPin /> {job.location}
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
+                        <FiMapPin /> {job.lokasi || 'Nasional / Remote'}
                       </span>
-                      <span className="flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1.5 rounded-lg border border-blue-100 dark:border-blue-900/30">
-                        <FiBriefcase /> {job.type}
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
+                        <FiBriefcase /> {job.tipe_pekerjaan || 'Full-Time'}
                       </span>
                     </div>
 
                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100 dark:border-zinc-800">
                       <span className="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
-                        <FiClock className="text-slate-300 dark:text-zinc-600" /> {job.time}
+                        <FiClock className="text-slate-300 dark:text-zinc-600" /> Aktif
                       </span>
-                      <button className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-bold px-5 py-2.5 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-colors shadow-sm">
+                      <button className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-bold px-5 py-2.5 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-colors shadow-sm cursor-pointer">
                         Apply Now
                       </button>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="col-span-full py-10 text-center text-slate-500">
+                    <p>Tidak ada lowongan yang sesuai.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -143,20 +165,15 @@ export default function MasaDepanPage() {
             Lihat Semua <FiArrowRight />
           </button>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { id: 1, title: "Cara Membuat CV ATS Friendly", subtitle: "Tingkatkan peluang lolos seleksi berkas" },
-            { id: 2, title: "Menyusun Portofolio Profesional", subtitle: "Tampilkan karyamu dengan elegan" },
-            { id: 3, title: "Persiapan Wawancara Kerja", subtitle: "Panduan menjawab pertanyaan HRD" }
-          ].map((item, idx) => (
-            <div key={item.id} className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[28px] p-6 flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all cursor-pointer group">
+          {tutorials.length > 0 ? tutorials.map((item, idx) => (
+            <div key={item.id} onClick={() => window.location.href = '/tutorial'} className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[28px] p-6 flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all cursor-pointer group">
               <div className="flex items-center justify-between mb-5">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${
-                  idx === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' : 
-                  idx === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' : 
-                  'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
-                }`}>
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${idx % 3 === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
+                  idx % 3 === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
+                    'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
+                  }`}>
                   <FiFileText />
                 </div>
                 <div className="w-10 h-10 rounded-full border border-slate-100 dark:border-zinc-800 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 dark:group-hover:bg-blue-500 transition-all">
@@ -164,11 +181,13 @@ export default function MasaDepanPage() {
                 </div>
               </div>
               <div className="flex-1">
-                <h4 className="font-black text-[15px] text-slate-900 dark:text-white leading-tight mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{item.title}</h4>
-                <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed transition-colors">{item.subtitle}</p>
+                <h4 className="font-black text-[15px] text-slate-900 dark:text-white leading-tight mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{item.judul}</h4>
+                <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed transition-colors line-clamp-2">{item.deskripsi || 'Pelajari materi ini lebih lanjut di halaman tutorial.'}</p>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className="col-span-full py-8 text-center text-slate-500">Belum ada tutorial.</div>
+          )}
         </div>
       </div>
     </div>

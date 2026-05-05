@@ -30,5 +30,7 @@ router.post('/admin/login', adminAuthCtrl.loginAdmin);
 router.get('/admin/verify', adminAuthCtrl.verifyAdmin);
 router.post('/admin/register', adminAuthCtrl.registerAdmin);
 router.get('/admin/stats', adminAuthCtrl.getDashboardStats);
+router.get('/admin/users', adminAuthCtrl.getAllUsers);
+router.delete('/admin/users/:id', adminAuthCtrl.deleteUser);
 
 module.exports = router;
