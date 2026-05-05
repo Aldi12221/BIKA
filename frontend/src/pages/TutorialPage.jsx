@@ -52,7 +52,7 @@ export default function TutorialPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             {quizzes.length > 0 ? quizzes.map((quiz, idx) => (
-              <div key={quiz.id} onClick={() => navigate(`/quiz/${quiz.id}`)} className="bg-white/90 dark:bg-white/10 rounded-2xl p-4 flex items-center justify-between hover:scale-[1.02] transition-transform cursor-pointer shadow-sm">
+              <div key={quiz.id} onClick={() => window.open(quiz.link_eksternal || 'https://docs.google.com/forms', '_blank')} className="bg-white/90 dark:bg-white/10 rounded-2xl p-4 flex items-center justify-between hover:scale-[1.02] transition-transform cursor-pointer shadow-sm">
                 <div>
                   <h4 className="font-black text-[15px] text-slate-800 dark:text-white leading-tight">{quiz.judul}</h4>
                   <p className="text-[11px] font-bold text-slate-500 dark:text-slate-300 capitalize">{quiz.kategori} · {quiz.deskripsi || 'Belum dideskripsi'}</p>

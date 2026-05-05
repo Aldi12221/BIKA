@@ -9,7 +9,7 @@ export default function ManageQuizPage() {
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showQModal, setShowQModal] = useState(false);
   const [activeQuizId, setActiveQuizId] = useState(null);
-  const [qForm, setQForm] = useState({ judul: '', deskripsi: '', kategori: 'umum' });
+  const [qForm, setQForm] = useState({ judul: '', deskripsi: '', kategori: 'umum', link_eksternal: '' });
   const [soalForm, setSoalForm] = useState({ teks_soal: '', opsi_a: '', opsi_b: '', opsi_c: '', opsi_d: '', jawaban_benar: 'a' });
 
   const load = () => { api.getQuizzes().then(d => Array.isArray(d) && setQuizzes(d)).catch(() => {}); };
@@ -25,7 +25,7 @@ export default function ManageQuizPage() {
   const addQuiz = async () => {
     await api.createQuiz(qForm);
     setShowQuizModal(false);
-    setQForm({ judul: '', deskripsi: '', kategori: 'umum' });
+    setQForm({ judul: '', deskripsi: '', kategori: 'umum', link_eksternal: '' });
     load();
   };
 
@@ -140,6 +140,8 @@ export default function ManageQuizPage() {
                 <option value="umum" className="bg-bg-surface">Umum</option>
                 <option value="psikotes" className="bg-bg-surface">Psikotes</option>
               </select>
+              <input value={qForm.link_eksternal || ''} onChange={e => setQForm({...qForm, link_eksternal: e.target.value})} placeholder="Link Eksternal (Google Form)"
+                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
               <button onClick={addQuiz} className="w-full btn-primary text-sm flex items-center justify-center gap-2"><FiSave /> Simpan</button>
             </div>
           </div>

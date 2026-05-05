@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { FiEdit2, FiFileText, FiImage, FiSave, FiUpload, FiUser } from 'react-icons/fi';
+import { FiEdit2, FiFileText, FiImage, FiSave, FiUser } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
@@ -53,19 +53,7 @@ export default function ProfilPage() {
     }
   };
 
-  const handleCvUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    handleChange('cv_file_name', file.name);
-    showMessage('File CV berhasil dipilih.');
-  };
 
-  const handlePortfolioUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    handleChange('portfolio_file_name', file.name);
-    showMessage('File portofolio berhasil dipilih.');
-  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -199,41 +187,7 @@ export default function ProfilPage() {
               <span className="text-red-500">📁</span> Dokumen & Portofolio
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="space-y-3">
-                <label className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 transition-colors">
-                  <FiUpload size={16} className="text-red-500" />
-                  Upload CV (File)
-                </label>
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  disabled={!isEditing}
-                  onChange={handleCvUpload}
-                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-600 dark:text-slate-300 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-xl file:bg-red-50 dark:file:bg-red-900/20 file:text-red-600 dark:file:text-red-400 file:font-bold hover:file:bg-red-100 dark:hover:file:bg-red-900/40 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
-                />
-                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-2 transition-colors">
-                  {form.cv_file_name ? <span className="text-blue-600 dark:text-blue-400">📄 {form.cv_file_name}</span> : 'Belum ada file CV.'}
-                </p>
-              </div>
 
-              <div className="space-y-3">
-                <label className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 transition-colors">
-                  <FiUpload size={16} className="text-red-500" />
-                  Upload Portofolio (File)
-                </label>
-                <input
-                  type="file"
-                  accept=".pdf,.ppt,.pptx,.zip,.rar"
-                  disabled={!isEditing}
-                  onChange={handlePortfolioUpload}
-                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-600 dark:text-slate-300 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-xl file:bg-red-50 dark:file:bg-red-900/20 file:text-red-600 dark:file:text-red-400 file:font-bold hover:file:bg-red-100 dark:hover:file:bg-red-900/40 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
-                />
-                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-2 transition-colors"> 
-                  {form.portfolio_file_name ? <span className="text-blue-600 dark:text-blue-400">📁 {form.portfolio_file_name}</span> : 'Belum ada file portofolio.'}
-                </p>
-              </div>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">

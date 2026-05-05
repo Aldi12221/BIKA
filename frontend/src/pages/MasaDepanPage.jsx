@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FiArrowRight, FiFileText, FiClock, FiSearch, FiChevronDown, FiMapPin, FiBriefcase } from 'react-icons/fi';
+import { FiArrowRight, FiFileText, FiClock, FiSearch, FiChevronDown, FiMapPin, FiBriefcase, FiX } from 'react-icons/fi';
 import api from '../utils/api';
 
 export default function MasaDepanPage() {
   const [lowongans, setLowongans] = useState([]);
   const [tutorials, setTutorials] = useState([]);
   const [search, setSearch] = useState('');
+  const [selectedJob, setSelectedJob] = useState(null);
 
   useEffect(() => {
     api.getContents('lowongan').then(d => {
@@ -115,7 +116,7 @@ export default function MasaDepanPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {filteredLowongans.length > 0 ? filteredLowongans.map((job) => (
-                  <div key={job.id} onClick={() => job.link_eksternal && window.open(job.link_eksternal, '_blank')} className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[24px] p-6 flex flex-col hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                  <div key={job.id} onClick={() => setSelectedJob(job)} className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[24px] p-6 flex flex-col hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                     <div className="flex items-start gap-4 mb-4">
                       <div className="w-14 h-14 bg-slate-50 dark:bg-black border border-slate-100 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform overflow-hidden shrink-0">
                         {job.gambar ? <img src={job.gambar} alt="logo" className="w-full h-full object-cover" /> : '💼'}
@@ -190,6 +191,57 @@ export default function MasaDepanPage() {
           )}
         </div>
       </div>
+
+      {/* Modal Job Detail */}
+      {selectedJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <div className="sticky top-0 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md p-6 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center z-10">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">Detail Lowongan</h3>
+              <button onClick={() => setSelectedJob(null)} className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors">
+                <FiX className="text-xl" />
+              </button>
+            </div>
+            
+            <div className="p-8">
+              <div className="flex items-start gap-6 mb-8">
+                <div className="w-20 h-20 bg-slate-50 dark:bg-black border border-slate-100 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-4xl shadow-sm overflow-hidden shrink-0">
+                  {selectedJob.gambar ? <img src={selectedJob.gambar} alt="logo" className="w-full h-full object-cover" /> : '💼'}
+                </div>
+                <div className="flex-1 pt-2">
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight mb-2">{selectedJob.judul}</h2>
+                  <p className="text-base font-bold text-blue-600 dark:text-blue-400 mb-3">{selectedJob.perusahaan || 'Mitra Bika'}</p>
+                  
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
+                      <FiMapPin /> {selectedJob.lokasi || 'Nasional / Remote'}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
+                      <FiBriefcase /> {selectedJob.tipe_pekerjaan || 'Full-Time'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-8">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Deskripsi Pekerjaan</h4>
+                <div className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">
+                  {selectedJob.deskripsi || 'Tidak ada spesifikasi deskripsi detail yang dilampirkan.'}
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => selectedJob.link_eksternal ? window.open(selectedJob.link_eksternal, '_blank') : alert('Link lamaran tidak tersedia')}
+                  className="flex-1 bg-blue-600 text-white text-sm font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30 text-center"
+                >
+                  Apply Sekarang
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
