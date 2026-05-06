@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX, FiLogOut, FiTrendingUp, FiMessageCircle, FiMoon, FiSun } from 'react-icons/fi';
+import ThemeToggleButton from './ThemeToggleButton';
+import { FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX, FiLogOut, FiTrendingUp, FiMessageCircle } from 'react-icons/fi';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logoutUser } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
   const location = useLocation();
 
   const navLinks = [
@@ -59,9 +58,7 @@ export default function Navbar() {
 
           {/* User Section / Login */}
           <div className="hidden md:flex items-center gap-4">
-            <button onClick={toggleTheme} className="p-2.5 rounded-full bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer">
-              {isDarkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
-            </button>
+            <ThemeToggleButton />
             {user ? (
               <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 p-1.5 pr-4 rounded-2xl border border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-3">
@@ -102,9 +99,10 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
-            <button onClick={toggleTheme} className="p-2 rounded-xl text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-none cursor-pointer hover:bg-slate-100 transition-all">
-              {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
-            </button>
+            <ThemeToggleButton
+              className="p-2 rounded-xl border-none hover:bg-slate-100 dark:hover:bg-slate-800"
+              iconSize={20}
+            />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-xl text-blue-900 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border-none cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
