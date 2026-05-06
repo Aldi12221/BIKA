@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FiUsers, FiFileText, FiHelpCircle, FiTrendingUp } from 'react-icons/fi';
+import { FiUsers, FiFileText, FiHelpCircle, FiTrendingUp, FiSave } from 'react-icons/fi';
 import api from '../../utils/api';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState({ totalUsers: 0, totalContents: 0, totalQuizzes: 0 });
 
   useEffect(() => {
-    api.adminStats().then(d => d && setStats(d)).catch(() => {});
+    api.adminStats().then(d => d && setStats(d)).catch(() => { });
   }, []);
 
   const cards = [
@@ -15,11 +15,26 @@ export default function AdminDashboardPage() {
     { label: 'Total Kuis', value: stats.totalQuizzes, icon: <FiHelpCircle size={24} />, gradient: 'gradient-success' },
   ];
 
+  const handleSimpanData = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(stats, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "laporan_statistik_bika.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold gradient-text mb-1">Dashboard</h1>
-        <p className="text-text-secondary text-sm">Selamat datang di Admin Panel BiKA</p>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h1 className="text-2xl font-bold gradient-text mb-1">Dashboard</h1>
+          <p className="text-text-secondary text-sm">Selamat datang di Admin Panel BiKA</p>
+        </div>
+        <button onClick={handleSimpanData} className="btn-primary text-sm flex items-center gap-2">
+          <FiSave /> Simpan Laporan Data
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

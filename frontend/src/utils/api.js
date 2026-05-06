@@ -87,6 +87,12 @@ const api = {
   adminStats: () =>
     fetch(`${API_BASE}/admin/stats`).then(r => r.json()),
 
+  adminUsers: () =>
+    fetch(`${API_BASE}/admin/users`).then(r => r.json()),
+
+  deleteAdminUser: (id) =>
+    fetch(`${API_BASE}/admin/users/${id}`, { method: 'DELETE' }).then(r => r.json()),
+
   adminRegister: (data) =>
     fetch(`${API_BASE}/admin/register`, {
       method: 'POST',

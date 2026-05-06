@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../utils/api';
 import siswa from '../assets/siswa.png';
 import { 
   FiArrowRight, 
@@ -10,6 +11,19 @@ import {
 } from 'react-icons/fi';
 
 export default function Beranda() {
+  const [lowongan, setLowongan] = useState([]);
+  const [tutorial, setTutorial] = useState([]);
+
+  useEffect(() => {
+    api.getContents('lowongan').then(d => {
+      if (Array.isArray(d)) setLowongan(d.slice(0, 3));
+    }).catch(console.error);
+
+    api.getContents('tutorial').then(d => {
+      if (Array.isArray(d)) setTutorial(d.slice(0, 3));
+    }).catch(console.error);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-black overflow-x-hidden transition-colors duration-300">
       {/* --- BACKGROUND ORNAMENTS --- */}
@@ -79,22 +93,39 @@ export default function Beranda() {
           
           {/* Lowongan */}
           <div className="space-y-6">
-            <SectionHeader title="Lowongan Terbaru" icon="💼" />
+            <SectionHeader title="Lowongan Terbaru" icon="💼" link="/masa-depan" />
             <div className="space-y-3">
-              <JobItem title="Junior Web Developer" company="Telkom Indonesia" type="Full Time" color="text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400" />
-              <JobItem title="UI/UX Design Intern" company="Tokopedia" type="Magang" color="text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400" />
+              {lowongan.length > 0 ? lowongan.map((item, idx) => (
+                <JobItem 
+                  key={item.id} 
+                  title={item.judul} 
+                  company={item.deskripsi || "Perushaan Mitra"} 
+                  type="Tersedia" 
+                  color={idx % 2 === 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400" : "text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400"} 
+                />
+              )) : (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada lowongan.</p>
+              )}
             </div>
-            <button className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-[20px] text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-zinc-900 transition-all text-sm">
+            <button onClick={() => window.location.href='/masa-depan'} className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-[20px] text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-zinc-900 transition-all text-sm cursor-pointer">
               Lihat Semua Lowongan →
             </button>
           </div>
 
           {/* Tutorial */}
           <div className="space-y-6">
-            <SectionHeader title="Tutorial Terbaru" icon="🎓" />
+            <SectionHeader title="Tutorial Terbaru" icon="🎓" link="/tutorial" />
             <div className="space-y-4">
-              <TutorialItem title="Membuat Website Portofolio" cat="Web Dev" time="12:45" />
-              <TutorialItem title="Belajar Figma Dasar" cat="UI/UX" time="15:30" />
+              {tutorial.length > 0 ? tutorial.map((item) => (
+                <TutorialItem 
+                  key={item.id}
+                  title={item.judul} 
+                  cat="Tutorial" 
+                  time="Baru" 
+                />
+              )) : (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada tutorial.</p>
+              )}
             </div>
           </div>
 
@@ -135,7 +166,7 @@ function FeatureCard({ title, desc, icon, color, shadow, textColor }) {
   );
 }
 
-function SectionHeader({ title, icon, isChat }) {
+function SectionHeader({ title, icon, isChat, link }) {
   return (
     <div className="flex justify-between items-center border-b border-slate-100 dark:border-zinc-800 pb-3 transition-colors">
       <h3 className="font-black text-xl text-blue-950 dark:text-white flex items-center gap-2 tracking-tight transition-colors">
@@ -147,7 +178,7 @@ function SectionHeader({ title, icon, isChat }) {
           <span className="text-[9px] font-black text-green-600 uppercase tracking-widest">Online</span>
         </div>
       ) : (
-        <button className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Lihat Semua</button>
+        <button onClick={() => link && (window.location.href = link)} className="text-[10px] font-black text-blue-600 uppercase tracking-widest cursor-pointer">Lihat Semua</button>
       )}
     </div>
   );

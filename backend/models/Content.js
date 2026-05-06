@@ -10,11 +10,23 @@ const Content = sequelize.define('Content', {
     type: DataTypes.TEXT
   },
   kategori: {
-    type: DataTypes.ENUM('lowongan', 'tutorial', 'usaha'),
+    type: DataTypes.ENUM('lowongan', 'tutorial', 'usaha', 'keuangan'),
     allowNull: false
   },
+  gambar: {
+    type: DataTypes.TEXT('long') // Untuk menyimpan base64 file cover / logo
+  },
+  perusahaan: {
+    type: DataTypes.STRING // Khusus lowongan
+  },
+  lokasi: {
+    type: DataTypes.STRING // Khusus lowongan
+  },
+  tipe_pekerjaan: {
+    type: DataTypes.STRING // Khusus lowongan (e.g. Remote, Magang)
+  },
   link_eksternal: {
-    type: DataTypes.STRING // Contoh: Link kuis luar atau link lowongan
+    type: DataTypes.STRING
   }
 });
 
