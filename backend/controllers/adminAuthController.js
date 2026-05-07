@@ -90,14 +90,64 @@ exports.registerAdmin = async (req, res) => {
 exports.getDashboardStats = async (req, res) => {
   try {
     const { User, Content, Quiz } = require('../models');
-    const totalUsers = await User.count();
-    const totalContents = await Content.count();
-    const totalQuizzes = await Quiz.count();
+    const users = await User.findAll({ attributes: ['createdAt'] });
+    const contents = await Content.findAll({ attributes: ['createdAt', 'kategori'] });
+    const quizzes = await Quiz.findAll({ attributes: ['createdAt'] });
+
+    const totalUsers = users.length;
+    const totalContents = contents.length;
+    const totalQuizzes = quizzes.length;
+
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+
+    const userSpark = new Array(12).fill(0);
+    const contentSpark = new Array(12).fill(0);
+    const quizSpark = new Array(12).fill(0);
+
+    const categoryCount = { lowongan: 0, tutorial: 0, usaha: 0, keuangan: 0 };
+    let activeContentsThisMonth = 0;
+    let activeContentsLastMonth = 0;
+
+    users.forEach(u => {
+      const d = new Date(u.createdAt);
+      if (d.getFullYear() === currentYear) userSpark[d.getMonth()]++;
+    });
+
+    contents.forEach(c => {
+      if (c.kategori && categoryCount[c.kategori] !== undefined) {
+        categoryCount[c.kategori]++;
+      }
+      const d = new Date(c.createdAt);
+      if (d.getFullYear() === currentYear) {
+        contentSpark[d.getMonth()]++;
+        if (d.getMonth() === currentMonth) activeContentsThisMonth++;
+        if (d.getMonth() === currentMonth - 1) activeContentsLastMonth++;
+      }
+    });
+
+    quizzes.forEach(q => {
+      const d = new Date(q.createdAt);
+      if (d.getFullYear() === currentYear) quizSpark[d.getMonth()]++;
+    });
 
     res.json({
       totalUsers,
       totalContents,
-      totalQuizzes
+      totalQuizzes,
+      currentYear,
+      userSpark,
+      contentSpark,
+      quizSpark,
+      barData: contentSpark,
+      activityData: userSpark,
+      categories: [
+        { label: 'Lowongan', count: categoryCount.lowongan, color: '#6C63FF' },
+        { label: 'Tutorial', count: categoryCount.tutorial, color: '#00D9FF' },
+        { label: 'Usaha', count: categoryCount.usaha, color: '#FF6B9D' }
+      ],
+      activeContentsThisMonth,
+      activeContentsLastMonth
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

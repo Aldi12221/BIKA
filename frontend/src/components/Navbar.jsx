@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX, FiLogOut, FiTrendingUp, FiMessageCircle, FiMoon, FiSun } from 'react-icons/fi';
+import logoBika from '../assets/logobika.png';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,15 +26,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo sesuai WhatsApp Image 2026-05-01 at 13.02.09.jpeg */}
-          <Link to="/" className="flex items-center gap-3 no-underline group">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-blue-200 dark:shadow-none transition-transform group-hover:scale-105">
-              B
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-2xl font-black text-blue-900 dark:text-white tracking-tight">Bika</span>
-              <span className="text-[10px] font-bold text-red-500 uppercase tracking-[0.2em]">Bisa SMK</span>
-            </div>
+          {/* Logo BIKA */}
+          <Link to="/" className="flex items-center no-underline group">
+            <img
+              src={logoBika}
+              alt="BIKA Bisa SMK"
+              className="h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm"
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -100,63 +99,16 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile: hanya tampilkan logo dan dark mode toggle (tanpa hamburger, navigasi pindah ke BottomNav) */}
           <div className="lg:hidden flex items-center gap-2">
             <button onClick={toggleTheme} className="p-2 rounded-xl text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-none cursor-pointer hover:bg-slate-100 transition-all">
               {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
-            </button>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl text-blue-900 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border-none cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
-            >
-              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      {isOpen && (
-        <div className="lg:hidden bg-white dark:bg-black border-t border-slate-50 dark:border-slate-900 absolute w-full shadow-2xl animate-in slide-in-from-top duration-300">
-          <div className="px-6 py-8 space-y-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-4 px-5 py-4 rounded-2xl text-base font-bold no-underline transition-all ${
-                  isActive(link.path)
-                    ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400'
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900'
-                }`}
-              >
-                <span className="text-xl">{link.icon || <FiBriefcase />}</span>
-                {link.label}
-              </Link>
-            ))}
-            
-            <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-900">
-              {user ? (
-                <button
-                  onClick={() => { logoutUser(); setIsOpen(false); }}
-                  className="flex items-center gap-4 px-5 py-4 rounded-2xl text-base font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all w-full bg-transparent border-none cursor-pointer"
-                >
-                  <FiLogOut size={20} />
-                  Keluar Akun
-                </button>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="block text-center py-4 bg-blue-600 text-white rounded-2xl font-bold no-underline shadow-lg shadow-blue-200"
-                >
-                  Masuk Sekarang
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Mobile dropdown menu dihapus — navigasi mobile menggunakan BottomNav */}
     </nav>
   );
 }
