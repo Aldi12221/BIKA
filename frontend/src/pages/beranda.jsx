@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 import api from '../utils/api';
 import siswa from '../assets/siswa.png';
 import { 
@@ -73,16 +74,19 @@ export default function Beranda() {
             title="Masa Depan" 
             desc="Temukan lowongan kerja, magang, dan peluang usaha terbaik untukmu." 
             icon="💼" color="bg-blue-600" shadow="shadow-blue-100" textColor="text-blue-600"
+            link="/masa-depan"
           />
           <FeatureCard 
             title="Tutorial" 
             desc="Belajar berbagai skill melalui video tutorial yang mudah dipahami." 
             icon="▶️" color="bg-red-500" shadow="shadow-red-100" textColor="text-red-500"
+            link="/tutorial"
           />
           <FeatureCard 
             title="Profil" 
             desc="Bangun profil profesionalmu untuk menarik perhatian perekrut." 
             icon="👤" color="bg-blue-500" shadow="shadow-blue-100" textColor="text-blue-500"
+            link="/profil"
           />
         </div>
       </section>
