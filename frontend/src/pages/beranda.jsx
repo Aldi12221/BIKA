@@ -49,13 +49,19 @@ export default function Beranda() {
               Platform digital siswa SMK untuk menemukan peluang kerja, magang, belajar skill baru, dan membangun profil profesional.
             </p>
 
+{/* buton pak ton dek ton mas ton */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+              <NavLink to={"/masa-depan"}>
               <button className="bg-blue-600 text-white px-8 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 text-base">
                 Mulai Sekarang <FiArrowRight strokeWidth={3} />
               </button>
+              </NavLink>
+              <NavLink to={"#content"}>
               <button className="bg-white dark:bg-zinc-900 text-blue-950 dark:text-white px-7 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all border border-slate-200 dark:border-zinc-800 text-base shadow-sm">
                 Pelajari Lebih Lanjut <FiPlayCircle size={22} className="text-blue-600 dark:text-blue-500" />
               </button>
+              </NavLink>
+              
             </div>
           </div>
 
@@ -92,7 +98,7 @@ export default function Beranda() {
       </section>
 
       {/* 3. CONTENT GRID - Jarak antar elemen tutorial/job dipersempit */}
-      <section className="px-6 lg:px-12 py-12">
+      <section className="px-6 lg:px-12 py-12" id='content'>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
           
           {/* Lowongan */}
@@ -155,7 +161,7 @@ export default function Beranda() {
 }
 
 // Sub-komponen tetap sama, hanya padding internal yang disesuaikan sedikit agar lebih ringkas.
-function FeatureCard({ title, desc, icon, color, shadow, textColor }) {
+function FeatureCard({ title, desc, icon, color, shadow, textColor, link }) {
   return (
     <div className="group bg-white dark:bg-zinc-900 p-8 rounded-[36px] border border-slate-50 dark:border-zinc-800 shadow-sm dark:shadow-none hover:shadow-xl dark:hover:border-zinc-700 hover:-translate-y-2 transition-all duration-300">
       <div className={`w-12 h-12 ${color} ${shadow} dark:shadow-none rounded-2xl flex items-center justify-center text-xl mb-6 shadow-lg`}>
@@ -163,9 +169,12 @@ function FeatureCard({ title, desc, icon, color, shadow, textColor }) {
       </div>
       <h3 className="text-xl font-black text-blue-950 dark:text-white mb-3 tracking-tight transition-colors">{title}</h3>
       <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 font-medium transition-colors">{desc}</p>
-      <div className={`font-black text-[12px] flex items-center gap-2 ${textColor} uppercase tracking-widest`}>
+      <NavLink
+        to={link || '/'}
+        className={`font-black text-[12px] inline-flex items-center gap-2 ${textColor} uppercase tracking-widest no-underline hover:opacity-80 transition-opacity`}
+      >
         Jelajahi <FiArrowRight className="group-hover:translate-x-1 transition-transform"/>
-      </div>
+      </NavLink>
     </div>
   );
 }
