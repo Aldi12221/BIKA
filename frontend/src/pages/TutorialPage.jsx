@@ -42,7 +42,7 @@ export default function TutorialPage() {
       <div className="max-w-4xl mx-auto px-6 space-y-8 relative z-10">
 
         {/* 1. Bank Kuis Section */}
-        <div className="bg-[#FF9B9B] dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+        <div className="bg-rose-500 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiBookOpen className="text-xl" />
@@ -72,14 +72,14 @@ export default function TutorialPage() {
               <div className="w-1/2 h-full bg-[#93C5FD] dark:bg-blue-500 rounded-full"></div>
             </div>
             <span className="text-white font-black text-sm">50/100</span>
-            <button className="bg-[#93C5FD] dark:bg-blue-600 text-white text-xs font-black px-5 py-2 rounded-xl hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-sm">
+            <button className="bg-indigo-400 dark:bg-blue-600 text-white text-xs font-black px-5 py-2 rounded-xl hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-sm">
               Progress
             </button>
           </div>
         </div>
 
         {/* 2. Tips & Trick Wawancara Section */}
-        <div className="bg-[#FF9B9B] dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+        <div className="bg-rose-500 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiMessageCircle className="text-xl" />
@@ -124,12 +124,12 @@ export default function TutorialPage() {
         </div>
 
         {/* 3. Test Psikotes Section */}
-        <div className="bg-[#FF9B9B] dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors text-center relative overflow-hidden">
+        <div className="bg-rose-500 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors text-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
 
           <div className="flex flex-col items-center justify-center mb-8 relative z-10">
             <h2 className="text-2xl font-black text-white tracking-tight mb-6">Test Psikotes</h2>
-            <button className="bg-[#93C5FD] dark:bg-blue-600 text-white font-black text-sm px-8 py-3 rounded-full hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20">
+            <button className="bg-indigo-400 dark:bg-blue-600 text-white font-black text-sm px-8 py-3 rounded-full hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20">
               Start now
             </button>
           </div>
