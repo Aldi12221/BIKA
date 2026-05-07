@@ -1,4 +1,4 @@
-const { Content } = require('../models');
+const { Content, User } = require('../models');
 
 // Ambil konten berdasarkan kategori (lowongan/tutorial/usaha)
 exports.getContentByKategori = (req, res) => {
@@ -29,4 +29,23 @@ exports.deleteContent = (req, res) => {
   Content.destroy({ where: { id: req.params.id } })
     .then(() => res.json({ message: "Konten berhasil dihapus" }))
     .catch(err => res.status(500).json({ error: err.message }));
+};
+
+// Statistik publik untuk halaman login
+exports.getLoginStats = async (req, res) => {
+  try {
+    const [totalUsersLoggedIn, totalLowongan, totalTutorial] = await Promise.all([
+      User.count(),
+      Content.count({ where: { kategori: 'lowongan' } }),
+      Content.count({ where: { kategori: 'tutorial' } }),
+    ]);
+
+    res.json({
+      totalUsersLoggedIn,
+      totalLowongan,
+      totalTutorial,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };

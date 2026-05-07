@@ -12,6 +12,7 @@ router.put('/user/:id', authCtrl.updateProfile);
 
 // Routes Contents (Masa Depan, Tutorial, Usaha)
 router.get('/contents/:kategori', contentCtrl.getContentByKategori);
+router.get('/stats/login', contentCtrl.getLoginStats);
 router.post('/contents', contentCtrl.createContent);
 router.put('/contents/:id', contentCtrl.updateContent);
 router.delete('/contents/:id', contentCtrl.deleteContent);
