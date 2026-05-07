@@ -26,13 +26,7 @@ export default function Navbar() {
           
           {/* Logo sesuai WhatsApp Image 2026-05-01 at 13.02.09.jpeg */}
           <Link to="/" className="flex items-center gap-3 no-underline group">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-blue-200 dark:shadow-none transition-transform group-hover:scale-105">
-              B
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-2xl font-black text-blue-900 dark:text-white tracking-tight">Bika</span>
-              <span className="text-[10px] font-bold text-red-500 uppercase tracking-[0.2em]">Bisa SMK</span>
-            </div>
+            <img src="src/assets/loog.svg" alt="Logo" className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Nav */}
