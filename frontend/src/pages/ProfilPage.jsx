@@ -245,7 +245,7 @@ export default function ProfilPage() {
                   value={form.cv_path}
                   disabled={!isEditing}
                   onChange={(event) => handleChange('cv_path', event.target.value)}
-                  placeholder="https://drive.google.com/..."
+                  placeholder="link cv kamu (Google Drive, Dropbox, dll)"
                   className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-blue-950 dark:text-white font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
                 />
               </div>
@@ -259,7 +259,7 @@ export default function ProfilPage() {
                   value={form.portofolio_link}
                   disabled={!isEditing}
                   onChange={(event) => handleChange('portofolio_link', event.target.value)}
-                  placeholder="https://behance.net/..."
+                  placeholder="link portofolio kamu (Behance, Dribbble, dll)"
                   className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-blue-950 dark:text-white font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
                 />
               </div>

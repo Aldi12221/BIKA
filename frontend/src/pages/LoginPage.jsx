@@ -7,6 +7,7 @@ import {
   FiArrowRight, FiShield, FiZap, FiStar, FiCheckCircle,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import ThemeToggleButton from '../components/ThemeToggleButton';
 import api from '../utils/api';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -19,17 +20,19 @@ const featureList = [
   { icon: <FiBriefcase size={15} />, title: 'Usaha', desc: 'Tips & kurva pendapatan', color: 'bg-blue-600' },
 ];
 
-const stats = [
-  { label: 'Siswa SMK', value: '2.400+', icon: '🎓' },
-  { label: 'Lowongan', value: '180+', icon: '💼' },
-  { label: 'Tutorial', value: '90+', icon: '▶️' },
-];
-
 const benefits = [
   'Akses ratusan lowongan kerja & magang',
   'Tutorial skill karir langkah demi langkah',
   'Bangun portofolio digital profesional',
 ];
+
+const numberFormatter = new Intl.NumberFormat('id-ID');
+
+const defaultLoginStats = {
+  totalUsersLoggedIn: null,
+  totalLowongan: null,
+  totalTutorial: null,
+};
 
 function buildLocalUserFromGoogle(decoded) {
   return {
@@ -58,10 +61,44 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [hoveredFeature, setHoveredFeature] = useState(null);
+  const [loginStats, setLoginStats] = useState(defaultLoginStats);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const toCountOrNull = (value) => {
+      const parsed = Number(value);
+      if (!Number.isFinite(parsed) || parsed < 0) return null;
+      return Math.floor(parsed);
+    };
+
+    const loadLoginStats = async () => {
+      try {
+        const response = await api.getLoginStats();
+        if (!active) return;
+
+        setLoginStats({
+          totalUsersLoggedIn: toCountOrNull(response?.totalUsersLoggedIn),
+          totalLowongan: toCountOrNull(response?.totalLowongan),
+          totalTutorial: toCountOrNull(response?.totalTutorial),
+        });
+      } catch {
+        if (!active) return;
+      }
+    };
+
+    loadLoginStats();
+    const intervalId = setInterval(loadLoginStats, 30000);
+
+    return () => {
+      active = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   // Returns animation style only after mount — uses 'fill: both' so opacity
@@ -70,6 +107,18 @@ export default function LoginPage() {
     mounted
       ? { animation: `${name} 0.75s ${delay}s cubic-bezier(0.16,1,0.3,1) both` }
       : {};
+
+  const formatStat = (value) => (
+    typeof value === 'number'
+      ? numberFormatter.format(value)
+      : '...'
+  );
+
+  const stats = [
+    { label: 'Siswa Login', value: formatStat(loginStats.totalUsersLoggedIn), icon: <FiUser size={16} /> },
+    { label: 'Lowongan', value: formatStat(loginStats.totalLowongan), icon: <FiBriefcase size={16} /> },
+    { label: 'Tutorial', value: formatStat(loginStats.totalTutorial), icon: <FiBookOpen size={16} /> },
+  ];
 
   const finishLogin = (userData) => {
     loginUser(userData);
@@ -101,6 +150,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex bg-[#F8FAFC] dark:bg-black transition-colors duration-300 overflow-hidden">
+      <div className="fixed top-6 right-6 z-50">
+        <ThemeToggleButton />
+      </div>
 
       {/* ═══════════════════════════════════════
           LEFT PANEL — Animated Branding
@@ -145,15 +197,11 @@ export default function LoginPage() {
           style={anim('slide-in-left', 0)}
         >
           <div className="relative">
-            <div className="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center font-black text-white text-lg shadow-xl shadow-blue-500/40">
-              B
-            </div>
             {/* Pulse ring */}
             <div className="absolute inset-0 rounded-2xl bg-blue-500/40" style={{ animation: 'pulse-ring 2.5s ease-out infinite' }} />
           </div>
           <div className="leading-none">
-            <p className="text-2xl font-black text-white tracking-tight">BIKA</p>
-            <p className="text-[9px] font-bold text-red-400 uppercase tracking-[0.25em]">Bisa SMK</p>
+            <img src="/src/assets/loog.svg" alt="logo bika" className="h-25" />
           </div>
         </div>
 
@@ -252,7 +300,7 @@ export default function LoginPage() {
           {stats.map((s) => (
             <div key={s.label} className="group cursor-default">
               <div className="flex items-center gap-1.5">
-                <span className="text-lg">{s.icon}</span>
+                <span className="text-blue-200 group-hover:text-blue-100 transition-colors duration-300">{s.icon}</span>
                 <p className="text-2xl font-black text-white group-hover:text-blue-300 transition-colors duration-300">{s.value}</p>
               </div>
               <p className="text-[11px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{s.label}</p>
@@ -299,44 +347,38 @@ export default function LoginPage() {
               <div className="w-2 h-1 rounded-full bg-blue-300" />
             </div>
             <h2 className="text-3xl font-black text-blue-950 dark:text-white tracking-tight leading-tight">
-              Selamat Datang 👋
+              Selamat Datang 👋 
             </h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mt-2">
               Masuk dan mulai perjalanan karirmu bersama ribuan siswa SMK se-Indonesia.
             </p>
           </div>
 
-          {/* Main card */}
           <div
-            className="relative rounded-[28px] p-7 overflow-hidden transition-all duration-500"
-            style={{
-              background: 'white',
-              boxShadow: '0 20px 60px -10px rgba(0,0,0,0.08), 0 4px 20px -4px rgba(59,130,246,0.08)',
-              border: '1px solid rgba(226,232,240,0.8)',
-            }}
-          >
-            {/* Card inner glow top */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
-
-            {/* Dark mode card */}
-            <style>{`
-              @media (prefers-color-scheme: dark) {
-                .login-card {
-                  background: rgb(24 24 27) !important;
-                  border-color: rgba(63,63,70,0.8) !important;
-                }
-              }
-            `}</style>
+            className="
+              relative
+              rounded-[28px]
+              p-7
+              overflow-hidden
+              transition-all
+              duration-500
+              bg-white
+              dark:bg-zinc-900
+              border
+              border-slate-200/80
+              dark:border-zinc-700/80
+              shadow-[0_20px_60px_-10px_rgba(0,0,0,0.08),0_4px_20px_-4px_rgba(59,130,246,0.08)]"
+            style={anim('fade-up', 0.3)}>
 
             <div className="space-y-6">
               {/* Trust badge */}
-              <div className="flex items-center gap-3 bg-slate-50 dark:bg-zinc-800/80 rounded-2xl px-4 py-3 border border-slate-100 dark:border-zinc-700/50">
+              <div className="flex items-center gap-3 bg-slate-100 dark:bg-zinc-800/60 rounded-2xl px-4 py-3 border border-slate-100 dark:border-zinc-800/60">
                 <div className="w-8 h-8 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
                   <FiShield size={15} className="text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200">100% Aman & Terenkripsi</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">Data kamu dilindungi standar Google OAuth 2.0</p>
+                  <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200 ">100% Aman & Terenkripsi</p>
+                  <p className="text-[10px] text-slate-400 dark:text-gray-300">Data kamu dilindungi standar Google OAuth 2.0</p>
                 </div>
               </div>
 
@@ -448,3 +490,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

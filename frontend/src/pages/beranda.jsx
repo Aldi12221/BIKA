@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 import api from '../utils/api';
 import siswa from '../assets/siswa.png';
-import { 
-  FiArrowRight, 
-  FiPlayCircle, 
-  FiBookmark, 
-  FiPlay, 
-  FiSend, 
-  FiSmile 
+import {
+  FiArrowRight,
+  FiPlayCircle,
+  FiBookmark,
+  FiPlay,
+  FiSend,
+  FiSmile,
+  FiBriefcase,
+  FiUser
 } from 'react-icons/fi';
 
 export default function Beranda() {
@@ -40,7 +43,7 @@ export default function Beranda() {
             </div>
 
             <h1 className="text-5xl lg:text-6xl font-black text-blue-950 dark:text-white leading-[1.1] tracking-tight transition-colors">
-              Bangun Masa <br className="hidden lg:block"/> Depanmu Bersama <br />
+              Bangun Masa <br className="hidden lg:block" /> Depanmu Bersama <br />
               <span className="text-red-500">BIKA</span>
             </h1>
 
@@ -48,13 +51,19 @@ export default function Beranda() {
               Platform digital siswa SMK untuk menemukan peluang kerja, magang, belajar skill baru, dan membangun profil profesional.
             </p>
 
+            {/* button pak ton dek ton mas ton */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-              <button className="bg-blue-600 text-white px-8 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 text-base">
-                Mulai Sekarang <FiArrowRight strokeWidth={3} />
-              </button>
-              <button className="bg-white dark:bg-zinc-900 text-blue-950 dark:text-white px-7 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all border border-slate-200 dark:border-zinc-800 text-base shadow-sm">
-                Pelajari Lebih Lanjut <FiPlayCircle size={22} className="text-blue-600 dark:text-blue-500" />
-              </button>
+              <NavLink to={"/masa-depan"}>
+                <button className="bg-blue-600 text-white px-8 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 text-base">
+                  Mulai Sekarang <FiArrowRight strokeWidth={3} />
+                </button>
+              </NavLink>
+              <NavLink to={"#content"}>
+                <button className="bg-white dark:bg-zinc-900 text-blue-950 dark:text-white px-7 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all border border-slate-200 dark:border-zinc-800 text-base shadow-sm">
+                  Pelajari Lebih Lanjut <FiPlayCircle size={22} className="text-blue-600 dark:text-blue-500" />
+                </button>
+              </NavLink>
+
             </div>
           </div>
 
@@ -69,59 +78,73 @@ export default function Beranda() {
       {/* 2. FEATURE CARDS - Margin negatif lebih besar agar 'menusuk' ke Hero section */}
       <section className="px-6 lg:px-12 py-8 -mt-16 relative z-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FeatureCard 
-            title="Masa Depan" 
-            desc="Temukan lowongan kerja, magang, dan peluang usaha terbaik untukmu." 
-            icon="💼" color="bg-blue-600" shadow="shadow-blue-100" textColor="text-blue-600"
+          <FeatureCard
+            title="Masa Depan"
+            desc="Temukan lowongan kerja, magang, dan peluang usaha terbaik untukmu."
+            icon={<FiBriefcase size={22} className="text-indigo-50 dark:text-indigo-950" />}
+            color="bg-blue-600"
+            shadow="shadow-blue-100"
+            textColor="text-blue-600"
+            link="/masa-depan"
           />
-          <FeatureCard 
-            title="Tutorial" 
-            desc="Belajar berbagai skill melalui video tutorial yang mudah dipahami." 
-            icon="▶️" color="bg-red-500" shadow="shadow-red-100" textColor="text-red-500"
+
+          <FeatureCard
+            title="Tutorial"
+            desc="Belajar berbagai skill melalui video tutorial yang mudah dipahami."
+            icon={<FiPlayCircle size={22} className="text-red-50 dark:text-indigo-950" />}
+            color="bg-red-500"
+            shadow="shadow-red-100"
+            textColor="text-red-500"
+            link="/tutorial"
           />
-          <FeatureCard 
-            title="Profil" 
-            desc="Bangun profil profesionalmu untuk menarik perhatian perekrut." 
-            icon="👤" color="bg-blue-500" shadow="shadow-blue-100" textColor="text-blue-500"
+
+          <FeatureCard
+            title="Profil"
+            desc="Bangun profil profesionalmu untuk menarik perhatian perekrut."
+            icon={<FiUser size={22} className="text-blue-50 dark:text-indigo-950" />}
+            color="bg-blue-500"
+            shadow="shadow-blue-100"
+            textColor="text-blue-500"
+            link="/profil"
           />
         </div>
       </section>
 
       {/* 3. CONTENT GRID - Jarak antar elemen tutorial/job dipersempit */}
-      <section className="px-6 lg:px-12 py-12">
+      <section className="px-6 lg:px-12 py-12" id='content'>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
-          
+
           {/* Lowongan */}
           <div className="space-y-6">
-            <SectionHeader title="Lowongan Terbaru" icon="💼" link="/masa-depan" />
+            <SectionHeader title="Lowongan Terbaru" icon={<FiBriefcase size={22} />} link="/masa-depan" />
             <div className="space-y-3">
               {lowongan.length > 0 ? lowongan.map((item, idx) => (
-                <JobItem 
-                  key={item.id} 
-                  title={item.judul} 
-                  company={item.deskripsi || "Perushaan Mitra"} 
-                  type="Tersedia" 
-                  color={idx % 2 === 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400" : "text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400"} 
+                <JobItem
+                  key={item.id}
+                  title={item.judul}
+                  company={item.deskripsi || "Perushaan Mitra"}
+                  type="Tersedia"
+                  color={idx % 2 === 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400" : "text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400"}
                 />
               )) : (
                 <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada lowongan.</p>
               )}
             </div>
-            <button onClick={() => window.location.href='/masa-depan'} className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-[20px] text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-zinc-900 transition-all text-sm cursor-pointer">
+            <button onClick={() => window.location.href = '/masa-depan'} className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-[20px] text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-zinc-900 transition-all text-sm cursor-pointer">
               Lihat Semua Lowongan →
             </button>
           </div>
 
           {/* Tutorial */}
           <div className="space-y-6">
-            <SectionHeader title="Tutorial Terbaru" icon="🎓" link="/tutorial" />
+            <SectionHeader title="Tutorial Terbaru" icon={<FiPlayCircle size={22}/>} link="/tutorial" />
             <div className="space-y-4">
               {tutorial.length > 0 ? tutorial.map((item) => (
-                <TutorialItem 
+                <TutorialItem
                   key={item.id}
-                  title={item.judul} 
-                  cat="Tutorial" 
-                  time="Baru" 
+                  title={item.judul}
+                  cat="Tutorial"
+                  time="Baru"
                 />
               )) : (
                 <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada tutorial.</p>
@@ -131,14 +154,14 @@ export default function Beranda() {
 
           {/* Profil Preview */}
           <div className="space-y-6">
-            <SectionHeader title="Profil Saya" icon="👤" />
+            <SectionHeader title="Profil Saya" icon={<FiUser size={22} />} />
             <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[32px] shadow-xl dark:shadow-none flex flex-col h-[380px] p-6 items-center justify-center text-center transition-colors">
               <div className="w-24 h-24 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-4xl mb-4 shadow-inner dark:shadow-none">
                 <FiSmile size={48} />
               </div>
               <h4 className="text-lg font-black text-blue-950 dark:text-white mb-1 transition-colors">Lengkapi Profilmu</h4>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 px-4 transition-colors">Tambahkan pengalaman dan skill untuk mendapatkan rekomendasi lowongan yang tepat.</p>
-              <button onClick={() => window.location.href='/profil'} className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none w-full text-sm">
+              <button onClick={() => window.location.href = '/profil'} className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none w-full text-sm">
                 Lihat Profil
               </button>
             </div>
@@ -151,7 +174,7 @@ export default function Beranda() {
 }
 
 // Sub-komponen tetap sama, hanya padding internal yang disesuaikan sedikit agar lebih ringkas.
-function FeatureCard({ title, desc, icon, color, shadow, textColor }) {
+function FeatureCard({ title, desc, icon, color, shadow, textColor, link }) {
   return (
     <div className="group bg-white dark:bg-zinc-900 p-8 rounded-[36px] border border-slate-50 dark:border-zinc-800 shadow-sm dark:shadow-none hover:shadow-xl dark:hover:border-zinc-700 hover:-translate-y-2 transition-all duration-300">
       <div className={`w-12 h-12 ${color} ${shadow} dark:shadow-none rounded-2xl flex items-center justify-center text-xl mb-6 shadow-lg`}>
@@ -159,9 +182,12 @@ function FeatureCard({ title, desc, icon, color, shadow, textColor }) {
       </div>
       <h3 className="text-xl font-black text-blue-950 dark:text-white mb-3 tracking-tight transition-colors">{title}</h3>
       <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 font-medium transition-colors">{desc}</p>
-      <div className={`font-black text-[12px] flex items-center gap-2 ${textColor} uppercase tracking-widest`}>
-        Jelajahi <FiArrowRight className="group-hover:translate-x-1 transition-transform"/>
-      </div>
+      <NavLink
+        to={link || '/'}
+        className={`font-black text-[12px] inline-flex items-center gap-2 ${textColor} uppercase tracking-widest no-underline hover:opacity-80 transition-opacity`}
+      >
+        Jelajahi <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+      </NavLink>
     </div>
   );
 }

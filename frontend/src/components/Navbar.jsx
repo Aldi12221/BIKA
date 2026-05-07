@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX, FiLogOut, FiTrendingUp, FiMessageCircle, FiMoon, FiSun } from 'react-icons/fi';
+import ThemeToggleButton from './ThemeToggleButton';
+import { FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX, FiLogOut, FiTrendingUp } from 'react-icons/fi';
 import logoBika from '../assets/logobika.png';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logoutUser } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
   const location = useLocation();
 
   const navLinks = [
@@ -26,12 +25,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo BIKA */}
+          {/* Logo BIKA - Menggunakan aset lokal kamu */}
           <Link to="/" className="flex items-center no-underline group">
             <img
               src={logoBika}
               alt="BIKA Bisa SMK"
-              className="h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm"
+              className="h-14 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm"
             />
           </Link>
 
@@ -48,7 +47,6 @@ export default function Navbar() {
                 }`}
               >
                 {link.label}
-                {/* Indikator Garis Bawah Merah sesuai gambar */}
                 {isActive(link.path) && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-red-500 rounded-full animate-in fade-in zoom-in duration-300"></span>
                 )}
@@ -58,9 +56,7 @@ export default function Navbar() {
 
           {/* User Section / Login */}
           <div className="hidden md:flex items-center gap-4">
-            <button onClick={toggleTheme} className="p-2.5 rounded-full bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-all cursor-pointer">
-              {isDarkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
-            </button>
+            <ThemeToggleButton />
             {user ? (
               <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 p-1.5 pr-4 rounded-2xl border border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-3">
@@ -99,16 +95,21 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile: hanya tampilkan logo dan dark mode toggle (tanpa hamburger, navigasi pindah ke BottomNav) */}
+          {/* Mobile Section */}
           <div className="lg:hidden flex items-center gap-2">
-            <button onClick={toggleTheme} className="p-2 rounded-xl text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 border-none cursor-pointer hover:bg-slate-100 transition-all">
-              {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
+            <ThemeToggleButton
+              className="p-2 rounded-xl border-none hover:bg-slate-100 dark:hover:bg-slate-800"
+              iconSize={20}
+            />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 rounded-xl text-blue-900 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border-none cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+            >
+              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Mobile dropdown menu dihapus — navigasi mobile menggunakan BottomNav */}
     </nav>
   );
 }

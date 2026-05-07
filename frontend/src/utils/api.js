@@ -20,6 +20,9 @@ const api = {
   getContents: (kategori) =>
     fetch(`${API_BASE}/contents/${kategori}`).then(r => r.json()),
 
+  getLoginStats: () =>
+    fetch(`${API_BASE}/stats/login`).then(r => r.json()),
+
   createContent: (data) =>
     fetch(`${API_BASE}/contents`, {
       method: 'POST',
