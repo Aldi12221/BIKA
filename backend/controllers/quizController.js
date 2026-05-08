@@ -1,4 +1,4 @@
-const { Quiz, Question } = require('../models');
+const { Quiz } = require('../models');
 
 // Ambil semua daftar kuis
 exports.getAllQuiz = (req, res) => {
@@ -7,9 +7,9 @@ exports.getAllQuiz = (req, res) => {
     .catch(err => res.status(500).json({ error: err.message }));
 };
 
-// Ambil detail satu kuis beserta soal-soalnya
+// Ambil detail satu kuis
 exports.getQuizDetail = (req, res) => {
-  Quiz.findByPk(req.params.id, { include: [Question] })
+  Quiz.findByPk(req.params.id)
     .then(quiz => {
       if (!quiz) return res.status(404).json({ message: "Kuis tidak ditemukan" });
       res.json(quiz);
@@ -38,20 +38,5 @@ exports.updateQuiz = (req, res) => {
 exports.deleteQuiz = (req, res) => {
   Quiz.destroy({ where: { id: req.params.id } })
     .then(() => res.json({ message: "Kuis berhasil dihapus" }))
-    .catch(err => res.status(500).json({ error: err.message }));
-};
-
-// Tambah Soal ke dalam Kuis Tertentu
-exports.addQuestionToQuiz = (req, res) => {
-  const payload = { ...req.body, quiz_id: req.params.quizId };
-  Question.create(payload)
-    .then(question => res.status(201).json(question))
-    .catch(err => res.status(400).json({ error: err.message }));
-};
-
-// Hapus Soal
-exports.deleteQuestion = (req, res) => {
-  Question.destroy({ where: { id: req.params.questionId, quiz_id: req.params.quizId } })
-    .then(() => res.json({ message: "Soal berhasil dihapus" }))
     .catch(err => res.status(500).json({ error: err.message }));
 };

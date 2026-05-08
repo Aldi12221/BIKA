@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiX, FiSave } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiX, FiSave, FiImage, FiEdit3 } from 'react-icons/fi';
 import api from '../../utils/api';
 
 export default function ManageQuizPage() {
@@ -7,13 +7,21 @@ export default function ManageQuizPage() {
   const [expanded, setExpanded] = useState(null);
   const [quizDetail, setQuizDetail] = useState({});
   const [showQuizModal, setShowQuizModal] = useState(false);
-  const [showQModal, setShowQModal] = useState(false);
-  const [activeQuizId, setActiveQuizId] = useState(null);
-  const [qForm, setQForm] = useState({ judul: '', deskripsi: '', kategori: 'umum', link_eksternal: '' });
-  const [soalForm, setSoalForm] = useState({ teks_soal: '', opsi_a: '', opsi_b: '', opsi_c: '', opsi_d: '', jawaban_benar: 'a' });
+  const [editItem, setEditItem] = useState(null);
+  const [qForm, setQForm] = useState({ judul: '', deskripsi: '', kategori: 'umum', link_eksternal: '', gambar: '' });
+  const [imagePreview, setImagePreview] = useState(null);
 
   const load = () => { api.getQuizzes().then(d => Array.isArray(d) && setQuizzes(d)).catch(() => {}); };
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (showQuizModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showQuizModal]);
 
   const toggleExpand = async (id) => {
     if (expanded === id) { setExpanded(null); return; }
@@ -22,37 +30,51 @@ export default function ManageQuizPage() {
     setExpanded(id);
   };
 
-  const addQuiz = async () => {
-    await api.createQuiz(qForm);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setQForm(prev => ({ ...prev, gambar: reader.result }));
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const openAdd = () => {
+    setEditItem(null);
+    setQForm({ judul: '', deskripsi: '', kategori: 'umum', link_eksternal: '', gambar: '' });
+    setImagePreview(null);
+    setShowQuizModal(true);
+  };
+
+  const openEdit = (quiz) => {
+    setEditItem(quiz);
+    setQForm({ 
+      judul: quiz.judul, 
+      deskripsi: quiz.deskripsi || '', 
+      kategori: quiz.kategori, 
+      link_eksternal: quiz.link_eksternal || '', 
+      gambar: quiz.gambar || '' 
+    });
+    setImagePreview(quiz.gambar || null);
+    setShowQuizModal(true);
+  };
+
+  const handleSave = async () => {
+    if (editItem) {
+      await api.updateQuiz(editItem.id, qForm);
+    } else {
+      await api.createQuiz(qForm);
+    }
     setShowQuizModal(false);
-    setQForm({ judul: '', deskripsi: '', kategori: 'umum', link_eksternal: '' });
     load();
   };
 
   const deleteQuiz = async (id) => {
-    if (!confirm('Hapus kuis ini beserta semua soalnya?')) return;
+    if (!confirm('Hapus kuis ini?')) return;
     await api.deleteQuiz(id);
     load();
-  };
-
-  const openAddSoal = (quizId) => {
-    setActiveQuizId(quizId);
-    setSoalForm({ teks_soal: '', opsi_a: '', opsi_b: '', opsi_c: '', opsi_d: '', jawaban_benar: 'a' });
-    setShowQModal(true);
-  };
-
-  const addSoal = async () => {
-    await api.addQuestion(activeQuizId, soalForm);
-    setShowQModal(false);
-    const detail = await api.getQuizDetail(activeQuizId);
-    setQuizDetail(prev => ({ ...prev, [activeQuizId]: detail }));
-  };
-
-  const deleteSoal = async (quizId, qId) => {
-    if (!confirm('Hapus soal ini?')) return;
-    await api.deleteQuestion(quizId, qId);
-    const detail = await api.getQuizDetail(quizId);
-    setQuizDetail(prev => ({ ...prev, [quizId]: detail }));
   };
 
   return (
@@ -60,9 +82,9 @@ export default function ManageQuizPage() {
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold gradient-text mb-1">Kelola Kuis</h1>
-          <p className="text-text-secondary text-sm">Buat kuis dan tambahkan soal</p>
+          <p className="text-text-secondary text-sm">Buat dan edit kuis dengan gambar dan link Google Form</p>
         </div>
-        <button onClick={() => setShowQuizModal(true)} className="btn-primary text-sm flex items-center gap-2"><FiPlus /> Buat Kuis</button>
+        <button onClick={openAdd} className="btn-primary text-sm flex items-center gap-2"><FiPlus /> Buat Kuis</button>
       </div>
 
       {quizzes.length === 0 ? (
@@ -73,15 +95,23 @@ export default function ManageQuizPage() {
             <div key={quiz.id} className="glass rounded-2xl overflow-hidden card-hover">
               <div className="flex items-center justify-between p-5 cursor-pointer" onClick={() => toggleExpand(quiz.id)}>
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg ${quiz.kategori === 'psikotes' ? 'gradient-accent' : 'gradient-primary'}`}>
-                    {quiz.kategori === 'psikotes' ? '🧠' : '📝'}
-                  </div>
+                  {quiz.gambar ? (
+                    <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                      <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white text-lg ${quiz.kategori === 'psikotes' ? 'gradient-accent' : 'gradient-primary'}`}>
+                      {quiz.kategori === 'psikotes' ? '🧠' : '📝'}
+                    </div>
+                  )}
                   <div>
                     <h3 className="text-sm font-semibold text-text-primary">{quiz.judul}</h3>
-                    <p className="text-xs text-text-muted capitalize">{quiz.kategori} · {quiz.deskripsi || 'Tanpa deskripsi'}</p>
+                    <p className="text-xs text-text-muted capitalize">{quiz.kategori}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <button onClick={(e) => { e.stopPropagation(); openEdit(quiz); }}
+                    className="p-2 rounded-lg text-text-muted hover:text-primary hover:bg-primary/10 transition-all bg-transparent border-none cursor-pointer"><FiEdit3 size={16} /></button>
                   <button onClick={(e) => { e.stopPropagation(); deleteQuiz(quiz.id); }}
                     className="p-2 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-all bg-transparent border-none cursor-pointer"><FiTrash2 size={16} /></button>
                   {expanded === quiz.id ? <FiChevronUp className="text-primary" /> : <FiChevronDown className="text-text-muted" />}
@@ -90,31 +120,25 @@ export default function ManageQuizPage() {
 
               {expanded === quiz.id && quizDetail[quiz.id] && (
                 <div className="border-t border-border p-5 animate-fade-in">
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm font-medium text-text-secondary">Soal ({quizDetail[quiz.id].Questions?.length || 0})</p>
-                    <button onClick={() => openAddSoal(quiz.id)} className="text-xs btn-primary flex items-center gap-1 py-1.5 px-3"><FiPlus size={14} /> Tambah Soal</button>
-                  </div>
-                  {(!quizDetail[quiz.id].Questions || quizDetail[quiz.id].Questions.length === 0) ? (
-                    <p className="text-sm text-text-muted text-center py-4">Belum ada soal</p>
-                  ) : (
-                    <div className="space-y-3">
-                      {quizDetail[quiz.id].Questions.map((s, i) => (
-                        <div key={s.id} className="bg-bg-card rounded-xl p-4 border border-border">
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <p className="text-sm text-text-primary"><span className="text-text-muted mr-2">{i+1}.</span>{s.teks_soal}</p>
-                            <button onClick={() => deleteSoal(quiz.id, s.id)} className="p-1 text-text-muted hover:text-danger bg-transparent border-none cursor-pointer flex-shrink-0"><FiTrash2 size={14} /></button>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            {['a','b','c','d'].map(k => (
-                              <p key={k} className={`text-xs px-3 py-1.5 rounded-lg ${s.jawaban_benar === k ? 'bg-success/10 text-success font-medium' : 'bg-bg-surface text-text-muted'}`}>
-                                {k.toUpperCase()}. {s[`opsi_${k}`]}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    {quizDetail[quiz.id].gambar && (
+                      <div>
+                        <p className="text-xs text-text-muted mb-2 font-medium">Cover Quiz</p>
+                        <img src={quizDetail[quiz.id].gambar} alt="Cover" className="w-full max-h-48 object-cover rounded-xl" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-xs text-text-muted mb-2 font-medium">Detail</p>
+                      <div className="bg-bg-card rounded-xl p-4 border border-border space-y-2">
+                        <p className="text-sm text-text-primary"><strong>Judul:</strong> {quizDetail[quiz.id].judul}</p>
+                        <p className="text-sm text-text-primary"><strong>Kategori:</strong> {quizDetail[quiz.id].kategori}</p>
+                        <p className="text-sm text-text-primary"><strong>Deskripsi:</strong> {quizDetail[quiz.id].deskripsi || '-'}</p>
+                        <p className="text-sm text-text-primary"><strong>Link Form:</strong> {quizDetail[quiz.id].link_eksternal ? (
+                          <a href={quizDetail[quiz.id].link_eksternal} target="_blank" rel="noreferrer" className="text-primary underline ml-1">{quizDetail[quiz.id].link_eksternal.substring(0, 40)}...</a>
+                        ) : ' -'}</p>
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
             </div>
@@ -125,49 +149,44 @@ export default function ManageQuizPage() {
       {/* Quiz Modal */}
       {showQuizModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="glass-strong rounded-2xl p-6 w-full max-w-md animate-slide-up">
+          <div className="glass-strong rounded-2xl p-6 w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-text-primary">Buat Kuis Baru</h2>
-              <button onClick={() => setShowQuizModal(false)} className="p-2 rounded-lg text-text-muted hover:text-text-primary bg-transparent border-none cursor-pointer"><FiX /></button>
+              <h2 className="text-lg font-bold text-text-primary">{editItem ? 'Edit Kuis' : 'Buat Kuis Baru'}</h2>
+              <button onClick={() => { setShowQuizModal(false); setImagePreview(null); }} className="p-2 rounded-lg text-text-muted hover:text-text-primary bg-transparent border-none cursor-pointer"><FiX /></button>
             </div>
             <div className="space-y-4">
               <input value={qForm.judul} onChange={e => setQForm({...qForm, judul: e.target.value})} placeholder="Judul kuis"
                 className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-              <textarea value={qForm.deskripsi} onChange={e => setQForm({...qForm, deskripsi: e.target.value})} rows={2} placeholder="Deskripsi"
+              <textarea value={qForm.deskripsi} onChange={e => setQForm({...qForm, deskripsi: e.target.value})} rows={3} placeholder="Deskripsi quiz"
                 className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none" />
               <select value={qForm.kategori} onChange={e => setQForm({...qForm, kategori: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
                 <option value="umum" className="bg-bg-surface">Umum</option>
                 <option value="psikotes" className="bg-bg-surface">Psikotes</option>
               </select>
-              <input value={qForm.link_eksternal || ''} onChange={e => setQForm({...qForm, link_eksternal: e.target.value})} placeholder="Link Eksternal (Google Form)"
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-              <button onClick={addQuiz} className="w-full btn-primary text-sm flex items-center justify-center gap-2"><FiSave /> Simpan</button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Soal Modal */}
-      {showQModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="glass-strong rounded-2xl p-6 w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-text-primary">Tambah Soal</h2>
-              <button onClick={() => setShowQModal(false)} className="p-2 rounded-lg text-text-muted hover:text-text-primary bg-transparent border-none cursor-pointer"><FiX /></button>
-            </div>
-            <div className="space-y-4">
-              <textarea value={soalForm.teks_soal} onChange={e => setSoalForm({...soalForm, teks_soal: e.target.value})} rows={3} placeholder="Pertanyaan"
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none" />
-              {['a','b','c','d'].map(k => (
-                <input key={k} value={soalForm[`opsi_${k}`]} onChange={e => setSoalForm({...soalForm, [`opsi_${k}`]: e.target.value})} placeholder={`Opsi ${k.toUpperCase()}`}
-                  className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-              ))}
-              <select value={soalForm.jawaban_benar} onChange={e => setSoalForm({...soalForm, jawaban_benar: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
-                {['a','b','c','d'].map(k => <option key={k} value={k} className="bg-bg-surface">Jawaban Benar: {k.toUpperCase()}</option>)}
-              </select>
-              <button onClick={addSoal} className="w-full btn-primary text-sm flex items-center justify-center gap-2"><FiSave /> Simpan Soal</button>
+              {/* Image Upload */}
+              <div>
+                <label className="text-xs font-medium text-text-secondary mb-2 block">Cover Quiz</label>
+                <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-bg-input border-2 border-dashed border-border text-text-muted hover:border-primary/50 transition-all cursor-pointer">
+                  <FiImage size={18} />
+                  <span className="text-sm">{imagePreview ? 'Ganti Gambar' : 'Upload Gambar Cover'}</span>
+                  <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                </label>
+                {imagePreview && (
+                  <div className="mt-3 relative">
+                    <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover rounded-xl" />
+                    <button onClick={() => { setImagePreview(null); setQForm(prev => ({...prev, gambar: ''})); }}
+                      className="absolute top-2 right-2 bg-black/60 text-white p-1 rounded-full border-none cursor-pointer hover:bg-black/80 transition-colors">
+                      <FiX size={14} />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <input value={qForm.link_eksternal || ''} onChange={e => setQForm({...qForm, link_eksternal: e.target.value})} placeholder="Link Google Form"
+                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+              <button onClick={handleSave} className="w-full btn-primary text-sm flex items-center justify-center gap-2"><FiSave /> Simpan Perubahan</button>
             </div>
           </div>
         </div>

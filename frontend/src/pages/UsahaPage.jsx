@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiX, FiExternalLink, FiArrowRight } from 'react-icons/fi';
 import api from '../utils/api';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
@@ -18,6 +18,7 @@ const chartOptions = {
 export default function UsahaPage() {
   const [usahaItems, setUsahaItems] = useState([]);
   const [keuanganItems, setKeuanganItems] = useState([]);
+  const [selectedContent, setSelectedContent] = useState(null);
   
   // Pengelola Keuangan State
   const [transactions, setTransactions] = useState([]);
@@ -27,6 +28,23 @@ export default function UsahaPage() {
     api.getContents('usaha').then(d => { if (Array.isArray(d)) setUsahaItems(d); }).catch(console.error);
     api.getContents('keuangan').then(d => { if (Array.isArray(d)) setKeuanganItems(d); }).catch(console.error);
   }, []);
+  
+  useEffect(() => {
+    if (selectedContent) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [selectedContent]);
+
+  const openContentDetail = (item) => {
+    setSelectedContent(item);
+  };
+
+  const closeContentModal = () => {
+    setSelectedContent(null);
+  };
 
   const addTransaction = () => {
     if (!trxForm.nominal || !trxForm.keterangan) return;
@@ -92,10 +110,17 @@ export default function UsahaPage() {
           <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips memulai usaha</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {usahaItems.length > 0 ? usahaItems.map((item, idx) => (
-              <div key={item.id} onClick={() => item.link_eksternal && window.open(item.link_eksternal, '_blank')} className="bg-white dark:bg-zinc-900 rounded-[24px] p-5 shadow-sm border border-slate-50 dark:border-zinc-800 hover:shadow-lg transition-all cursor-pointer">
-                <img src={`https://images.unsplash.com/photo-${1522071820081 + idx}?w=400&q=80`} className="w-full h-36 object-cover rounded-[16px] mb-4 shadow-sm" alt="Mental Usaha" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80" }} />
-                <h4 className="font-bold text-blue-950 dark:text-slate-100 text-[15px] mb-2 leading-snug">{item.judul}</h4>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider line-clamp-2">{item.deskripsi || 'Terbaru'}</p>
+              <div key={item.id} onClick={() => openContentDetail(item)} className="bg-white dark:bg-zinc-900 rounded-[24px] p-5 shadow-sm border border-slate-50 dark:border-zinc-800 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group">
+                <div className="relative w-full h-36 mb-4 rounded-[16px] overflow-hidden">
+                  <img src={`https://images.unsplash.com/photo-${1522071820081 + idx}?w=400&q=80`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Mental Usaha" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80" }} />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                </div>
+                <h4 className="font-bold text-blue-950 dark:text-slate-100 text-[15px] mb-2 leading-snug group-hover:text-blue-600 transition-colors">{item.judul}</h4>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider line-clamp-2">{item.deskripsi || 'Klik untuk membaca selengkapnya'}</p>
+                <div className="mt-3 pt-3 border-t border-slate-50 dark:border-white/5 flex items-center justify-between">
+                  <span className="text-[10px] font-black text-blue-600 dark:text-blue-400">Baca Tips</span>
+                  <FiArrowRight size={14} className="text-blue-400" />
+                </div>
               </div>
             )) : (
               <div className="col-span-full py-8 text-center text-slate-500">Belum ada tips divalidasi.</div>
@@ -129,9 +154,12 @@ export default function UsahaPage() {
           <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips Mengatur Keuangan</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {keuanganItems.length > 0 ? keuanganItems.map((item) => (
-              <div key={item.id} onClick={() => item.link_eksternal && window.open(item.link_eksternal, '_blank')} className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md transition-all cursor-pointer">
-                <h4 className="font-bold text-blue-900 dark:text-blue-400 text-[13px] mb-4">{item.judul}</h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium line-clamp-3">{item.deskripsi || 'Baca selengkapnya...'}</p>
+              <div key={item.id} onClick={() => openContentDetail(item)} className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md hover:scale-[1.03] transition-all cursor-pointer group">
+                <h4 className="font-bold text-blue-900 dark:text-blue-400 text-[13px] mb-4 group-hover:text-blue-600 transition-colors">{item.judul}</h4>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium line-clamp-3 mb-4">{item.deskripsi || 'Baca selengkapnya...'}</p>
+                <div className="flex justify-center">
+                  <FiArrowRight className="text-blue-400 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
             )) : (
               <div className="col-span-full py-8 text-center text-slate-500">Belum ada tips keuangan divalidasi.</div>
@@ -218,6 +246,72 @@ export default function UsahaPage() {
         </section>
 
       </div>
+
+      {/* ===== ARTICLE DETAIL MODAL ===== */}
+      {selectedContent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={closeContentModal}>
+          <div
+            className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl animate-[slideUp_0.35s_ease-out] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header/Image */}
+            <div className="relative w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 shrink-0">
+              {selectedContent.gambar ? (
+                <img src={selectedContent.gambar} alt={selectedContent.judul} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">📰</div>
+              )}
+              <button onClick={closeContentModal} className="absolute top-4 right-4 w-10 h-10 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-md border-none cursor-pointer transition-all">
+                <FiX size={20} />
+              </button>
+              <div className="absolute bottom-4 left-6">
+                <span className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-lg capitalize">
+                  {selectedContent.kategori}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-8 overflow-y-auto custom-scrollbar">
+              <h2 className="text-3xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
+                {selectedContent.judul}
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 font-bold text-sm mb-8 pb-4 border-b border-slate-100 dark:border-white/5">
+                {selectedContent.deskripsi}
+              </p>
+              
+              <div className="prose dark:prose-invert max-w-none">
+                <div className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap text-base font-medium">
+                  {selectedContent.isi_konten}
+                </div>
+              </div>
+
+              {selectedContent.link_eksternal && (
+                <div className="mt-10 pt-6 border-t border-slate-100 dark:border-white/5">
+                  <button 
+                    onClick={() => window.open(selectedContent.link_eksternal, '_blank')}
+                    className="flex items-center gap-2 text-blue-600 font-black text-sm hover:gap-3 transition-all cursor-pointer bg-transparent border-none"
+                  >
+                    Kunjungi Sumber Eksternal <FiExternalLink />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inline animation keyframes */}
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(40px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+      `}</style>
     </div>
   );
 }

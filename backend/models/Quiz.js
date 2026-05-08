@@ -13,6 +13,9 @@ const Quiz = sequelize.define('Quiz', {
     type: DataTypes.ENUM('umum', 'psikotes'),
     defaultValue: 'umum'
   },
+  gambar: {
+    type: DataTypes.TEXT('long') // Untuk menyimpan base64 file cover quiz
+  },
   link_eksternal: {
     type: DataTypes.STRING
   }
