@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggleButton from './ThemeToggleButton';
 import { FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX, FiLogOut, FiTrendingUp } from 'react-icons/fi';
-import logoBika from '../assets/logobika.png';
+import logoBika from '../assets/loog.svg';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

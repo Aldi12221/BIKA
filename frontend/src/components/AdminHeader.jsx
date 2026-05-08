@@ -84,13 +84,7 @@ export default function AdminHeader() {
             </span>
           </span>
         </button>
-
-        {/* Notification */}
-        <button className="admin-header__icon-btn admin-header__notif" title="Notifikasi">
-          <FiBell size={18} />
-          <span className="admin-header__notif-badge">3</span>
-        </button>
-
+        
         {/* Admin Avatar */}
         <div className="admin-header__avatar" title={admin?.nama}>
           {admin?.nama?.charAt(0)?.toUpperCase() || 'A'}
