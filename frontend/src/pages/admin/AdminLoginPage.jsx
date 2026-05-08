@@ -1,8 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiLock, FiUser, FiEye, FiEyeOff } from 'react-icons/fi';
+import {
+  FiLock, FiUser, FiEye, FiEyeOff,
+  FiShield, FiZap, FiUsers, FiBookOpen,
+  FiBarChart2, FiArrowRight, FiCheckCircle,
+} from 'react-icons/fi';
 import api from '../../utils/api';
+
+/* ─── decorative floating orb ─── */
+function Orb({ size, style }) {
+  return (
+    <div
+      className="absolute rounded-full pointer-events-none"
+      style={{ width: size, height: size, ...style }}
+    />
+  );
+}
+
+/* ─── animated counter ─── */
+function CountUp({ target, duration = 1200 }) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!target) return;
+    let start = null;
+    const step = (ts) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      setVal(Math.floor(progress * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration]);
+  return <>{val.toLocaleString('id-ID')}</>;
+}
+
+const adminFeatures = [
+  { icon: <FiUsers size={14} />, label: 'Kelola Pengguna', color: '#6C63FF' },
+  { icon: <FiBookOpen size={14} />, label: 'Manajemen Konten', color: '#FF6B9D' },
+  { icon: <FiBarChart2 size={14} />, label: 'Statistik Real-time', color: '#00D9FF' },
+  { icon: <FiShield size={14} />, label: 'Keamanan Penuh', color: '#00E676' },
+];
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('');
@@ -10,8 +48,15 @@ export default function AdminLoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
   const navigate = useNavigate();
   const { loginAdmin } = useAuth();
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,61 +68,485 @@ export default function AdminLoginPage() {
         loginAdmin(res.admin, res.token);
         navigate('/admin/dashboard');
       } else {
-        setError(res.message || 'Login gagal');
+        setError(res.message || 'Username atau password salah.');
       }
     } catch {
-      setError('Terjadi kesalahan server');
+      setError('Terjadi kesalahan server. Coba lagi.');
     }
     setLoading(false);
   };
 
+  /* simple entrance animation helper */
+  const anim = (delay = 0) =>
+    mounted
+      ? {
+          animation: `adminLoginFadeUp 0.65s ${delay}s cubic-bezier(0.16,1,0.3,1) both`,
+        }
+      : { opacity: 0 };
+
   return (
-    <div className="min-h-screen bg-bg-body flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full bg-accent/5 blur-3xl"></div>
-        <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full bg-primary/5 blur-3xl"></div>
-      </div>
+    <>
+      {/* keyframes injected once */}
+      <style>{`
+        @keyframes adminLoginFadeUp {
+          from { opacity: 0; transform: translateY(22px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes adminLoginSlideLeft {
+          from { opacity: 0; transform: translateX(-30px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes adminLoginSlideRight {
+          from { opacity: 0; transform: translateX(30px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes adminOrbFloat1 {
+          0%,100% { transform: translateY(0px) scale(1); }
+          50%      { transform: translateY(-18px) scale(1.04); }
+        }
+        @keyframes adminOrbFloat2 {
+          0%,100% { transform: translateY(0px) scale(1); }
+          50%      { transform: translateY(14px) scale(0.97); }
+        }
+        @keyframes adminSpinSlow {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes adminPulseRing {
+          0%   { transform: scale(1);   opacity: 0.6; }
+          100% { transform: scale(1.9); opacity: 0; }
+        }
+        @keyframes adminShimmer {
+          0%   { background-position: -400px 0; }
+          100% { background-position:  400px 0; }
+        }
+        @keyframes adminBlink {
+          0%,100% { opacity: 1; }
+          50%      { opacity: 0.4; }
+        }
+        .admin-login-shimmer-btn::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+          background-size: 400px 100%;
+          animation: adminShimmer 2s linear infinite;
+          pointer-events: none;
+        }
+      `}</style>
 
-      <div className="relative z-10 w-full max-w-sm">
-        <div className="text-center mb-8 animate-slide-up">
-          <div className="w-16 h-16 rounded-2xl gradient-accent flex items-center justify-center text-white text-2xl mx-auto mb-4 shadow-xl shadow-accent/25 animate-float">
-            <FiLock />
+      <div
+        className="min-h-screen flex overflow-hidden"
+        style={{ background: 'var(--color-bg-body, #0F1123)', fontFamily: "'Inter', system-ui, sans-serif" }}
+      >
+        {/* ══════════════════════════════════════════
+            LEFT PANEL — Branding
+        ══════════════════════════════════════════ */}
+        <div
+          className="hidden lg:flex lg:w-[52%] relative flex-col justify-between p-14 overflow-hidden"
+          style={{
+            background: 'linear-gradient(145deg, #0B0D1F 0%, #0F1230 45%, #0A0C1A 100%)',
+            animation: mounted ? 'adminLoginSlideLeft 0.7s 0s cubic-bezier(0.16,1,0.3,1) both' : 'none',
+          }}
+        >
+          {/* Orbs */}
+          <Orb size="500px" style={{
+            top: '-120px', right: '-100px',
+            background: 'radial-gradient(circle, rgba(108,99,255,0.22) 0%, transparent 70%)',
+            animation: 'adminOrbFloat1 9s ease-in-out infinite',
+          }} />
+          <Orb size="380px" style={{
+            bottom: '40px', left: '-100px',
+            background: 'radial-gradient(circle, rgba(255,107,157,0.18) 0%, transparent 70%)',
+            animation: 'adminOrbFloat2 7s ease-in-out infinite',
+          }} />
+          <Orb size="220px" style={{
+            top: '38%', right: '8%',
+            background: 'radial-gradient(circle, rgba(0,217,255,0.12) 0%, transparent 70%)',
+            animation: 'adminOrbFloat1 5s ease-in-out infinite reverse',
+          }} />
+
+          {/* Rotating rings */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            {[600, 480, 360].map((s, i) => (
+              <div
+                key={s}
+                className="absolute rounded-full"
+                style={{
+                  width: s, height: s,
+                  top: '50%', left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  border: '1px solid rgba(108,99,255,0.07)',
+                  animation: `adminSpinSlow ${20 - i * 4}s linear infinite ${i % 2 ? 'reverse' : ''}`,
+                }}
+              />
+            ))}
           </div>
-          <h1 className="text-2xl font-bold text-text-primary mb-1">Admin Panel</h1>
-          <p className="text-text-secondary text-sm">BiKA - Bimbingan Karir</p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="glass rounded-2xl p-8 space-y-5 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          {error && (
-            <div className="p-3 rounded-xl bg-danger/10 border border-danger/30 text-danger text-sm animate-fade-in">{error}</div>
-          )}
+          {/* Dot grid */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)',
+              backgroundSize: '28px 28px',
+            }}
+          />
 
-          <div>
-            <label className="text-xs text-text-muted flex items-center gap-2 mb-1.5"><FiUser size={14} /> Username</label>
-            <input type="text" value={username} onChange={e => setUsername(e.target.value)} required placeholder="admin"
-              className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all" />
-          </div>
+          {/* Vignette */}
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.55) 100%)' }} />
 
-          <div>
-            <label className="text-xs text-text-muted flex items-center gap-2 mb-1.5"><FiLock size={14} /> Password</label>
+          {/* ── Logo ── */}
+          <div className="relative z-10 flex items-center gap-3">
             <div className="relative">
-              <input type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••"
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all pr-10" />
-              <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary bg-transparent border-none cursor-pointer">
-                {showPw ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-              </button>
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-lg shadow-2xl"
+                style={{ background: 'linear-gradient(135deg, #6C63FF, #FF6B9D)' }}
+              >
+                B
+              </div>
+              <div
+                className="absolute inset-0 rounded-2xl"
+                style={{
+                  background: 'linear-gradient(135deg, #6C63FF, #FF6B9D)',
+                  animation: 'adminPulseRing 2.5s ease-out infinite',
+                }}
+              />
+            </div>
+            <div>
+              <p className="text-xl font-black text-white tracking-tight leading-none">BIKA</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] leading-none mt-0.5"
+                style={{ color: '#FF6B9D' }}>Admin Panel</p>
             </div>
           </div>
 
-          <button type="submit" disabled={loading} className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50">
-            {loading ? 'Memproses...' : 'Masuk sebagai Admin'}
-          </button>
+          {/* ── Main copy ── */}
+          <div className="relative z-10 space-y-8 max-w-md">
+            {/* Badge */}
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+              style={{
+                background: 'rgba(108,99,255,0.15)',
+                border: '1px solid rgba(108,99,255,0.3)',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400"
+                style={{ animation: 'adminBlink 2s ease-in-out infinite' }} />
+              <span className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em]">
+                Sistem Aktif
+              </span>
+            </div>
 
-          <a href="/login" className="block text-center text-xs text-text-muted hover:text-primary transition-colors no-underline mt-4">
-            ← Kembali ke login user
-          </a>
-        </form>
+            {/* Headline */}
+            <div>
+              <h1 className="text-5xl xl:text-6xl font-black text-white leading-[1.05] tracking-tight">
+                Pusat<br />
+                Kendali<br />
+                <span style={{
+                  background: 'linear-gradient(135deg, #6C63FF, #FF6B9D)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  BIKA
+                </span>
+              </h1>
+              <p className="text-slate-400 text-sm leading-relaxed mt-4 max-w-xs">
+                Kelola seluruh konten, pengguna, dan data platform dari satu dasbor terpusat.
+              </p>
+            </div>
+
+            {/* Feature chips */}
+            <div className="grid grid-cols-2 gap-3">
+              {adminFeatures.map((f) => (
+                <div
+                  key={f.label}
+                  className="flex items-center gap-2.5 rounded-2xl px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 cursor-default"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(6px)',
+                  }}
+                >
+                  <div
+                    className="w-7 h-7 rounded-xl flex items-center justify-center text-white flex-shrink-0"
+                    style={{ background: `${f.color}30`, color: f.color }}
+                  >
+                    {f.icon}
+                  </div>
+                  <p className="text-xs font-semibold text-white/80">{f.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats row */}
+            <div className="flex items-center gap-8 pt-6 border-t border-white/10">
+              {[
+                { label: 'Uptime', value: '99.9%' },
+                { label: 'Pengguna', value: <><CountUp target={1200} />+</> },
+                { label: 'Konten', value: <><CountUp target={340} />+</> },
+              ].map((s) => (
+                <div key={s.label}>
+                  <p className="text-2xl font-black text-white">{s.value}</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom tagline */}
+          <div className="relative z-10">
+            <p className="text-[11px] text-slate-600 font-medium">
+              © 2025 BIKA — Bimbingan Karir Siswa SMK
+            </p>
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════
+            RIGHT PANEL — Login Form
+        ══════════════════════════════════════════ */}
+        <div
+          className="w-full lg:w-[48%] flex flex-col items-center justify-center px-6 py-12 sm:px-10 relative"
+          style={{
+            background: 'var(--color-bg-body, #0F1123)',
+            animation: mounted ? 'adminLoginSlideRight 0.7s 0s cubic-bezier(0.16,1,0.3,1) both' : 'none',
+          }}
+        >
+          {/* Subtle bg glow */}
+          <div className="absolute top-0 right-0 w-72 h-72 rounded-full pointer-events-none"
+            style={{ background: 'radial-gradient(circle, rgba(108,99,255,0.08) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
+          <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full pointer-events-none"
+            style={{ background: 'radial-gradient(circle, rgba(255,107,157,0.07) 0%, transparent 70%)', transform: 'translate(-30%, 30%)' }} />
+
+          <div className="w-full max-w-sm relative z-10">
+
+            {/* Mobile logo */}
+            <div className="flex items-center gap-3 mb-10 lg:hidden" style={anim(0)}>
+              <div className="relative">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-white shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #6C63FF, #FF6B9D)' }}>B</div>
+                <div className="absolute inset-0 rounded-2xl"
+                  style={{ background: 'linear-gradient(135deg, #6C63FF, #FF6B9D)', animation: 'adminPulseRing 2.5s ease-out infinite' }} />
+              </div>
+              <div>
+                <p className="text-lg font-black text-white tracking-tight leading-none">BIKA</p>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] leading-none mt-0.5" style={{ color: '#FF6B9D' }}>Admin Panel</p>
+              </div>
+            </div>
+
+            {/* Header text */}
+            <div className="mb-8" style={anim(0.05)}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-1 rounded-full" style={{ background: 'linear-gradient(90deg, #6C63FF, #FF6B9D)' }} />
+                <div className="w-4 h-1 rounded-full" style={{ background: '#6C63FF55' }} />
+                <div className="w-2 h-1 rounded-full" style={{ background: '#6C63FF33' }} />
+              </div>
+              <h2 className="text-3xl font-black tracking-tight leading-tight"
+                style={{ color: 'var(--color-text-primary, #E8E8F0)' }}>
+                Selamat Datang
+              </h2>
+              <p className="text-sm leading-relaxed mt-2"
+                style={{ color: 'var(--color-text-secondary, #9A9BBF)' }}>
+                Masuk ke panel admin untuk mengelola platform BIKA.
+              </p>
+            </div>
+
+            {/* Card */}
+            <div
+              className="relative rounded-[28px] p-7 overflow-hidden"
+              style={{
+                background: 'var(--color-bg-card, #1C1F3A)',
+                border: '1px solid var(--color-border, rgba(255,255,255,0.07))',
+                boxShadow: '0 24px 64px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(108,99,255,0.08)',
+                animation: mounted ? `adminLoginFadeUp 0.65s 0.15s cubic-bezier(0.16,1,0.3,1) both` : 'none',
+              }}
+            >
+              {/* Card inner glow */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px pointer-events-none"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(108,99,255,0.5), transparent)' }} />
+
+              <div className="space-y-5">
+
+                {/* Security badge */}
+                <div
+                  className="flex items-center gap-3 rounded-2xl px-4 py-3"
+                  style={{
+                    background: 'rgba(0,230,118,0.06)',
+                    border: '1px solid rgba(0,230,118,0.15)',
+                  }}
+                >
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(0,230,118,0.12)' }}>
+                    <FiShield size={14} style={{ color: '#00E676' }} />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold" style={{ color: 'var(--color-text-primary, #E8E8F0)' }}>
+                      Akses Terbatas
+                    </p>
+                    <p className="text-[10px]" style={{ color: 'var(--color-text-muted, #6B6D8A)' }}>
+                      Hanya untuk administrator yang berwenang
+                    </p>
+                  </div>
+                  <div className="ml-auto flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-400"
+                      style={{ animation: 'adminBlink 2s ease-in-out infinite' }} />
+                    <span className="text-[9px] font-bold text-green-400 uppercase tracking-wider">Live</span>
+                  </div>
+                </div>
+
+                {/* Error */}
+                {error && (
+                  <div
+                    className="flex items-start gap-2.5 rounded-2xl px-4 py-3"
+                    style={{
+                      background: 'rgba(255,82,82,0.08)',
+                      border: '1px solid rgba(255,82,82,0.25)',
+                      animation: 'adminLoginFadeUp 0.4s ease both',
+                    }}
+                  >
+                    <FiZap size={13} style={{ color: '#FF5252', flexShrink: 0, marginTop: 1 }} />
+                    <p className="text-[12px] leading-snug" style={{ color: '#FF5252' }}>{error}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Username */}
+                  <div>
+                    <label
+                      className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider mb-2"
+                      style={{ color: 'var(--color-text-muted, #6B6D8A)' }}
+                    >
+                      <FiUser size={11} /> Username
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        onFocus={() => setFocusedField('username')}
+                        onBlur={() => setFocusedField(null)}
+                        required
+                        placeholder="admin"
+                        className="w-full px-4 py-3 rounded-2xl text-sm transition-all duration-200 outline-none"
+                        style={{
+                          background: 'var(--color-bg-input, #1A1D35)',
+                          border: `1px solid ${focusedField === 'username' ? 'rgba(108,99,255,0.6)' : 'var(--color-border, rgba(255,255,255,0.07))'}`,
+                          color: 'var(--color-text-primary, #E8E8F0)',
+                          boxShadow: focusedField === 'username' ? '0 0 0 3px rgba(108,99,255,0.12)' : 'none',
+                        }}
+                      />
+                      {username && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <FiCheckCircle size={14} style={{ color: '#00E676' }} />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div>
+                    <label
+                      className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider mb-2"
+                      style={{ color: 'var(--color-text-muted, #6B6D8A)' }}
+                    >
+                      <FiLock size={11} /> Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPw ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onFocus={() => setFocusedField('password')}
+                        onBlur={() => setFocusedField(null)}
+                        required
+                        placeholder="••••••••"
+                        className="w-full px-4 py-3 rounded-2xl text-sm transition-all duration-200 outline-none pr-11"
+                        style={{
+                          background: 'var(--color-bg-input, #1A1D35)',
+                          border: `1px solid ${focusedField === 'password' ? 'rgba(108,99,255,0.6)' : 'var(--color-border, rgba(255,255,255,0.07))'}`,
+                          color: 'var(--color-text-primary, #E8E8F0)',
+                          boxShadow: focusedField === 'password' ? '0 0 0 3px rgba(108,99,255,0.12)' : 'none',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPw(!showPw)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors duration-200"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'var(--color-text-muted, #6B6D8A)',
+                        }}
+                      >
+                        {showPw ? <FiEyeOff size={15} /> : <FiEye size={15} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Submit */}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="admin-login-shimmer-btn relative w-full flex items-center justify-center gap-2.5 font-bold py-3.5 rounded-2xl text-sm text-white overflow-hidden transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    style={{
+                      background: loading
+                        ? 'rgba(108,99,255,0.5)'
+                        : 'linear-gradient(135deg, #6C63FF 0%, #9B59FF 50%, #FF6B9D 100%)',
+                      boxShadow: loading ? 'none' : '0 8px 28px -4px rgba(108,99,255,0.45)',
+                    }}
+                  >
+                    {loading ? (
+                      <>
+                        <div
+                          className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white"
+                          style={{ animation: 'adminSpinSlow 0.7s linear infinite' }}
+                        />
+                        Memverifikasi...
+                      </>
+                    ) : (
+                      <>
+                        <FiLock size={14} />
+                        Masuk ke Admin Panel
+                        <FiArrowRight size={14} className="ml-auto" />
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {/* Divider */}
+                <div className="flex items-center gap-3 pt-1">
+                  <div className="flex-1 h-px" style={{ background: 'var(--color-border, rgba(255,255,255,0.07))' }} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest"
+                    style={{ color: 'var(--color-text-muted, #6B6D8A)' }}>atau</span>
+                  <div className="flex-1 h-px" style={{ background: 'var(--color-border, rgba(255,255,255,0.07))' }} />
+                </div>
+
+                {/* Back link */}
+                <a
+                  href="/login"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 no-underline"
+                  style={{
+                    background: 'var(--color-bg-input, #1A1D35)',
+                    border: '1px solid var(--color-border, rgba(255,255,255,0.07))',
+                    color: 'var(--color-text-secondary, #9A9BBF)',
+                  }}
+                >
+                  ← Kembali ke Login Siswa
+                </a>
+              </div>
+            </div>
+
+            {/* Footer note */}
+            <p
+              className="text-center text-[11px] mt-6 leading-relaxed"
+              style={{ color: 'var(--color-text-muted, #6B6D8A)', ...anim(0.4) }}
+            >
+              Dengan masuk, kamu menyetujui kebijakan keamanan dan privasi BIKA.
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
