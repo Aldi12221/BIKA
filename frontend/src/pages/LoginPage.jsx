@@ -312,7 +312,7 @@ export default function LoginPage() {
       {/* ═══════════════════════════════════════
           RIGHT PANEL — Login Form
       ═══════════════════════════════════════ */}
-      <div className="w-full lg:w-[42%] flex flex-col items-center justify-center px-6 py-12 sm:px-10 relative bg-[#F8FAFC] dark:bg-zinc-950">
+      <div className="w-full lg:w-[42%] flex flex-col items-center justify-center px-6 py-12 sm:px-10 relative bg-[#F8FAFC] dark:bg-zinc-950 overflow-hidden" >
 
         {/* Subtle background decoration (right panel) */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-100/60 dark:bg-blue-900/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
