@@ -47,7 +47,7 @@ export default function ManageContentPage({ kategoriProp }) {
     setForm({ 
       judul: item.judul, 
       deskripsi: item.deskripsi || '', 
-      kategori: item.kategori, 
+      kategori: kategoriProp, 
       link_eksternal: item.link_eksternal || '', 
       gambar: item.gambar || '', 
       perusahaan: item.perusahaan || '', 

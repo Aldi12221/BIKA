@@ -117,6 +117,7 @@ export default function AdminDashboardPage() {
     { label: 'Lowongan', count: 0, color: '#6C63FF' },
     { label: 'Tutorial', count: 0, color: '#00D9FF' },
     { label: 'Usaha', count: 0, color: '#FF6B9D' },
+    { label: 'Keuangan', count: 0, color: '#FFD700' },
   ];
 
   /* Helper for trend calculation */
@@ -189,23 +190,23 @@ export default function AdminDashboardPage() {
     {
       icon: <FiBriefcase size={16} />,
       color: '#6C63FF',
-      title: 'Kelola Konten',
-      desc: 'Tambah lowongan, tutorial, dan tips usaha untuk pengguna.',
-      link: '/admin/konten',
+      title: 'Kelola Lowongan',
+      desc: 'Update daftar lowongan kerja terbaru untuk pencari kerja.',
+      link: '/admin/lowongan',
     },
     {
       icon: <FiBookOpen size={16} />,
       color: '#00D9FF',
       title: 'Kelola Kuis',
-      desc: 'Buat dan kelola soal kuis interaktif untuk pengguna.',
+      desc: 'Pantau kuis interaktif yang tersedia untuk pengguna.',
       link: '/admin/kuis',
     },
     {
-      icon: <FiAward size={16} />,
+      icon: <FiActivity size={16} />,
       color: '#FF6B9D',
-      title: 'Kategori Lowongan',
-      desc: 'Konten berlabel "lowongan" tampil di halaman Masa Depan.',
-      link: '/admin/konten',
+      title: 'Tips Usaha & Keuangan',
+      desc: 'Kelola artikel panduan bisnis dan manajemen keuangan.',
+      link: '/admin/usaha',
     },
   ];
 
