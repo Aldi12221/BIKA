@@ -50,12 +50,10 @@ exports.updateContent = async (req, res) => {
 };
 
 exports.deleteContent = async (req, res) => {
-  // Karena ID mungkin sama di tabel berbeda, kita butuh cara untuk tahu tabel mana.
-  // Tapi biasanya di admin kita tahu kategorinya dari state.
-  // Kita bisa kirim kategori via query param atau body.
   const { kategori } = req.query; 
+  console.log('Delete Request - ID:', req.params.id, 'Kategori:', kategori);
   const Model = getModel(kategori);
-  if (!Model) return res.status(400).json({ error: "Kategori (query) diperlukan untuk menghapus" });
+  if (!Model) return res.status(400).json({ error: `Kategori '${kategori}' tidak valid atau tidak ditemukan` });
 
   try {
     await Model.destroy({ where: { id: req.params.id } });

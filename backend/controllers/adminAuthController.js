@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Admin } = require('../models');
+const { Admin, User, Quiz, Job, Tutorial, Business, Finance } = require('../models');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'bika_secret_key_2026';
 
@@ -89,8 +89,6 @@ exports.registerAdmin = async (req, res) => {
 // Get Dashboard Stats
 exports.getDashboardStats = async (req, res) => {
   try {
-    const { User, Quiz, Job, Tutorial, Business, Finance } = require('../models');
-    
     const [users, quizzes, jobs, tutorials, businesses, finances] = await Promise.all([
       User.findAll({ attributes: ['createdAt'] }),
       Quiz.findAll({ attributes: ['createdAt'] }),
@@ -155,6 +153,7 @@ exports.getDashboardStats = async (req, res) => {
       activeContentsLastMonth
     });
   } catch (err) {
+    console.error('Stats Error:', err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -162,7 +161,6 @@ exports.getDashboardStats = async (req, res) => {
 // GetAllUsers untuk mengelola pengguna
 exports.getAllUsers = async (req, res) => {
   try {
-    const { User } = require('../models');
     const users = await User.findAll({ order: [['createdAt', 'DESC']] });
     res.json(users);
   } catch (err) {
@@ -173,7 +171,6 @@ exports.getAllUsers = async (req, res) => {
 // DeleteUser untuk mengelola pengguna
 exports.deleteUser = async (req, res) => {
   try {
-    const { User } = require('../models');
     await User.destroy({ where: { id: req.params.id } });
     res.json({ message: 'User berhasil dihapus' });
   } catch (err) {
