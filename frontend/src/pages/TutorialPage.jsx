@@ -42,7 +42,7 @@ export default function TutorialPage() {
       <div className="max-w-4xl mx-auto px-6 space-y-8 relative z-10">
 
         {/* 1. Bank Kuis Section */}
-        <div className="bg-rose-500 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiBookOpen className="text-xl" />
@@ -79,7 +79,7 @@ export default function TutorialPage() {
         </div>
 
         {/* 2. Tips & Trick Wawancara Section */}
-        <div className="bg-rose-500 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-10 h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiMessageCircle className="text-xl" />
@@ -124,7 +124,7 @@ export default function TutorialPage() {
         </div>
 
         {/* 3. Test Psikotes Section */}
-        <div className="bg-rose-500 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors text-center relative overflow-hidden">
+        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors text-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
 
           <div className="flex flex-col items-center justify-center mb-8 relative z-10">
