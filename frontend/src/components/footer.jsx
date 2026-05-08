@@ -9,7 +9,7 @@ import {
   FiMapPin 
 } from 'react-icons/fi';
 import { FaTiktok } from 'react-icons/fa';
-import logoBika from '../assets/logobika.png';
+import logoBika from '../assets/loog.svg';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
