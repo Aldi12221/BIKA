@@ -22,13 +22,4 @@ const sequelize = new Sequelize(
   }
 );
 
-// Fungsi untuk mengetes koneksi (Callback style dengan .then)
-sequelize.authenticate()
-  .then(() => {
-    console.log('Koneksi ke database MySQL berhasil terhubung.');
-  })
-  .catch(err => {
-    console.error('Tidak dapat terhubung ke database:', err);
-  });
-
 module.exports = sequelize;

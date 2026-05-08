@@ -52,7 +52,10 @@ function App() {
               <Route element={<AdminLayout />}>
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
                 <Route path="/admin/users" element={<ManageUserPage />} />
-                <Route path="/admin/konten" element={<ManageContentPage />} />
+                <Route path="/admin/lowongan" element={<ManageContentPage kategoriProp="lowongan" />} />
+                <Route path="/admin/tutorial" element={<ManageContentPage kategoriProp="tutorial" />} />
+                <Route path="/admin/usaha" element={<ManageContentPage kategoriProp="usaha" />} />
+                <Route path="/admin/keuangan" element={<ManageContentPage kategoriProp="keuangan" />} />
                 <Route path="/admin/kuis" element={<ManageQuizPage />} />
               </Route>
 

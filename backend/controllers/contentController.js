@@ -1,50 +1,74 @@
-const { Content, User } = require('../models');
+const { Job, Tutorial, Business, Finance, User } = require('../models');
 
-// Ambil konten berdasarkan kategori (lowongan/tutorial/usaha)
-exports.getContentByKategori = (req, res) => {
-  Content.findAll({ where: { kategori: req.params.kategori }, order: [['createdAt', 'DESC']] })
-    .then(data => res.json(data))
-    .catch(err => res.status(500).json({ error: err.message }));
+const modelMap = {
+  lowongan: Job,
+  tutorial: Tutorial,
+  usaha: Business,
+  keuangan: Finance
 };
 
-// Tambah Konten Baru
-exports.createContent = (req, res) => {
-  Content.create(req.body)
-    .then(content => res.status(201).json(content))
-    .catch(err => res.status(400).json({ error: err.message }));
+// Helper untuk mendapatkan model berdasarkan kategori
+const getModel = (kategori) => modelMap[kategori?.toLowerCase()];
+
+exports.getContentByKategori = async (req, res) => {
+  const Model = getModel(req.params.kategori);
+  if (!Model) return res.status(400).json({ error: "Kategori tidak valid" });
+
+  try {
+    const data = await Model.findAll({ order: [['createdAt', 'DESC']] });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-// Update Konten
-exports.updateContent = (req, res) => {
-  Content.update(req.body, { where: { id: req.params.id } })
-    .then(() => {
-      Content.findByPk(req.params.id)
-        .then(content => res.json({ message: "Konten diperbarui", data: content }));
-    })
-    .catch(err => res.status(500).json({ error: err.message }));
+exports.createContent = async (req, res) => {
+  const { kategori } = req.body;
+  const Model = getModel(kategori);
+  if (!Model) return res.status(400).json({ error: "Kategori tidak valid" });
+
+  try {
+    const data = await Model.create(req.body);
+    res.status(201).json(data);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
-// Hapus Konten
-exports.deleteContent = (req, res) => {
-  Content.destroy({ where: { id: req.params.id } })
-    .then(() => res.json({ message: "Konten berhasil dihapus" }))
-    .catch(err => res.status(500).json({ error: err.message }));
+exports.updateContent = async (req, res) => {
+  const { kategori } = req.body; // Kita butuh kategori untuk tahu tabel mana yang diupdate
+  const Model = getModel(kategori);
+  if (!Model) return res.status(400).json({ error: "Kategori tidak valid" });
+
+  try {
+    await Model.update(req.body, { where: { id: req.params.id } });
+    const updated = await Model.findByPk(req.params.id);
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-// Statistik publik untuk halaman login
+exports.deleteContent = async (req, res) => {
+  // Karena ID mungkin sama di tabel berbeda, kita butuh cara untuk tahu tabel mana.
+  // Tapi biasanya di admin kita tahu kategorinya dari state.
+  // Kita bisa kirim kategori via query param atau body.
+  const { kategori } = req.query; 
+  const Model = getModel(kategori);
+  if (!Model) return res.status(400).json({ error: "Kategori (query) diperlukan untuk menghapus" });
+
+  try {
+    await Model.destroy({ where: { id: req.params.id } });
+    res.json({ message: "Berhasil dihapus" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.getLoginStats = async (req, res) => {
   try {
-    const [totalUsersLoggedIn, totalLowongan, totalTutorial] = await Promise.all([
-      User.count(),
-      Content.count({ where: { kategori: 'lowongan' } }),
-      Content.count({ where: { kategori: 'tutorial' } }),
-    ]);
-
-    res.json({
-      totalUsersLoggedIn,
-      totalLowongan,
-      totalTutorial,
-    });
+    const total = await User.count();
+    res.json({ totalUsers: total });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

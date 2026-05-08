@@ -89,15 +89,70 @@ exports.registerAdmin = async (req, res) => {
 // Get Dashboard Stats
 exports.getDashboardStats = async (req, res) => {
   try {
-    const { User, Content, Quiz } = require('../models');
-    const totalUsers = await User.count();
-    const totalContents = await Content.count();
-    const totalQuizzes = await Quiz.count();
+    const { User, Quiz, Job, Tutorial, Business, Finance } = require('../models');
+    
+    const [users, quizzes, jobs, tutorials, businesses, finances] = await Promise.all([
+      User.findAll({ attributes: ['createdAt'] }),
+      Quiz.findAll({ attributes: ['createdAt'] }),
+      Job.findAll({ attributes: ['createdAt'] }),
+      Tutorial.findAll({ attributes: ['createdAt'] }),
+      Business.findAll({ attributes: ['createdAt'] }),
+      Finance.findAll({ attributes: ['createdAt'] })
+    ]);
+
+    const totalUsers = users.length;
+    const totalQuizzes = quizzes.length;
+    const totalContents = jobs.length + tutorials.length + businesses.length + finances.length;
+
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+
+    const userSpark = new Array(12).fill(0);
+    const contentSpark = new Array(12).fill(0);
+    const quizSpark = new Array(12).fill(0);
+
+    let activeContentsThisMonth = 0;
+    let activeContentsLastMonth = 0;
+
+    users.forEach(u => {
+      const d = new Date(u.createdAt);
+      if (d.getFullYear() === currentYear) userSpark[d.getMonth()]++;
+    });
+
+    // Gabungkan semua konten untuk sparkline dan statistik bulanan
+    const allContents = [...jobs, ...tutorials, ...businesses, ...finances];
+    allContents.forEach(c => {
+      const d = new Date(c.createdAt);
+      if (d.getFullYear() === currentYear) {
+        contentSpark[d.getMonth()]++;
+        if (d.getMonth() === currentMonth) activeContentsThisMonth++;
+        if (d.getMonth() === currentMonth - 1) activeContentsLastMonth++;
+      }
+    });
+
+    quizzes.forEach(q => {
+      const d = new Date(q.createdAt);
+      if (d.getFullYear() === currentYear) quizSpark[d.getMonth()]++;
+    });
 
     res.json({
       totalUsers,
       totalContents,
-      totalQuizzes
+      totalQuizzes,
+      currentYear,
+      userSpark,
+      contentSpark,
+      quizSpark,
+      barData: contentSpark,
+      activityData: userSpark,
+      categories: [
+        { label: 'Lowongan', count: jobs.length, color: '#6C63FF' },
+        { label: 'Tutorial', count: tutorials.length, color: '#00D9FF' },
+        { label: 'Usaha', count: businesses.length, color: '#FF6B9D' },
+        { label: 'Keuangan', count: finances.length, color: '#FFD700' }
+      ],
+      activeContentsThisMonth,
+      activeContentsLastMonth
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -23,8 +23,6 @@ router.get('/quizzes/:id', quizCtrl.getQuizDetail);
 router.post('/quizzes', quizCtrl.createQuiz);
 router.put('/quizzes/:id', quizCtrl.updateQuiz);
 router.delete('/quizzes/:id', quizCtrl.deleteQuiz);
-router.post('/quizzes/:quizId/questions', quizCtrl.addQuestionToQuiz);
-router.delete('/quizzes/:quizId/questions/:questionId', quizCtrl.deleteQuestion);
 
 // Routes Admin Auth
 router.post('/admin/login', adminAuthCtrl.loginAdmin);

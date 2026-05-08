@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiCheckCircle, FiPlay, FiBookOpen, FiMessageCircle, FiUserCheck } from 'react-icons/fi';
+import { FiPlay, FiBookOpen, FiMessageCircle, FiX, FiExternalLink, FiArrowRight } from 'react-icons/fi';
 import api from '../utils/api';
 
 export default function TutorialPage() {
   const [quizzes, setQuizzes] = useState([]);
   const [tutorials, setTutorials] = useState([]);
+  const [selectedContent, setSelectedContent] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +18,24 @@ export default function TutorialPage() {
       if (Array.isArray(d)) setTutorials(d);
     }).catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (selectedContent) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [selectedContent]);
+
+  const openContentDetail = (item) => {
+    setSelectedContent(item);
+  };
+
+  const closeContentModal = () => {
+    setSelectedContent(null);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black overflow-x-hidden transition-colors duration-300 font-sans pb-24">
       {/* --- BACKGROUND ORNAMENTS --- */}
@@ -39,7 +58,7 @@ export default function TutorialPage() {
         </p>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 space-y-8 relative z-10">
+      <div className="max-w-5xl mx-auto px-6 space-y-8 relative z-10">
 
         {/* 1. Bank Kuis Section */}
         <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
@@ -50,31 +69,51 @@ export default function TutorialPage() {
             <h2 className="text-2xl font-black text-white tracking-tight">Bank Kuis</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {quizzes.length > 0 ? quizzes.map((quiz, idx) => (
-              <div key={quiz.id} onClick={() => window.open(quiz.link_eksternal || 'https://docs.google.com/forms', '_blank')} className="bg-white/90 dark:bg-white/10 rounded-2xl p-4 flex items-center justify-between hover:scale-[1.02] transition-transform cursor-pointer shadow-sm">
-                <div>
-                  <h4 className="font-black text-[15px] text-slate-800 dark:text-white leading-tight">{quiz.judul}</h4>
-                  <p className="text-[11px] font-bold text-slate-500 dark:text-slate-300 capitalize">{quiz.kategori} · {quiz.deskripsi || 'Belum dideskripsi'}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {quizzes.length > 0 ? quizzes.map((quiz) => (
+              <div
+                key={quiz.id}
+                onClick={() => openQuizDetail(quiz)}
+                className="group bg-white/95 dark:bg-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] hover:shadow-xl transition-all duration-300 cursor-pointer shadow-sm"
+              >
+                {/* Quiz Image */}
+                <div className="relative w-full h-40 bg-gradient-to-br from-rose-100 to-orange-100 dark:from-rose-900/30 dark:to-orange-900/30 overflow-hidden">
+                  {quiz.gambar ? (
+                    <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-5xl opacity-50">
+                      {quiz.kategori === 'psikotes' ? '🧠' : '📝'}
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3">
+                    <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-sm ${quiz.kategori === 'psikotes' ? 'bg-purple-500/80 text-white' : 'bg-white/80 text-rose-600 dark:bg-black/50 dark:text-rose-300'}`}>
+                      {quiz.kategori}
+                    </span>
+                  </div>
                 </div>
-                <div className="w-6 h-6 rounded-full flex items-center justify-center bg-rose-100 dark:bg-rose-900/50 text-rose-400 dark:text-rose-300">
-                  <FiPlay className="text-sm ml-0.5" />
+
+                {/* Quiz Info */}
+                <div className="p-4">
+                  <h4 className="font-black text-[15px] text-slate-800 dark:text-white leading-tight mb-2 line-clamp-2">
+                    {quiz.judul}
+                  </h4>
+                  <p className="text-[12px] font-medium text-slate-500 dark:text-slate-300 leading-relaxed line-clamp-2">
+                    {quiz.deskripsi || 'Klik untuk melihat detail quiz'}
+                  </p>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-white/10">
+                    <span className="text-[11px] font-bold text-rose-500 dark:text-rose-400">Lihat Detail</span>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-rose-100 dark:bg-rose-900/50 text-rose-500 dark:text-rose-300 group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                      <FiArrowRight className="text-sm" />
+                    </div>
+                  </div>
                 </div>
               </div>
             )) : (
-              <div className="col-span-full py-4 text-white/80">Belum ada kuis tersedia.</div>
+              <div className="col-span-full py-8 text-center text-white/80">
+                <p className="text-lg font-bold mb-1">Belum ada kuis tersedia</p>
+                <p className="text-sm opacity-70">Kuis akan segera ditambahkan</p>
+              </div>
             )}
-          </div>
-
-          <div className="flex items-center gap-4 bg-white/20 dark:bg-black/20 rounded-2xl p-4">
-            <span className="text-white font-bold text-sm whitespace-nowrap">Progress</span>
-            <div className="flex-1 h-2.5 bg-white/30 dark:bg-black/40 rounded-full overflow-hidden">
-              <div className="w-1/2 h-full bg-[#93C5FD] dark:bg-blue-500 rounded-full"></div>
-            </div>
-            <span className="text-white font-black text-sm">50/100</span>
-            <button className="bg-indigo-400 dark:bg-blue-600 text-white text-xs font-black px-5 py-2 rounded-xl hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-sm">
-              Progress
-            </button>
           </div>
         </div>
 
@@ -91,14 +130,15 @@ export default function TutorialPage() {
             {/* Left Column - Articles */}
             <div className="space-y-4">
               {tutorials.length > 0 ? tutorials.map((item) => (
-                <div key={item.id} onClick={() => item.link_eksternal && window.open(item.link_eksternal, '_blank')} className="flex items-center gap-4 bg-white/90 dark:bg-white/10 rounded-2xl p-3 hover:shadow-md transition-shadow cursor-pointer">
+                <div key={item.id} onClick={() => openContentDetail(item)} className="flex items-center gap-4 bg-white/90 dark:bg-white/10 rounded-2xl p-3 hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer">
                   <div className="w-16 h-16 bg-slate-200 dark:bg-black/30 rounded-xl overflow-hidden shrink-0">
                     <img src={`https://ui-avatars.com/api/?name=${item.judul}&background=cbd5e1&color=475569`} alt="Thumbnail" className="w-full h-full object-cover opacity-80" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h4 className="font-black text-[13px] text-slate-800 dark:text-white leading-tight mb-1">{item.judul}</h4>
-                    <p className="text-[10px] font-bold text-slate-500 dark:text-slate-300">{item.deskripsi ? item.deskripsi.substring(0, 30) + '...' : 'Tutorial Baru'}</p>
+                    <p className="text-[10px] font-bold text-slate-500 dark:text-slate-300">{item.deskripsi ? item.deskripsi.substring(0, 50) + '...' : 'Klik untuk membaca selengkapnya'}</p>
                   </div>
+                  <FiArrowRight className="text-slate-400 group-hover:text-rose-500" />
                 </div>
               )) : (
                 <div className="py-4 text-white/80">Belum ada tutorial...</div>
@@ -151,6 +191,66 @@ export default function TutorialPage() {
         </div>
 
       </div>
+
+      {/* ===== ARTICLE DETAIL MODAL ===== */}
+      {selectedContent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={closeContentModal}>
+          <div
+            className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl animate-[slideUp_0.35s_ease-out] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header/Image */}
+            <div className="relative w-full h-48 bg-gradient-to-br from-rose-100 to-orange-100 dark:from-rose-900/40 dark:to-orange-900/40 shrink-0">
+              {selectedContent.gambar ? (
+                <img src={selectedContent.gambar} alt={selectedContent.judul} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">📰</div>
+              )}
+              <button onClick={closeContentModal} className="absolute top-4 right-4 w-10 h-10 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-md border-none cursor-pointer transition-all">
+                <FiX size={20} />
+              </button>
+              <div className="absolute bottom-4 left-6">
+                <span className="bg-rose-500 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-lg">Tutorial</span>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-8 overflow-y-auto custom-scrollbar">
+              <h2 className="text-3xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
+                {selectedContent.judul}
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 font-bold text-sm mb-8 pb-4 border-b border-slate-100 dark:border-white/5">
+                {selectedContent.deskripsi}
+              </p>
+              
+              <div className="prose dark:prose-invert max-w-none">
+                <div className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap text-base font-medium">
+                  {selectedContent.isi_konten}
+                </div>
+              </div>
+
+              {selectedContent.link_eksternal && (
+                <div className="mt-10 pt-6 border-t border-slate-100 dark:border-white/5">
+                  <button 
+                    onClick={() => window.open(selectedContent.link_eksternal, '_blank')}
+                    className="flex items-center gap-2 text-rose-500 font-black text-sm hover:gap-3 transition-all cursor-pointer bg-transparent border-none"
+                  >
+                    Kunjungi Sumber Eksternal <FiExternalLink />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inline animation keyframes */}
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(40px) scale(0.96); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+      `}</style>
     </div>
   );
 }
