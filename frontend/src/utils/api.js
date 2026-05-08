@@ -37,8 +37,8 @@ const api = {
       body: JSON.stringify(data)
     }).then(r => r.json()),
 
-  deleteContent: (id) =>
-    fetch(`${API_BASE}/contents/${id}`, { method: 'DELETE' }).then(r => r.json()),
+  deleteContent: (id, kategori) =>
+    fetch(`${API_BASE}/contents/${id}?kategori=${kategori}`, { method: 'DELETE' }).then(r => r.json()),
 
   // ===== Quizzes =====
   getQuizzes: () =>
@@ -63,16 +63,6 @@ const api = {
 
   deleteQuiz: (id) =>
     fetch(`${API_BASE}/quizzes/${id}`, { method: 'DELETE' }).then(r => r.json()),
-
-  addQuestion: (quizId, data) =>
-    fetch(`${API_BASE}/quizzes/${quizId}/questions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    }).then(r => r.json()),
-
-  deleteQuestion: (quizId, questionId) =>
-    fetch(`${API_BASE}/quizzes/${quizId}/questions/${questionId}`, { method: 'DELETE' }).then(r => r.json()),
 
   // ===== Admin =====
   adminLogin: (data) =>

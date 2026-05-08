@@ -1,26 +1,17 @@
 const User = require('./User');
-const Content = require('./Content');
 const Quiz = require('./Quiz');
-const Question = require('./Question');
 const Admin = require('./Admin');
-
-// Definisi Relasi
-// Satu Quiz memiliki banyak Question (1:M)
-Quiz.hasMany(Question, {
-  foreignKey: 'quiz_id',
-  onDelete: 'CASCADE'
-});
-Question.belongsTo(Quiz, {
-  foreignKey: 'quiz_id'
-});
-
-// Jika ingin mencatat skor user (Opsional Kedepannya)
-// User.hasMany(Score); 
+const Job = require('./Job');
+const Tutorial = require('./Tutorial');
+const Business = require('./Business');
+const Finance = require('./Finance');
 
 module.exports = {
   User,
-  Content,
   Quiz,
-  Question,
-  Admin
+  Admin,
+  Job,
+  Tutorial,
+  Business,
+  Finance
 };

@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAdminTheme } from '../context/AdminThemeContext';
 import {
   FiGrid, FiFileText, FiHelpCircle, FiLogOut,
-  FiChevronLeft, FiChevronRight, FiX
+  FiChevronLeft, FiChevronRight, FiX, FiBriefcase, FiBookOpen, FiActivity, FiDollarSign, FiUsers
 } from 'react-icons/fi';
 
 export default function AdminSidebar() {
@@ -13,7 +13,11 @@ export default function AdminSidebar() {
 
   const menuItems = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: <FiGrid size={20} /> },
-    { path: '/admin/konten', label: 'Kelola Konten', icon: <FiFileText size={20} /> },
+    { path: '/admin/users', label: 'Kelola User', icon: <FiUsers size={20} /> },
+    { path: '/admin/lowongan', label: 'Kelola Lowongan', icon: <FiBriefcase size={20} /> },
+    { path: '/admin/tutorial', label: 'Tips Wawancara', icon: <FiBookOpen size={20} /> },
+    { path: '/admin/usaha', label: 'Tips Memulai Usaha', icon: <FiActivity size={20} /> },
+    { path: '/admin/keuangan', label: 'Tips Keuangan', icon: <FiDollarSign size={20} /> },
     { path: '/admin/kuis', label: 'Kelola Kuis', icon: <FiHelpCircle size={20} /> },
   ];
 

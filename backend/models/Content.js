@@ -16,6 +16,9 @@ const Content = sequelize.define('Content', {
   gambar: {
     type: DataTypes.TEXT('long') // Untuk menyimpan base64 file cover / logo
   },
+  isi_konten: {
+    type: DataTypes.TEXT('long') // Untuk menyimpan isi artikel lengkap
+  },
   perusahaan: {
     type: DataTypes.STRING // Khusus lowongan
   },
