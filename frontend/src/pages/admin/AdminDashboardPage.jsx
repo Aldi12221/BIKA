@@ -220,7 +220,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="admin-dashboard">
+    <div className="admin-dashboard no-scrollbar">
 
       {/* ── Row 1: Stat Cards ── */}
       <div className="admin-stat-grid">
