@@ -59,6 +59,29 @@ export default function ManageContentPage({ kategoriProp }) {
   };
 
   const handleSave = async () => {
+    if (!form.judul || form.judul.trim() === '') {
+      alert('Judul tidak boleh kosong!');
+      return;
+    }
+    
+    // Validate job specific fields if it's a job
+    if (kategoriProp === 'lowongan') {
+      if (!form.perusahaan || form.perusahaan.trim() === '') {
+        alert('Nama perusahaan tidak boleh kosong!');
+        return;
+      }
+      if (!form.lokasi || form.lokasi.trim() === '') {
+        alert('Lokasi tidak boleh kosong!');
+        return;
+      }
+    } else {
+      // Validate content fields for articles/tutorials/tips
+      if (!form.isi_konten || form.isi_konten.trim() === '') {
+        alert('Isi konten tidak boleh kosong!');
+        return;
+      }
+    }
+
     if (editItem) { await api.updateContent(editItem.id, form); }
     else { await api.createContent(form); }
     setShowModal(false); load();

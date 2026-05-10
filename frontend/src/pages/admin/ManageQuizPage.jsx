@@ -62,6 +62,15 @@ export default function ManageQuizPage() {
   };
 
   const handleSave = async () => {
+    if (!qForm.judul || qForm.judul.trim() === '') {
+      alert('Judul kuis tidak boleh kosong!');
+      return;
+    }
+    if (!qForm.link_eksternal || qForm.link_eksternal.trim() === '') {
+      alert('Link Google Form tidak boleh kosong!');
+      return;
+    }
+
     if (editItem) {
       await api.updateQuiz(editItem.id, qForm);
     } else {

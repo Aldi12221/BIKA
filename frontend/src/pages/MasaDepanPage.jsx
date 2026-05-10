@@ -367,12 +367,12 @@ export default function MasaDepanPage() {
               className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[28px] p-6 flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-between mb-5">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm overflow-hidden shrink-0 ${
                   idx % 3 === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
                   idx % 3 === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
                   'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
                 }`}>
-                  <FiFileText />
+                  {item.gambar ? <img src={item.gambar} alt={item.judul} className="w-full h-full object-cover" /> : <FiFileText />}
                 </div>
                 <div className="w-10 h-10 rounded-full border border-slate-100 dark:border-zinc-800 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 dark:group-hover:bg-blue-500 transition-all">
                   <FiArrowRight className="group-hover:translate-x-0.5 transition-transform" />
