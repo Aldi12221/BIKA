@@ -29,7 +29,7 @@ app.use((err, req, res, next) => {
 async function initDb() {
   try {
     // Sync Database & Jalankan Server
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log('Database synced successfully.');
 
     const PORT = process.env.PORT || 3001;
