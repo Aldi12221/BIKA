@@ -2,7 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/db'); // Koneksi DB
-require('./models'); // Memastikan Relasi Model Terdaftar
+const { Admin } = require('./models'); // Import model Admin
+const bcrypt = require('bcryptjs');
 const apiRoutes = require('./routes/api'); // Semua Route API
 
 const app = express();
@@ -18,6 +19,20 @@ app.use(async (req, res, next) => {
   if (!isDbSynced) {
     try {
       await sequelize.sync();
+      
+      // Seed default admin jika belum ada
+      const adminCount = await Admin.count({ where: { username: 'admin' } });
+      if (adminCount === 0) {
+        const hashedPassword = await bcrypt.hash('admin123', 10);
+        await Admin.create({
+          username: 'admin',
+          password: hashedPassword,
+          nama: 'Default Admin',
+          role: 'admin'
+        });
+        console.log('Default admin created: admin/admin123');
+      }
+
       isDbSynced = true;
       console.log('Database synced successfully.');
     } catch (err) {

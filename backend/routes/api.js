@@ -28,7 +28,7 @@ router.delete('/quizzes/:id', isAdmin, quizCtrl.deleteQuiz);
 // Routes Admin Auth
 router.post('/admin/login', adminAuthCtrl.loginAdmin);
 router.get('/admin/verify', adminAuthCtrl.verifyAdmin);
-router.post('/admin/register',registerAdmin);
+router.post('/admin/register', adminAuthCtrl.registerAdmin);
 router.get('/admin/stats', isAdmin, adminAuthCtrl.getDashboardStats);
 router.get('/admin/users', isAdmin, adminAuthCtrl.getAllUsers);
 router.delete('/admin/users/:id', isAdmin, adminAuthCtrl.deleteUser);
