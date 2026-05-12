@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { FiEdit2, FiFileText, FiImage, FiSave, FiUpload, FiUser } from 'react-icons/fi';
+import { FiEdit2, FiImage, FiSave, FiUser } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 
@@ -22,10 +22,6 @@ export default function ProfilPage() {
   const createFormFromUser = (source) => ({
     nama: source?.nama || '',
     foto: source?.foto || '',
-    cv_file_name: source?.cv_file_name || '',
-    portfolio_file_name: source?.portfolio_file_name || '',
-    cv_path: source?.cv_path || '',
-    portofolio_link: source?.portofolio_link || '',
   });
 
   const [form, setForm] = useState(() => createFormFromUser(user));
@@ -53,29 +49,11 @@ export default function ProfilPage() {
     }
   };
 
-  const handleCvUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    handleChange('cv_file_name', file.name);
-    showMessage('File CV berhasil dipilih.');
-  };
-
-  const handlePortfolioUpload = (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    handleChange('portfolio_file_name', file.name);
-    showMessage('File portofolio berhasil dipilih.');
-  };
-
   const handleSave = async () => {
     setSaving(true);
     const payload = {
       nama: form.nama,
       foto: form.foto,
-      cv_path: form.cv_path || form.cv_file_name,
-      portofolio_link: form.portofolio_link || form.portfolio_file_name,
-      cv_file_name: form.cv_file_name,
-      portfolio_file_name: form.portfolio_file_name,
     };
 
     try {
@@ -85,7 +63,6 @@ export default function ProfilPage() {
       showMessage('Profil berhasil diperbarui.');
       setIsEditing(false);
     } catch {
-      // Fallback local supaya halaman tetap fungsional saat API belum siap.
       setUser({ ...user, ...payload });
       showMessage('Profil tersimpan lokal (backend belum terhubung).');
       setIsEditing(false);
@@ -112,7 +89,7 @@ export default function ProfilPage() {
             Profil <span className="text-blue-600 dark:text-blue-500">Pengguna</span>
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-base max-w-lg mx-auto mt-4 font-medium transition-colors">
-            Kelola informasi pribadimu, unggah CV, dan portofolio untuk menarik perhatian perekrut.
+            Kelola informasi pribadimu dan perbarui foto profil kapan saja.
           </p>
         </div>
 
@@ -164,7 +141,7 @@ export default function ProfilPage() {
             <span className="text-blue-600 dark:text-blue-500">📋</span> Informasi Pribadi
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <label className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 transition-colors">
                 <FiUser size={16} className="text-blue-500" />
@@ -191,78 +168,6 @@ export default function ProfilPage() {
                 onChange={handlePhotoUpload}
                 className="w-full px-5 py-3 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-600 dark:text-slate-300 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-xl file:bg-blue-100 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-400 file:font-bold hover:file:bg-blue-200 dark:hover:file:bg-blue-900/50 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
               />
-            </div>
-          </div>
-
-          <div className="border-t border-slate-100 dark:border-zinc-800 pt-8 mt-2 transition-colors">
-            <h3 className="text-xl font-black text-blue-950 dark:text-white mb-6 flex items-center gap-2 transition-colors">
-              <span className="text-red-500">📁</span> Dokumen & Portofolio
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="space-y-3">
-                <label className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 transition-colors">
-                  <FiUpload size={16} className="text-red-500" />
-                  Upload CV (File)
-                </label>
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  disabled={!isEditing}
-                  onChange={handleCvUpload}
-                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-600 dark:text-slate-300 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-xl file:bg-red-50 dark:file:bg-red-900/20 file:text-red-600 dark:file:text-red-400 file:font-bold hover:file:bg-red-100 dark:hover:file:bg-red-900/40 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
-                />
-                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-2 transition-colors">
-                  {form.cv_file_name ? <span className="text-blue-600 dark:text-blue-400">📄 {form.cv_file_name}</span> : 'Belum ada file CV.'}
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 transition-colors">
-                  <FiUpload size={16} className="text-red-500" />
-                  Upload Portofolio (File)
-                </label>
-                <input
-                  type="file"
-                  accept=".pdf,.ppt,.pptx,.zip,.rar"
-                  disabled={!isEditing}
-                  onChange={handlePortfolioUpload}
-                  className="w-full px-5 py-3 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-600 dark:text-slate-300 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-xl file:bg-red-50 dark:file:bg-red-900/20 file:text-red-600 dark:file:text-red-400 file:font-bold hover:file:bg-red-100 dark:hover:file:bg-red-900/40 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
-                />
-                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-2 transition-colors"> 
-                  {form.portfolio_file_name ? <span className="text-blue-600 dark:text-blue-400">📁 {form.portfolio_file_name}</span> : 'Belum ada file portofolio.'}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <label className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 transition-colors">
-                  <FiFileText size={16} className="text-blue-500" />
-                  Link CV (URL)
-                </label>
-                <input
-                  value={form.cv_path}
-                  disabled={!isEditing}
-                  onChange={(event) => handleChange('cv_path', event.target.value)}
-                  placeholder="link cv kamu (Google Drive, Dropbox, dll)"
-                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-blue-950 dark:text-white font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 transition-colors">
-                  <FiFileText size={16} className="text-blue-500" />
-                  Link Portofolio (URL)
-                </label>
-                <input
-                  value={form.portofolio_link}
-                  disabled={!isEditing}
-                  onChange={(event) => handleChange('portofolio_link', event.target.value)}
-                  placeholder="link portofolio kamu (Behance, Dribbble, dll)"
-                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-blue-950 dark:text-white font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 transition-all disabled:opacity-70 disabled:bg-slate-100 dark:disabled:bg-zinc-950"
-                />
-              </div>
             </div>
           </div>
 
