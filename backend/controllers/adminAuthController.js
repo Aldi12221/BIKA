@@ -7,8 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'bika_secret_key_2026';
 // Login Admin
 exports.loginAdmin = async (req, res) => {
   try {
+    console.log('Full Request Body:', req.body);
     const { username, password } = req.body;
-    console.log('Login attempt:', { username });
+    console.log('Parsed Username:', username);
 
     const admin = await Admin.findOne({ where: { username } });
     if (!admin) {

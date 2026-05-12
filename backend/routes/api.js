@@ -27,6 +27,24 @@ router.delete('/quizzes/:id', isAdmin, quizCtrl.deleteQuiz);
 
 // Routes Admin Auth
 router.post('/admin/login', adminAuthCtrl.loginAdmin);
+router.get('/admin/setup', async (req, res) => {
+  try {
+    const { Admin } = require('../models');
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const [admin, created] = await Admin.findOrCreate({
+      where: { username: 'admin' },
+      defaults: {
+        password: hashedPassword,
+        nama: 'Default Admin',
+        role: 'admin'
+      }
+    });
+    res.json({ message: created ? 'Admin created' : 'Admin already exists', admin: { username: admin.username } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 router.get('/admin/verify', adminAuthCtrl.verifyAdmin);
 router.post('/admin/register', adminAuthCtrl.registerAdmin);
 router.get('/admin/stats', isAdmin, adminAuthCtrl.getDashboardStats);
