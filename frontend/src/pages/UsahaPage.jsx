@@ -112,7 +112,7 @@ export default function UsahaPage() {
             {usahaItems.length > 0 ? usahaItems.map((item, idx) => (
               <div key={item.id} onClick={() => openContentDetail(item)} className="bg-white dark:bg-zinc-900 rounded-[24px] p-5 shadow-sm border border-slate-50 dark:border-zinc-800 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group">
                 <div className="relative w-full h-36 mb-4 rounded-[16px] overflow-hidden">
-                  <img src={`https://images.unsplash.com/photo-${1522071820081 + idx}?w=400&q=80`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Mental Usaha" onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80" }} />
+                  <img src={item.gambar || `https://images.unsplash.com/photo-${1522071820081 + idx}?w=400&q=80`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={item.judul} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80" }} />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
                 </div>
                 <h4 className="font-bold text-blue-950 dark:text-slate-100 text-[15px] mb-2 leading-snug group-hover:text-blue-600 transition-colors">{item.judul}</h4>
@@ -154,10 +154,15 @@ export default function UsahaPage() {
           <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips Mengatur Keuangan</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {keuanganItems.length > 0 ? keuanganItems.map((item) => (
-              <div key={item.id} onClick={() => openContentDetail(item)} className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md hover:scale-[1.03] transition-all cursor-pointer group">
+              <div key={item.id} onClick={() => openContentDetail(item)} className="bg-blue-50 dark:bg-zinc-900 rounded-[24px] p-5 text-center border border-blue-100 dark:border-zinc-800 hover:shadow-md hover:scale-[1.03] transition-all cursor-pointer group flex flex-col items-center">
+                {item.gambar && (
+                  <div className="w-full h-24 mb-4 rounded-xl overflow-hidden shrink-0">
+                    <img src={item.gambar} alt={item.judul} className="w-full h-full object-cover" />
+                  </div>
+                )}
                 <h4 className="font-bold text-blue-900 dark:text-blue-400 text-[13px] mb-4 group-hover:text-blue-600 transition-colors">{item.judul}</h4>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium line-clamp-3 mb-4">{item.deskripsi || 'Baca selengkapnya...'}</p>
-                <div className="flex justify-center">
+                <div className="flex justify-center mt-auto">
                   <FiArrowRight className="text-blue-400 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>

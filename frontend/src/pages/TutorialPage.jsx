@@ -132,7 +132,7 @@ export default function TutorialPage() {
               {tutorials.length > 0 ? tutorials.map((item) => (
                 <div key={item.id} onClick={() => openContentDetail(item)} className="flex items-center gap-4 bg-white/90 dark:bg-white/10 rounded-2xl p-3 hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer">
                   <div className="w-16 h-16 bg-slate-200 dark:bg-black/30 rounded-xl overflow-hidden shrink-0">
-                    <img src={`https://ui-avatars.com/api/?name=${item.judul}&background=cbd5e1&color=475569`} alt="Thumbnail" className="w-full h-full object-cover opacity-80" />
+                    <img src={item.gambar || `https://ui-avatars.com/api/?name=${item.judul}&background=cbd5e1&color=475569`} alt="Thumbnail" className="w-full h-full object-cover opacity-80" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-black text-[13px] text-slate-800 dark:text-white leading-tight mb-1">{item.judul}</h4>
@@ -150,7 +150,7 @@ export default function TutorialPage() {
               {tutorials.length > 0 ? tutorials.slice(0, 3).map((video) => (
                 <div key={video.id} onClick={() => video.link_eksternal && window.open(video.link_eksternal, '_blank')} className="flex items-center gap-4 bg-[#4A3B3B] dark:bg-zinc-900 rounded-2xl p-3 hover:shadow-md transition-shadow cursor-pointer border border-[#5A4B4B] dark:border-zinc-800">
                   <div className="w-16 h-16 bg-black/50 rounded-xl flex items-center justify-center text-white shrink-0 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-rose-500/20"></div>
+                    {video.gambar ? <img src={video.gambar} className="absolute inset-0 w-full h-full object-cover opacity-60" alt="" /> : <div className="absolute inset-0 bg-rose-500/20"></div>}
                     <FiPlay className="text-xl relative z-10 ml-1" fill="currentColor" />
                   </div>
                   <div>

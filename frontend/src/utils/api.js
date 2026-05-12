@@ -1,5 +1,10 @@
 const API_BASE = '/api';
 
+const getAuthHeader = () => {
+  const token = localStorage.getItem('bika_admin_token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
+
 const api = {
   // ===== Auth =====
   loginGoogle: (data) =>
@@ -26,19 +31,28 @@ const api = {
   createContent: (data) =>
     fetch(`${API_BASE}/contents`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
       body: JSON.stringify(data)
     }).then(r => r.json()),
 
   updateContent: (id, data) =>
     fetch(`${API_BASE}/contents/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
       body: JSON.stringify(data)
     }).then(r => r.json()),
 
   deleteContent: (id, kategori) =>
-    fetch(`${API_BASE}/contents/${id}?kategori=${kategori}`, { method: 'DELETE' }).then(r => r.json()),
+    fetch(`${API_BASE}/contents/${id}?kategori=${kategori}`, {
+      method: 'DELETE',
+      headers: getAuthHeader()
+    }).then(r => r.json()),
 
   // ===== Quizzes =====
   getQuizzes: () =>
@@ -50,19 +64,28 @@ const api = {
   createQuiz: (data) =>
     fetch(`${API_BASE}/quizzes`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
       body: JSON.stringify(data)
     }).then(r => r.json()),
 
   updateQuiz: (id, data) =>
     fetch(`${API_BASE}/quizzes/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
       body: JSON.stringify(data)
     }).then(r => r.json()),
 
   deleteQuiz: (id) =>
-    fetch(`${API_BASE}/quizzes/${id}`, { method: 'DELETE' }).then(r => r.json()),
+    fetch(`${API_BASE}/quizzes/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeader()
+    }).then(r => r.json()),
 
   // ===== Admin =====
   adminLogin: (data) =>
@@ -78,13 +101,20 @@ const api = {
     }).then(r => r.json()),
 
   adminStats: () =>
-    fetch(`${API_BASE}/admin/stats`).then(r => r.json()),
+    fetch(`${API_BASE}/admin/stats`, {
+      headers: getAuthHeader()
+    }).then(r => r.json()),
 
   adminUsers: () =>
-    fetch(`${API_BASE}/admin/users`).then(r => r.json()),
+    fetch(`${API_BASE}/admin/users`, {
+      headers: getAuthHeader()
+    }).then(r => r.json()),
 
   deleteAdminUser: (id) =>
-    fetch(`${API_BASE}/admin/users/${id}`, { method: 'DELETE' }).then(r => r.json()),
+    fetch(`${API_BASE}/admin/users/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeader()
+    }).then(r => r.json()),
 
   adminRegister: (data) =>
     fetch(`${API_BASE}/admin/register`, {

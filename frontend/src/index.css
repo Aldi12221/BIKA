@@ -88,3 +88,24 @@
   }
 }
 
+/* Di global.css atau file CSS utama Anda */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Safari dan Chrome */
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE dan Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+/* ===== Hide All Scrollbars ===== */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

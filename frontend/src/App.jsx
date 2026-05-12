@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import AdminLayout from './components/AdminLayout';
 
@@ -33,6 +34,37 @@ function App() {
       <AuthProvider>
         <ThemeProvider>
           <BrowserRouter>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 3500,
+                style: {
+                  background: '#1C1F3A',
+                  color: '#E8E8F0',
+                  border: '1px solid rgba(108,99,255,0.25)',
+                  borderRadius: '16px',
+                  padding: '14px 18px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                },
+                success: {
+                  iconTheme: { primary: '#00E676', secondary: '#1C1F3A' },
+                  style: {
+                    border: '1px solid rgba(0,230,118,0.3)',
+                  },
+                },
+                error: {
+                  iconTheme: { primary: '#FF5252', secondary: '#1C1F3A' },
+                  style: {
+                    border: '1px solid rgba(255,82,82,0.3)',
+                  },
+                },
+                loading: {
+                  iconTheme: { primary: '#6C63FF', secondary: '#1C1F3A' },
+                },
+              }}
+            />
             <Routes>
               {/* Public */}
               <Route path="/login" element={<LoginPage />} />
