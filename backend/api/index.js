@@ -1,3 +1,7 @@
+// Explicit import agar Vercel bundler mendeteksi mysql2
+// (Sequelize melakukan dynamic require yang tidak terdeteksi oleh bundler)
+require('mysql2');
+
 let app;
 
 try {
