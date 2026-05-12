@@ -20,6 +20,21 @@ function readFileAsDataUrl(file) {
   });
 }
 
+// Max image size: 2MB (base64 inflates ~33%, so 2MB → ~2.7MB payload, safe under 10MB backend limit)
+const MAX_IMAGE_MB = 2;
+const MAX_IMAGE_BYTES = MAX_IMAGE_MB * 1024 * 1024;
+
+async function validateAndReadImage(file) {
+  if (file.size > MAX_IMAGE_BYTES) {
+    toast.error(
+      `Ukuran gambar terlalu besar! Maksimal ${MAX_IMAGE_MB}MB, file kamu ${(file.size / 1024 / 1024).toFixed(1)}MB.`,
+      { duration: 5000 }
+    );
+    return null;
+  }
+  return readFileAsDataUrl(file);
+}
+
 function confirmToast(message, onConfirm) {
   toast((t) => (
     <div className="flex flex-col gap-3">
@@ -552,7 +567,12 @@ export default function ManageContentPage({ kategoriProp }) {
                     )}
                     <input type="file" accept="image/*" onChange={async e => {
                       const file = e.target.files?.[0];
-                      if (file) { const base64 = await readFileAsDataUrl(file); setForm({ ...form, gambar: base64 }); }
+                      if (file) {
+                        const base64 = await validateAndReadImage(file);
+                        if (base64) setForm({ ...form, gambar: base64 });
+                        // reset input so same file can be re-selected after rejection
+                        e.target.value = '';
+                      }
                     }} className="hidden" />
                   </label>
                   {form.gambar && <button onClick={() => setForm({ ...form, gambar: '' })} className="mt-2 text-[10px] text-danger font-bold uppercase tracking-wider bg-transparent border-none cursor-pointer">Hapus Gambar</button>}

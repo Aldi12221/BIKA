@@ -122,6 +122,16 @@ export default function ManageQuizPage() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error(
+        `Ukuran gambar terlalu besar! Maksimal 2MB, file kamu ${(file.size / 1024 / 1024).toFixed(1)}MB.`,
+        { duration: 5000 }
+      );
+      e.target.value = ''; // reset input
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setQForm(prev => ({ ...prev, gambar: reader.result }));
