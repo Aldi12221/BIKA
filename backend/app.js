@@ -23,6 +23,7 @@ app.use(async (req, res, next) => {
       // Seed default admin jika belum ada
       const adminCount = await Admin.count({ where: { username: 'admin' } });
       if (adminCount === 0) {
+        console.log('No admin found, creating default admin...');
         const hashedPassword = await bcrypt.hash('admin123', 10);
         await Admin.create({
           username: 'admin',
@@ -31,6 +32,8 @@ app.use(async (req, res, next) => {
           role: 'admin'
         });
         console.log('Default admin created: admin/admin123');
+      } else {
+        console.log('Admin already exists, skipping seed.');
       }
 
       isDbSynced = true;

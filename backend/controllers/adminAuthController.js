@@ -8,14 +8,17 @@ const JWT_SECRET = process.env.JWT_SECRET || 'bika_secret_key_2026';
 exports.loginAdmin = async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log('Login attempt:', { username });
 
     const admin = await Admin.findOne({ where: { username } });
     if (!admin) {
+      console.log('Admin not found:', username);
       return res.status(401).json({ message: 'Username atau password salah' });
     }
 
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
+      console.log('Password mismatch for user:', username);
       return res.status(401).json({ message: 'Username atau password salah' });
     }
 
