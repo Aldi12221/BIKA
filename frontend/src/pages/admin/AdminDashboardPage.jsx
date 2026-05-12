@@ -26,14 +26,17 @@ function Sparkline({ data = [], color = '#6C63FF', height = 40 }) {
   );
 }
 
-/* ─── Donut Chart ─── */
-function DonutChart({ value, max, color, bg, size = 70 }) {
+/* ─── Donut Chart — ukuran fluid via viewBox ─── */
+function DonutChart({ value, max, color, bg }) {
   const r = 26, cx = 36, cy = 36;
   const circ = 2 * Math.PI * r;
   const pct = max ? (value / max) : 0;
   const dash = pct * circ;
   return (
-    <svg width={size} height={size} viewBox="0 0 72 72">
+    <svg
+      viewBox="0 0 72 72"
+      style={{ width: '100%', maxWidth: 70, height: 'auto', display: 'block' }}
+    >
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={bg} strokeWidth="9" />
       <circle
         cx={cx} cy={cy} r={r} fill="none"
@@ -227,12 +230,12 @@ export default function AdminDashboardPage() {
         {statCards.map((c, i) => (
           <div key={i} className="admin-stat-card" style={{ animationDelay: `${i * 0.07}s` }}>
             <div className="admin-stat-card__top">
-              <div>
+              <div style={{ minWidth: 0, flex: 1 }}>
                 <p className="admin-stat-card__label">{c.label}</p>
                 <h3 className="admin-stat-card__value">{c.value.toLocaleString()}</h3>
                 <p className="admin-stat-card__sub">{c.sub}</p>
               </div>
-              <div className="admin-stat-card__icon" style={{ background: c.bg, color: c.color }}>
+              <div className="admin-stat-card__icon" style={{ background: c.bg, color: c.color, flexShrink: 0 }}>
                 {c.icon}
               </div>
             </div>

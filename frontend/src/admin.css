@@ -559,51 +559,150 @@
     .admin-mid-grid, .admin-bot-grid { grid-template-columns: 1fr; }
   }
 
-  /* ── Responsive Mobile (< 768px) ── */
+  /* ════════════════════════════════════════
+     MOBILE — semua ukuran < 768px
+     Pendekatan: fluid, tidak ada fixed width
+  ════════════════════════════════════════ */
   @media (max-width: 767px) {
-    .admin-main { margin-left: 0 !important; }
+    /* ── Layout ── */
+    .admin-main    { margin-left: 0 !important; }
+    .admin-content { padding: 12px 10px 24px; }
 
-    /* Header compact */
-    .admin-header { padding: 0 14px; height: 56px; gap: 8px; }
-    .admin-header__title { font-size: 16px; }
-    .admin-header__date  { font-size: 10px; }
-    .admin-header__search--desktop { display: none; }
-    .admin-header__search-mobile-btn { display: flex; }
+    /* ── Header ── */
+    .admin-header         { padding: 0 12px; height: 54px; gap: 6px; }
+    .admin-header__title  { font-size: 15px; }
+    .admin-header__date   { font-size: 10px; }
+    .admin-header__search--desktop    { display: none; }
+    .admin-header__search-mobile-btn  { display: flex; }
     .admin-header__search--open {
       position: absolute; left: 0; right: 0; top: 0;
-      height: 56px; background: var(--ad-header);
+      height: 54px; background: var(--ad-header);
       border-bottom: 1px solid var(--ad-border);
-      padding: 0 14px; display: flex; align-items: center; gap: 8px; z-index: 10;
+      padding: 0 12px; display: flex; align-items: center; gap: 8px; z-index: 10;
     }
     .admin-header__search-close {
       background: none; border: none; cursor: pointer;
       color: var(--ad-text-muted); padding: 4px; display: flex; align-items: center;
     }
-    .admin-header__avatar    { width: 32px; height: 32px; font-size: 13px; }
-    .admin-header__icon-btn  { width: 34px; height: 34px; }
+    .admin-header__avatar   { width: 30px; height: 30px; font-size: 12px; }
+    .admin-header__icon-btn { width: 32px; height: 32px; }
 
-    /* Content */
-    .admin-content { padding: 14px 12px 24px; }
+    /* ── Dashboard wrapper ── */
+    .admin-dashboard { gap: 12px; }
 
-    /* Stat grid */
-    .admin-stat-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .admin-stat-card { padding: 14px; border-radius: 14px; }
-    .admin-stat-card__value { font-size: 22px; }
-    .admin-stat-card__label { font-size: 10px; }
-    .admin-stat-card__spark { display: none; }
+    /* ── Stat grid: 2 kolom fluid ── */
+    .admin-stat-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .admin-stat-card {
+      padding: 12px;
+      border-radius: 12px;
+      gap: 10px;
+    }
+    .admin-stat-card__label {
+      font-size: 9px;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .admin-stat-card__value {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .admin-stat-card__sub { font-size: 10px; }
+    .admin-stat-card__icon {
+      width: 34px; height: 34px; border-radius: 10px;
+    }
+    /* Sembunyikan sparkline & trend-sub di mobile kecil */
+    .admin-stat-card__spark    { display: none; }
+    .admin-stat-card__trend-sub { display: none; }
+    .admin-stat-card__bottom   { gap: 6px; }
+    .admin-stat-card__trend    { font-size: 10px; padding: 2px 6px; }
 
-    /* Charts stacked */
-    .admin-mid-grid, .admin-bot-grid { grid-template-columns: 1fr; gap: 12px; }
-    .admin-panel { padding: 14px; border-radius: 14px; }
-    .admin-bar-chart  { height: 80px; }
-    .admin-activity-wrap { height: 80px; }
+    /* ── Panels ── */
+    .admin-mid-grid, .admin-bot-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .admin-panel {
+      padding: 12px;
+      border-radius: 12px;
+    }
+    .admin-panel__title { font-size: 13px; }
+    .admin-panel__sub   { font-size: 10px; }
 
-    /* Donut: 2 per row on mobile too */
-    .admin-donut-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    /* ── Bar chart ── */
+    .admin-bar-chart { height: 72px; gap: 3px; }
+    /* Hanya tampilkan label bulan pendek selang-seling */
+    .admin-bar-labels {
+      font-size: 8px;
+      gap: 0;
+    }
+    .admin-bar-labels span:nth-child(even) { visibility: hidden; }
+
+    /* ── Donut grid: 2×2, ukuran lebih kecil ── */
+    .admin-donut-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .admin-donut-item { gap: 4px; }
+    .admin-donut-item__info {
+      font-size: 10px;
+      gap: 3px;
+    }
+
+    /* ── Activity chart ── */
+    .admin-activity-wrap { height: 72px; }
+
+    /* ── Info list ── */
+    .admin-info-list { gap: 8px; }
+    .admin-info-item {
+      padding: 9px 10px;
+      gap: 8px;
+      border-radius: 10px;
+    }
+    .admin-info-item__icon  { width: 28px; height: 28px; border-radius: 8px; }
+    .admin-info-item__title { font-size: 12px; }
+    .admin-info-item__desc  {
+      font-size: 10px;
+      white-space: normal;       /* biarkan wrap, jangan terpotong */
+      overflow: visible;
+      text-overflow: unset;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   }
 
+  /* ── Layar sangat kecil: 320–400px (HP lama / kecil) ── */
   @media (max-width: 400px) {
-    .admin-stat-grid { grid-template-columns: 1fr; }
+    .admin-content { padding: 10px 8px 20px; }
+
+    .admin-stat-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .admin-stat-card {
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .admin-stat-card__value { font-size: 18px; }
+    .admin-stat-card__label { font-size: 8.5px; }
+    .admin-stat-card__icon  { width: 30px; height: 30px; border-radius: 8px; }
+
+    .admin-panel { padding: 10px; border-radius: 10px; }
+    .admin-bar-chart { height: 60px; }
+    .admin-activity-wrap { height: 60px; }
+
+    .admin-donut-grid { gap: 6px; }
+    .admin-donut-item__info { font-size: 9px; }
+  }
+
+  /* ── Layar sangat sempit: < 320px ── */
+  @media (max-width: 319px) {
+    .admin-stat-grid { grid-template-columns: 1fr; gap: 6px; }
+    .admin-stat-card__value { font-size: 22px; }
   }
 
   /* ── Desktop-only elements ── */
