@@ -27,24 +27,24 @@ function Sparkline({ data = [], color = '#6C63FF', height = 40 }) {
 }
 
 /* ─── Donut Chart ─── */
-function DonutChart({ value, max, color, bg, size = 80 }) {
-  const r = 28, cx = 40, cy = 40;
+function DonutChart({ value, max, color, bg, size = 70 }) {
+  const r = 26, cx = 36, cy = 36;
   const circ = 2 * Math.PI * r;
   const pct = max ? (value / max) : 0;
   const dash = pct * circ;
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80">
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={bg} strokeWidth="10" />
+    <svg width={size} height={size} viewBox="0 0 72 72">
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={bg} strokeWidth="9" />
       <circle
         cx={cx} cy={cy} r={r} fill="none"
-        stroke={color} strokeWidth="10"
+        stroke={color} strokeWidth="9"
         strokeDasharray={`${dash} ${circ}`}
         strokeLinecap="round"
         transform={`rotate(-90 ${cx} ${cy})`}
         style={{ transition: 'stroke-dasharray 0.8s ease' }}
       />
       <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle"
-        fontSize="13" fontWeight="700" fill={color}>
+        fontSize="12" fontWeight="700" fill={color}>
         {Math.round(pct * 100)}%
       </text>
     </svg>
@@ -116,7 +116,8 @@ export default function AdminDashboardPage() {
   const categories = stats.categories || [
     { label: 'Lowongan', count: 0, color: '#6C63FF' },
     { label: 'Tutorial', count: 0, color: '#00D9FF' },
-    { label: 'Usaha', count: 0, color: '#FF6B9D' },
+    { label: 'Usaha',    count: 0, color: '#FF6B9D' },
+    { label: 'Keuangan', count: 0, color: '#00E676' },
   ];
 
   /* Helper for trend calculation */
