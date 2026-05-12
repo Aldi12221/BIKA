@@ -7,6 +7,7 @@ export default function TutorialPage() {
   const [quizzes, setQuizzes] = useState([]);
   const [tutorials, setTutorials] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +35,14 @@ export default function TutorialPage() {
 
   const closeContentModal = () => {
     setSelectedContent(null);
+  };
+
+  const openQuizDetail = (quiz) => {
+    setSelectedQuiz(quiz);
+  };
+
+  const closeQuizModal = () => {
+    setSelectedQuiz(null);
   };
 
   return (
@@ -251,6 +260,71 @@ export default function TutorialPage() {
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>
+
+      {/* ===== QUIZ DETAIL MODAL ===== */}
+      {selectedQuiz && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={closeQuizModal}>
+          <div
+            className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg shadow-2xl animate-[slideUp_0.35s_ease-out] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Cover image */}
+            <div className="relative w-full h-48 bg-gradient-to-br from-rose-100 to-orange-100 dark:from-rose-900/40 dark:to-orange-900/40 shrink-0">
+              {selectedQuiz.gambar ? (
+                <img src={selectedQuiz.gambar} alt={selectedQuiz.judul} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-6xl opacity-40">
+                  {selectedQuiz.kategori === 'psikotes' ? '🧠' : '📝'}
+                </div>
+              )}
+              <button onClick={closeQuizModal} className="absolute top-4 right-4 w-10 h-10 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-md border-none cursor-pointer transition-all">
+                <FiX size={20} />
+              </button>
+              <div className="absolute bottom-4 left-6">
+                <span className={`text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-lg ${selectedQuiz.kategori === 'psikotes' ? 'bg-purple-500 text-white' : 'bg-rose-500 text-white'}`}>
+                  {selectedQuiz.kategori}
+                </span>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="p-8">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight mb-3 tracking-tight">
+                {selectedQuiz.judul}
+              </h2>
+              {selectedQuiz.deskripsi && (
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed mb-6">
+                  {selectedQuiz.deskripsi}
+                </p>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={closeQuizModal}
+                  className="flex-1 py-3 rounded-2xl text-sm font-bold border border-slate-200 dark:border-zinc-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-zinc-600 transition-all bg-transparent cursor-pointer"
+                >
+                  Tutup
+                </button>
+                <button
+                  onClick={() => {
+                    closeQuizModal();
+                    if (selectedQuiz.link_eksternal) {
+                      window.open(selectedQuiz.link_eksternal, '_blank');
+                    } else {
+                      navigate(`/quiz/${selectedQuiz.id}`);
+                    }
+                  }}
+                  className="flex-1 py-3 rounded-2xl text-sm font-black text-white flex items-center justify-center gap-2 transition-all cursor-pointer border-none shadow-lg shadow-rose-500/30"
+                  style={{ background: 'linear-gradient(135deg, #f43f5e, #fb923c)' }}
+                >
+                  <FiPlay size={14} fill="currentColor" /> Mulai Kuis
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
