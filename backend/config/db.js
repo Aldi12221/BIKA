@@ -1,18 +1,22 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config(); // Mengambil variabel dari file .env
+require('dotenv').config();
 
-/**
- * Konfigurasi Koneksi Database
- * Pastikan kamu sudah membuat database di MySQL sesuai dengan DB_NAME di .env
- */
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'database_bika', // Nama database
-  process.env.DB_USER || 'root',          // Username database
-  process.env.DB_PASSWORD || '',          // Password database
+  process.env.DB_NAME || 'database_bika', 
+  process.env.DB_USER || 'root',          
+  process.env.DB_PASSWORD || '',          
   {
     host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 4000, // TiDB menggunakan port 4000
     dialect: 'mysql',
-    logging: false, // Set ke true jika ingin melihat query SQL di terminal
+    logging: false, 
+    // TAMBAHKAN BAGIAN DI BAWAH INI:
+    dialectOptions: {
+      ssl: {
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: true
+      }
+    },
     pool: {
       max: 5,
       min: 0,
