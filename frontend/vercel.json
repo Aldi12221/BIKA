@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://bikawebsite-nzces05x9-aldi12221s-projects.vercel.app/api/$1"
+      "destination": "https://bikawebsite.vercel.app//api/$1"
     },
     {
       "source": "/(.*)",

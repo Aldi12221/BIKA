@@ -11,7 +11,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://bikawebsite-nzces05x9-aldi12221s-projects.vercel.app',
+        target: 'https://bikawebsite.vercel.app',
         changeOrigin: true,
       }
     }
