@@ -7,19 +7,25 @@ const JWT_SECRET = process.env.JWT_SECRET || 'bika_secret_key_2026';
 // Login Admin
 exports.loginAdmin = async (req, res) => {
   try {
-    console.log('Full Request Body:', req.body);
     const { username, password } = req.body;
-    console.log('Parsed Username:', username);
+    console.log('DEBUG LOGIN -> Body:', req.body);
+
+    if (!username || !password) {
+      console.log('DEBUG LOGIN -> Missing username or password');
+      return res.status(400).json({ message: 'Username dan password wajib diisi' });
+    }
 
     const admin = await Admin.findOne({ where: { username } });
     if (!admin) {
-      console.log('Admin not found:', username);
+      console.log('DEBUG LOGIN -> Admin not found for username:', username);
       return res.status(401).json({ message: 'Username atau password salah' });
     }
 
     const isMatch = await bcrypt.compare(password, admin.password);
+    console.log('DEBUG LOGIN -> Password match result:', isMatch);
+
     if (!isMatch) {
-      console.log('Password mismatch for user:', username);
+      console.log('DEBUG LOGIN -> Password mismatch for:', username);
       return res.status(401).json({ message: 'Username atau password salah' });
     }
 
