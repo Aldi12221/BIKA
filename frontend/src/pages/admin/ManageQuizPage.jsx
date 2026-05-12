@@ -311,41 +311,80 @@ export default function ManageQuizPage() {
       {/* Quiz Modal */}
       {showQuizModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="glass-strong rounded-2xl p-6 w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-text-primary">{editItem ? 'Edit Kuis' : 'Buat Kuis Baru'}</h2>
+          <div className="glass-strong rounded-2xl w-full max-w-md animate-slide-up max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-border shrink-0">
+              <div>
+                <h2 className="text-lg font-bold text-text-primary">{editItem ? 'Edit Kuis' : 'Buat Kuis Baru'}</h2>
+                <p className="text-xs text-text-muted mt-0.5">{editItem ? 'Perbarui data kuis' : 'Isi detail kuis baru'}</p>
+              </div>
               <button onClick={() => { setShowQuizModal(false); setImagePreview(null); }} className="p-2 rounded-lg text-text-muted hover:text-text-primary bg-transparent border-none cursor-pointer"><FiX /></button>
             </div>
-            <div className="space-y-4">
-              <input value={qForm.judul} onChange={e => setQForm({ ...qForm, judul: e.target.value })} placeholder="Judul kuis"
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-              <textarea value={qForm.deskripsi} onChange={e => setQForm({ ...qForm, deskripsi: e.target.value })} rows={3} placeholder="Deskripsi quiz"
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none" />
-              <select value={qForm.kategori} onChange={e => setQForm({ ...qForm, kategori: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
-                <option value="umum" className="bg-bg-surface">Umum</option>
-                <option value="psikotes" className="bg-bg-surface">Psikotes</option>
-              </select>
-              <div>
-                <label className="text-xs font-medium text-text-secondary mb-2 block">Cover Quiz</label>
-                <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-bg-input border-2 border-dashed border-border text-text-muted hover:border-primary/50 transition-all cursor-pointer">
-                  <FiImage size={18} />
-                  <span className="text-sm">{imagePreview ? 'Ganti Gambar' : 'Upload Gambar Cover'}</span>
-                  <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                </label>
-                {imagePreview && (
-                  <div className="mt-3 relative">
-                    <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover rounded-xl" />
-                    <button onClick={() => { setImagePreview(null); setQForm(prev => ({ ...prev, gambar: '' })); }}
-                      className="absolute top-2 right-2 bg-black/60 text-white p-1 rounded-full border-none cursor-pointer hover:bg-black/80 transition-colors">
-                      <FiX size={14} />
-                    </button>
-                  </div>
-                )}
+
+            {/* Scrollable body */}
+            <div className="overflow-y-auto flex-1 p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Judul Kuis</label>
+                  <input value={qForm.judul} onChange={e => setQForm({ ...qForm, judul: e.target.value })} placeholder="Judul kuis"
+                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Deskripsi</label>
+                  <textarea value={qForm.deskripsi} onChange={e => setQForm({ ...qForm, deskripsi: e.target.value })} rows={3} placeholder="Deskripsi quiz"
+                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Kategori</label>
+                  <select value={qForm.kategori} onChange={e => setQForm({ ...qForm, kategori: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
+                    <option value="umum" className="bg-bg-surface">Umum</option>
+                    <option value="psikotes" className="bg-bg-surface">Psikotes</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Cover Quiz</label>
+                  <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-bg-input border-2 border-dashed border-border text-text-muted hover:border-primary/50 transition-all cursor-pointer">
+                    <FiImage size={18} />
+                    <span className="text-sm">{imagePreview ? 'Ganti Gambar' : 'Upload Gambar Cover'}</span>
+                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                  </label>
+                  <p className="text-[10px] text-text-muted mt-1.5">Maks. 2MB · JPG, PNG, WEBP</p>
+                  {imagePreview && (
+                    <div className="mt-3 relative">
+                      <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover rounded-xl" />
+                      <button onClick={() => { setImagePreview(null); setQForm(prev => ({ ...prev, gambar: '' })); }}
+                        className="absolute top-2 right-2 bg-black/60 text-white p-1 rounded-full border-none cursor-pointer hover:bg-black/80 transition-colors">
+                        <FiX size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Link Google Form</label>
+                  <input value={qForm.link_eksternal || ''} onChange={e => setQForm({ ...qForm, link_eksternal: e.target.value })} placeholder="https://forms.gle/..."
+                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
+                </div>
               </div>
-              <input value={qForm.link_eksternal || ''} onChange={e => setQForm({ ...qForm, link_eksternal: e.target.value })} placeholder="Link Google Form"
-                className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-              <button onClick={handleSave} className="w-full btn-primary text-sm flex items-center justify-center gap-2"><FiSave /> Simpan Perubahan</button>
+            </div>
+
+            {/* Sticky footer with save button */}
+            <div className="p-6 pt-4 border-t border-border shrink-0">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setShowQuizModal(false); setImagePreview(null); }}
+                  className="flex-1 py-3 rounded-2xl text-sm font-bold border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="flex-1 btn-primary py-3 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-95 transition-all cursor-pointer"
+                >
+                  <FiSave size={16} />
+                  {editItem ? 'Simpan Perubahan' : 'Buat Kuis'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
