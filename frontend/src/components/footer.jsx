@@ -53,13 +53,13 @@ export default function Footer() {
                 <span className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 transition-colors">
                   <FiMail size={16} />
                 </span>
-                info@bika-smk.id
+                bikadmin@gmail.com
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 transition-colors">
                   <FiPhone size={16} />
                 </span>
-                0821-4123-6977
+                0812-1367-635
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 transition-colors">
@@ -74,10 +74,10 @@ export default function Footer() {
           <div className="flex flex-col items-center md:items-start">
             <h4 className="text-blue-950 dark:text-white font-bold mb-4 md:mb-6 transition-colors hidden md:block">Ikuti Kami</h4>
             <div className="flex gap-4">
-              <SocialIcon href="#" icon={<FiInstagram />} color="hover:bg-pink-500" />
-              <SocialIcon href="#" icon={<FiYoutube />} color="hover:bg-red-600" />
-              <SocialIcon href="#" icon={<FaTiktok />} color="hover:bg-black" />
-              <SocialIcon href="#" icon={<FiLinkedin />} color="hover:bg-blue-700" />
+              <SocialIcon href="https://www.instagram.com" target="_blank" icon={<FiInstagram />} color="hover:bg-pink-500" />
+              <SocialIcon href="https://www.youtube.com" target="_blank" icon={<FiYoutube />} color="hover:bg-red-600" />
+              <SocialIcon href="https://www.tiktok.com" target="_blank" icon={<FaTiktok />} color="hover:bg-black" />
+              <SocialIcon href="https://www.linkedin.com" target="_blank" icon={<FiLinkedin />} color="hover:bg-blue-700" />
             </div>
           </div>
 

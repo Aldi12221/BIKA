@@ -54,12 +54,12 @@ export default function Beranda() {
             {/* button pak ton dek ton mas ton */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
               <NavLink to={"/masa-depan"}>
-                <button className="bg-blue-600 text-white px-8 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 text-base">
+                <button className="bg-blue-600 dark:bg-blue-600/40 border border-blue-600 text-white px-8 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 text-base">
                   Mulai Sekarang <FiArrowRight strokeWidth={3} />
                 </button>
               </NavLink>
               <NavLink to={"#content"}>
-                <button className="bg-white dark:bg-zinc-900 text-blue-950 dark:text-white px-7 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all border border-slate-200 dark:border-zinc-800 text-base shadow-sm">
+                <button className="bg-white dark:bg-zinc-900 border border-blue-600 text-blue-950 dark:text-white px-7 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all border border-slate-200 dark:border-zinc-800 text-base shadow-sm">
                   Pelajari Lebih Lanjut <FiPlayCircle size={22} className="text-blue-600 dark:text-blue-500" />
                 </button>
               </NavLink>
@@ -81,8 +81,8 @@ export default function Beranda() {
           <FeatureCard
             title="Masa Depan"
             desc="Temukan lowongan kerja, magang, dan peluang usaha terbaik untukmu."
-            icon={<FiBriefcase size={22} className="text-indigo-50 dark:text-indigo-950" />}
-            color="bg-blue-600"
+            icon={<FiBriefcase size={22} className="text-indigo-50 dark:text-zinc-950" />}
+            color="bg-blue-600 dark:bg-blue-600/50"
             shadow="shadow-blue-100"
             textColor="text-blue-600"
             link="/masa-depan"
@@ -91,8 +91,8 @@ export default function Beranda() {
           <FeatureCard
             title="Tutorial"
             desc="Belajar berbagai skill melalui video tutorial yang mudah dipahami."
-            icon={<FiPlayCircle size={22} className="text-red-50 dark:text-indigo-950" />}
-            color="bg-red-500"
+            icon={<FiPlayCircle size={22} className="text-red-50 dark:text-zinc-950" />}
+            color="bg-red-500 dark:bg-red-500/50"
             shadow="shadow-red-100"
             textColor="text-red-500"
             link="/tutorial"
@@ -101,8 +101,8 @@ export default function Beranda() {
           <FeatureCard
             title="Profil"
             desc="Bangun profil profesionalmu untuk menarik perhatian perekrut."
-            icon={<FiUser size={22} className="text-blue-50 dark:text-indigo-950" />}
-            color="bg-blue-500"
+            icon={<FiUser size={22} className="text-blue-50 dark:text-zinc-950" />}
+            color="bg-blue-500 dark:bg-blue-500/50"
             shadow="shadow-blue-100"
             textColor="text-blue-500"
             link="/profil"
@@ -161,7 +161,7 @@ export default function Beranda() {
               </div>
               <h4 className="text-lg font-black text-blue-950 dark:text-white mb-1 transition-colors">Lengkapi Profilmu</h4>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 px-4 transition-colors">Tambahkan pengalaman dan skill untuk mendapatkan rekomendasi lowongan yang tepat.</p>
-              <button onClick={() => window.location.href = '/profil'} className="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none w-full text-sm">
+              <button onClick={() => window.location.href = '/profil'} className="bg-blue-600 dark:bg-blue-600/50 border border-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none w-full text-sm">
                 Lihat Profil
               </button>
             </div>
