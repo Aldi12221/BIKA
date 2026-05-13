@@ -308,87 +308,324 @@ export default function ManageQuizPage() {
         </div>
       )}
 
-      {/* Quiz Modal */}
+      {/* ══════════════════════════════════════════
+          MODAL — Buat / Edit Kuis
+          Inline styles dengan CSS variables admin
+      ══════════════════════════════════════════ */}
       {showQuizModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="glass-strong rounded-2xl w-full max-w-md animate-slide-up max-h-[90vh] flex flex-col">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-border shrink-0">
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 100,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 16,
+          background: 'rgba(0,0,0,0.65)',
+          backdropFilter: 'blur(8px)',
+        }}>
+          <div style={{
+            width: '100%', maxWidth: 480,
+            maxHeight: '90vh',
+            display: 'flex', flexDirection: 'column',
+            background: 'var(--ad-card)',
+            border: '1px solid var(--ad-border)',
+            borderRadius: 28,
+            boxShadow: '0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(108,99,255,0.1)',
+          }}>
+
+            {/* ── Header ── */}
+            <div style={{
+              display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+              padding: '24px 28px 20px',
+              borderBottom: '1px solid var(--ad-border)',
+              flexShrink: 0,
+            }}>
               <div>
-                <h2 className="text-lg font-bold text-text-primary">{editItem ? 'Edit Kuis' : 'Buat Kuis Baru'}</h2>
-                <p className="text-xs text-text-muted mt-0.5">{editItem ? 'Perbarui data kuis' : 'Isi detail kuis baru'}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <div style={{
+                    width: 4, height: 22, borderRadius: 4,
+                    background: 'linear-gradient(180deg,#6C63FF,#FF6B9D)',
+                    flexShrink: 0,
+                  }} />
+                  <h2 style={{ margin: 0, fontSize: 19, fontWeight: 800, color: 'var(--ad-text)', lineHeight: 1 }}>
+                    {editItem ? 'Edit Kuis' : 'Buat Kuis Baru'}
+                  </h2>
+                </div>
+                <span style={{
+                  display: 'inline-block', fontSize: 10, fontWeight: 800,
+                  letterSpacing: '0.14em', textTransform: 'uppercase',
+                  color: '#6C63FF',
+                  background: 'rgba(108,99,255,0.12)',
+                  border: '1px solid rgba(108,99,255,0.25)',
+                  borderRadius: 20, padding: '3px 12px',
+                }}>
+                  {editItem ? 'Perbarui data kuis' : 'Isi detail kuis baru'}
+                </span>
               </div>
-              <button onClick={() => { setShowQuizModal(false); setImagePreview(null); }} className="p-2 rounded-lg text-text-muted hover:text-text-primary bg-transparent border-none cursor-pointer"><FiX /></button>
+
+              <button
+                onClick={() => { setShowQuizModal(false); setImagePreview(null); }}
+                style={{
+                  width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                  background: 'var(--ad-input)',
+                  border: '1px solid var(--ad-border)',
+                  color: 'var(--ad-text-muted)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(255,82,82,0.12)';
+                  e.currentTarget.style.color = '#FF5252';
+                  e.currentTarget.style.borderColor = 'rgba(255,82,82,0.3)';
+                  e.currentTarget.style.transform = 'rotate(90deg)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'var(--ad-input)';
+                  e.currentTarget.style.color = 'var(--ad-text-muted)';
+                  e.currentTarget.style.borderColor = 'var(--ad-border)';
+                  e.currentTarget.style.transform = 'rotate(0deg)';
+                }}
+              >
+                <FiX size={17} />
+              </button>
             </div>
 
-            {/* Scrollable body */}
-            <div className="overflow-y-auto flex-1 p-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Judul Kuis</label>
-                  <input value={qForm.judul} onChange={e => setQForm({ ...qForm, judul: e.target.value })} placeholder="Judul kuis"
-                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Deskripsi</label>
-                  <textarea value={qForm.deskripsi} onChange={e => setQForm({ ...qForm, deskripsi: e.target.value })} rows={3} placeholder="Deskripsi quiz"
-                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Kategori</label>
-                  <select value={qForm.kategori} onChange={e => setQForm({ ...qForm, kategori: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
-                    <option value="umum" className="bg-bg-surface">Umum</option>
-                    <option value="psikotes" className="bg-bg-surface">Psikotes</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Cover Quiz</label>
-                  <label className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-bg-input border-2 border-dashed border-border text-text-muted hover:border-primary/50 transition-all cursor-pointer">
-                    <FiImage size={18} />
-                    <span className="text-sm">{imagePreview ? 'Ganti Gambar' : 'Upload Gambar Cover'}</span>
-                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                  </label>
-                  <p className="text-[10px] text-text-muted mt-1.5">Maks. 2MB · JPG, PNG, WEBP</p>
-                  {imagePreview && (
-                    <div className="mt-3 relative">
-                      <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover rounded-xl" />
-                      <button onClick={() => { setImagePreview(null); setQForm(prev => ({ ...prev, gambar: '' })); }}
-                        className="absolute top-2 right-2 bg-black/60 text-white p-1 rounded-full border-none cursor-pointer hover:bg-black/80 transition-colors">
-                        <FiX size={14} />
-                      </button>
-                    </div>
+            {/* ── Scrollable body ── */}
+            <div style={{ overflowY: 'auto', flex: 1, padding: '20px 28px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+              {/* Judul */}
+              <QField label="Judul Kuis">
+                <QInput value={qForm.judul} onChange={e => setQForm({ ...qForm, judul: e.target.value })} placeholder="Judul kuis" />
+              </QField>
+
+              {/* Deskripsi */}
+              <QField label="Deskripsi">
+                <QTextarea value={qForm.deskripsi} onChange={e => setQForm({ ...qForm, deskripsi: e.target.value })} placeholder="Deskripsi quiz" rows={3} />
+              </QField>
+
+              {/* Kategori */}
+              <QField label="Kategori">
+                <QSelect
+                  value={qForm.kategori}
+                  onChange={e => setQForm({ ...qForm, kategori: e.target.value })}
+                  options={[{ value: 'umum', label: 'Umum' }, { value: 'psikotes', label: 'Psikotes' }]}
+                />
+              </QField>
+
+              {/* Cover */}
+              <QField label="Cover Quiz">
+                <label
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                    padding: imagePreview ? 8 : '14px 16px',
+                    borderRadius: 14,
+                    background: 'var(--ad-input)',
+                    border: '2px dashed var(--ad-border)',
+                    cursor: 'pointer', transition: 'all 0.2s',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'rgba(108,99,255,0.5)';
+                    e.currentTarget.style.background = 'rgba(108,99,255,0.05)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--ad-border)';
+                    e.currentTarget.style.background = 'var(--ad-input)';
+                  }}
+                >
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 10 }} />
+                  ) : (
+                    <>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: '50%',
+                        background: 'rgba(108,99,255,0.12)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#6C63FF',
+                      }}>
+                        <FiImage size={18} />
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ad-text-muted)' }}>
+                        Upload Gambar Cover
+                      </span>
+                    </>
                   )}
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Link Google Form</label>
-                  <input value={qForm.link_eksternal || ''} onChange={e => setQForm({ ...qForm, link_eksternal: e.target.value })} placeholder="https://forms.gle/..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all" />
-                </div>
-              </div>
+                  <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+                </label>
+                <p style={{ fontSize: 10, color: 'var(--ad-text-muted)', marginTop: 4 }}>
+                  Maks. 2MB · JPG, PNG, WEBP
+                </p>
+                {imagePreview && (
+                  <button
+                    onClick={() => { setImagePreview(null); setQForm(prev => ({ ...prev, gambar: '' })); }}
+                    style={{
+                      marginTop: 4, fontSize: 10, fontWeight: 800,
+                      textTransform: 'uppercase', letterSpacing: '0.08em',
+                      color: '#FF5252', background: 'none', border: 'none', cursor: 'pointer',
+                    }}
+                  >
+                    Hapus Gambar
+                  </button>
+                )}
+              </QField>
+
+              {/* Link Google Form */}
+              <QField label="Link Google Form">
+                <QInput
+                  value={qForm.link_eksternal || ''}
+                  onChange={e => setQForm({ ...qForm, link_eksternal: e.target.value })}
+                  placeholder="https://forms.gle/..."
+                />
+              </QField>
             </div>
 
-            {/* Sticky footer with save button */}
-            <div className="p-6 pt-4 border-t border-border shrink-0">
-              <div className="flex gap-3">
-                <button
-                  onClick={() => { setShowQuizModal(false); setImagePreview(null); }}
-                  className="flex-1 py-3 rounded-2xl text-sm font-bold border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer"
-                >
-                  Batal
-                </button>
-                <button
-                  onClick={handleSave}
-                  className="flex-1 btn-primary py-3 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-95 transition-all cursor-pointer"
-                >
-                  <FiSave size={16} />
-                  {editItem ? 'Simpan Perubahan' : 'Buat Kuis'}
-                </button>
-              </div>
+            {/* ── Footer ── */}
+            <div style={{
+              padding: '16px 28px 24px',
+              borderTop: '1px solid var(--ad-border)',
+              flexShrink: 0,
+              display: 'flex', gap: 10,
+            }}>
+              <button
+                onClick={() => { setShowQuizModal(false); setImagePreview(null); }}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 12, fontSize: 13, fontWeight: 600,
+                  background: 'var(--ad-input)',
+                  border: '1px solid var(--ad-border)',
+                  color: 'var(--ad-text-sec)',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ad-card-hover)'; e.currentTarget.style.color = 'var(--ad-text)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--ad-input)'; e.currentTarget.style.color = 'var(--ad-text-sec)'; }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleSave}
+                style={{
+                  flex: 1, padding: '11px 0', borderRadius: 12, fontSize: 13, fontWeight: 700,
+                  background: 'linear-gradient(135deg,#6C63FF,#9B59FF)',
+                  border: 'none', color: '#fff', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  boxShadow: '0 6px 20px rgba(108,99,255,0.4)',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(108,99,255,0.5)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(108,99,255,0.4)'; }}
+              >
+                <FiSave size={16} />
+                {editItem ? 'Simpan Perubahan' : 'Buat Kuis'}
+              </button>
             </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+
+/* ══════════════════════════════════════════
+   Helper sub-components untuk modal kuis
+   Semua pakai CSS variables admin
+══════════════════════════════════════════ */
+function QField({ label, children }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <label style={{
+        fontSize: 10, fontWeight: 800, letterSpacing: '0.1em',
+        textTransform: 'uppercase', color: 'var(--ad-text-muted)',
+      }}>
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function QInput({ value, onChange, placeholder }) {
+  return (
+    <input
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      style={{
+        width: '100%', padding: '10px 14px',
+        borderRadius: 12, fontSize: 13,
+        background: 'var(--ad-input)',
+        border: '1px solid var(--ad-border)',
+        color: 'var(--ad-text)',
+        outline: 'none', transition: 'border 0.2s, box-shadow 0.2s',
+        boxSizing: 'border-box',
+        fontFamily: 'inherit',
+      }}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(108,99,255,0.6)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(108,99,255,0.1)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'var(--ad-border)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function QTextarea({ value, onChange, placeholder, rows = 3 }) {
+  return (
+    <textarea
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={rows}
+      style={{
+        width: '100%', padding: '10px 14px',
+        borderRadius: 12, fontSize: 13,
+        background: 'var(--ad-input)',
+        border: '1px solid var(--ad-border)',
+        color: 'var(--ad-text)',
+        outline: 'none', resize: 'vertical',
+        transition: 'border 0.2s, box-shadow 0.2s',
+        boxSizing: 'border-box',
+        fontFamily: 'inherit',
+      }}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(108,99,255,0.6)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(108,99,255,0.1)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'var(--ad-border)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function QSelect({ value, onChange, options }) {
+  return (
+    <select
+      value={value}
+      onChange={onChange}
+      style={{
+        width: '100%', padding: '10px 14px',
+        borderRadius: 12, fontSize: 13,
+        background: 'var(--ad-input)',
+        border: '1px solid var(--ad-border)',
+        color: 'var(--ad-text)',
+        outline: 'none', cursor: 'pointer',
+        transition: 'border 0.2s',
+        boxSizing: 'border-box',
+        appearance: 'none',
+        fontFamily: 'inherit',
+      }}
+      onFocus={e => { e.target.style.borderColor = 'rgba(108,99,255,0.6)'; }}
+      onBlur={e  => { e.target.style.borderColor = 'var(--ad-border)'; }}
+    >
+      {options.map(o => (
+        <option
+          key={o.value}
+          value={o.value}
+          style={{ background: 'var(--ad-surface)', color: 'var(--ad-text)' }}
+        >
+          {o.label}
+        </option>
+      ))}
+    </select>
   );
 }

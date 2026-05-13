@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { FiPlus, FiTrash2, FiEdit3, FiX, FiSave, FiSearch, FiExternalLink, FiCheckSquare, FiSquare, FiAlertTriangle, FiBriefcase, FiBookOpen, FiActivity, FiDollarSign, FiFilter, FiRefreshCw, FiChevronDown } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
@@ -524,104 +524,359 @@ export default function ManageContentPage({ kategoriProp }) {
         </div>
       </div>
 
-      {/* Modal */}
+
+      {/* ══════════════════════════════════════════
+          MODAL — Tambah / Edit Data
+          Semua styling pakai CSS variables admin
+          agar otomatis benar di dark & light mode
+      ══════════════════════════════════════════ */}
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-          <div className="glass-strong rounded-[28px] p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up shadow-2xl border border-white/10">
-            <div className="flex items-center justify-between mb-8">
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 100,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 16,
+            background: 'rgba(0,0,0,0.65)',
+            backdropFilter: 'blur(8px)',
+          }}
+        >
+          <div
+            style={{
+              width: '100%', maxWidth: 680,
+              maxHeight: '90vh', overflowY: 'auto',
+              background: 'var(--ad-card)',
+              border: '1px solid var(--ad-border)',
+              borderRadius: 28,
+              boxShadow: '0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(108,99,255,0.1)',
+              padding: '28px 28px 24px',
+            }}
+          >
+            {/* ── Header ── */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
               <div>
-                <h2 className="text-xl font-black text-text-primary">{editItem ? 'Edit Data' : 'Tambah Data Baru'}</h2>
-                <p className="text-xs text-text-muted mt-1 uppercase tracking-widest">{kategoriProp}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <div style={{
+                    width: 4, height: 22, borderRadius: 4,
+                    background: 'linear-gradient(180deg,#6C63FF,#FF6B9D)',
+                    flexShrink: 0,
+                  }} />
+                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: 'var(--ad-text)', lineHeight: 1 }}>
+                    {editItem ? 'Edit Data' : 'Tambah Data Baru'}
+                  </h2>
+                </div>
+                <span style={{
+                  display: 'inline-block', fontSize: 10, fontWeight: 800,
+                  letterSpacing: '0.14em', textTransform: 'uppercase',
+                  color: '#6C63FF',
+                  background: 'rgba(108,99,255,0.12)',
+                  border: '1px solid rgba(108,99,255,0.25)',
+                  borderRadius: 20, padding: '3px 12px',
+                }}>
+                  {kategoriProp}
+                </span>
               </div>
-              <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-full bg-bg-card text-text-muted hover:text-text-primary hover:rotate-90 transition-all flex items-center justify-center border-none cursor-pointer"><FiX size={20} /></button>
+
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                  background: 'var(--ad-input)',
+                  border: '1px solid var(--ad-border)',
+                  color: 'var(--ad-text-muted)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(255,82,82,0.12)';
+                  e.currentTarget.style.color = '#FF5252';
+                  e.currentTarget.style.borderColor = 'rgba(255,82,82,0.3)';
+                  e.currentTarget.style.transform = 'rotate(90deg)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'var(--ad-input)';
+                  e.currentTarget.style.color = 'var(--ad-text-muted)';
+                  e.currentTarget.style.borderColor = 'var(--ad-border)';
+                  e.currentTarget.style.transform = 'rotate(0deg)';
+                }}
+              >
+                <FiX size={17} />
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* ── Form Grid ── */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: 20,
+            }}>
+
               {/* Left Column */}
-              <div className="space-y-5">
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Judul</label>
-                  <input value={form.judul} onChange={e => setForm({ ...form, judul: e.target.value })} placeholder="Masukkan judul..."
-                    className="w-full px-5 py-3 rounded-2xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all shadow-sm" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Deskripsi Singkat</label>
-                  <textarea value={form.deskripsi} onChange={e => setForm({ ...form, deskripsi: e.target.value })} rows={3} placeholder="Tampilkan sebagai snippet di card..."
-                    className="w-full px-5 py-3 rounded-2xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none shadow-sm" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Link Eksternal (Opsional)</label>
-                  <input value={form.link_eksternal} onChange={e => setForm({ ...form, link_eksternal: e.target.value })} placeholder="https://..."
-                    className="w-full px-5 py-3 rounded-2xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all shadow-sm" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Gambar Cover</label>
-                  <label className="flex flex-col items-center justify-center gap-3 w-full p-6 rounded-2xl bg-bg-input border-2 border-dashed border-border text-text-muted hover:border-primary/50 transition-all cursor-pointer hover:bg-primary/5 group">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                {/* Judul */}
+                <MField label="Judul">
+                  <MInput value={form.judul} onChange={e => setForm({ ...form, judul: e.target.value })} placeholder="Masukkan judul..." />
+                </MField>
+
+                {/* Deskripsi */}
+                <MField label="Deskripsi Singkat">
+                  <MTextarea value={form.deskripsi} onChange={e => setForm({ ...form, deskripsi: e.target.value })} placeholder="Tampilkan sebagai snippet di card..." rows={3} />
+                </MField>
+
+                {/* Link */}
+                <MField label="Link Eksternal (Opsional)">
+                  <MInput value={form.link_eksternal} onChange={e => setForm({ ...form, link_eksternal: e.target.value })} placeholder="https://..." />
+                </MField>
+
+                {/* Gambar */}
+                <MField label="Gambar Cover">
+                  <label
+                    style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      justifyContent: 'center', gap: 10,
+                      padding: form.gambar ? 8 : 24,
+                      borderRadius: 14,
+                      background: 'var(--ad-input)',
+                      border: '2px dashed var(--ad-border)',
+                      cursor: 'pointer', transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = 'rgba(108,99,255,0.5)';
+                      e.currentTarget.style.background = 'rgba(108,99,255,0.05)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = 'var(--ad-border)';
+                      e.currentTarget.style.background = 'var(--ad-input)';
+                    }}
+                  >
                     {form.gambar ? (
-                      <img src={form.gambar} className="w-full h-32 object-cover rounded-xl shadow-md" alt="" />
+                      <img src={form.gambar} style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: 10 }} alt="" />
                     ) : (
                       <>
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><FiPlus size={24} /></div>
-                        <span className="text-[11px] font-bold">Pilih File Gambar</span>
+                        <div style={{
+                          width: 42, height: 42, borderRadius: '50%',
+                          background: 'rgba(108,99,255,0.12)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: '#6C63FF',
+                        }}>
+                          <FiPlus size={20} />
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ad-text-muted)' }}>
+                          Pilih File Gambar
+                        </span>
                       </>
                     )}
-                    <input type="file" accept="image/*" onChange={async e => {
+                    <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
                       const file = e.target.files?.[0];
                       if (file) {
                         const base64 = await validateAndReadImage(file);
                         if (base64) setForm({ ...form, gambar: base64 });
-                        // reset input so same file can be re-selected after rejection
                         e.target.value = '';
                       }
-                    }} className="hidden" />
+                    }} />
                   </label>
-                  {form.gambar && <button onClick={() => setForm({ ...form, gambar: '' })} className="mt-2 text-[10px] text-danger font-bold uppercase tracking-wider bg-transparent border-none cursor-pointer">Hapus Gambar</button>}
-                </div>
+                  {form.gambar && (
+                    <button
+                      onClick={() => setForm({ ...form, gambar: '' })}
+                      style={{
+                        marginTop: 6, fontSize: 10, fontWeight: 800,
+                        textTransform: 'uppercase', letterSpacing: '0.08em',
+                        color: '#FF5252', background: 'none', border: 'none', cursor: 'pointer',
+                      }}
+                    >
+                      Hapus Gambar
+                    </button>
+                  )}
+                </MField>
               </div>
 
               {/* Right Column */}
-              <div className="space-y-5">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {kategoriProp === 'lowongan' ? (
-                  <div className="bg-bg-card/30 p-5 rounded-2xl border border-border space-y-5">
-                    <h3 className="text-xs font-black text-primary uppercase tracking-widest flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Detail Pekerjaan
-                    </h3>
-                    <div>
-                      <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Nama Perusahaan</label>
-                      <input value={form.perusahaan} onChange={e => setForm({ ...form, perusahaan: e.target.value })} placeholder="Misal: Google Inc"
-                        className="w-full px-5 py-3 rounded-2xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all" />
+                  <div style={{
+                    background: 'rgba(108,99,255,0.06)',
+                    border: '1px solid rgba(108,99,255,0.18)',
+                    borderRadius: 16, padding: 18,
+                    display: 'flex', flexDirection: 'column', gap: 14,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#6C63FF' }} />
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#6C63FF', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                        Detail Pekerjaan
+                      </span>
                     </div>
-                    <div>
-                      <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Lokasi</label>
-                      <input value={form.lokasi} onChange={e => setForm({ ...form, lokasi: e.target.value })} placeholder="Misal: Jakarta / Remote"
-                        className="w-full px-5 py-3 rounded-2xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Tipe</label>
-                      <select value={form.tipe_pekerjaan} onChange={e => setForm({ ...form, tipe_pekerjaan: e.target.value })}
-                        className="w-full px-5 py-3 rounded-2xl bg-bg-input border border-border text-text-primary focus:outline-none focus:border-primary/50 transition-all">
-                        {['Full-Time', 'Part-Time', 'Contract', 'Freelance', 'Magang'].map(t => <option key={t} value={t} className="bg-bg-surface">{t}</option>)}
-                      </select>
-                    </div>
+                    <MField label="Nama Perusahaan">
+                      <MInput value={form.perusahaan} onChange={e => setForm({ ...form, perusahaan: e.target.value })} placeholder="Misal: Google Inc" />
+                    </MField>
+                    <MField label="Lokasi">
+                      <MInput value={form.lokasi} onChange={e => setForm({ ...form, lokasi: e.target.value })} placeholder="Misal: Jakarta / Remote" />
+                    </MField>
+                    <MField label="Tipe Pekerjaan">
+                      <MSelect
+                        value={form.tipe_pekerjaan}
+                        onChange={e => setForm({ ...form, tipe_pekerjaan: e.target.value })}
+                        options={['Full-Time', 'Part-Time', 'Contract', 'Freelance', 'Magang']}
+                      />
+                    </MField>
                   </div>
                 ) : (
-                  <div className="h-full flex flex-col">
-                    <label className="text-xs font-bold text-text-muted mb-2 block uppercase tracking-wider">Isi Konten / Artikel Lengkap</label>
-                    <textarea value={form.isi_konten} onChange={e => setForm({ ...form, isi_konten: e.target.value })} placeholder="Tulis konten lengkap artikel di sini..."
-                      className="w-full flex-1 px-5 py-3 rounded-2xl bg-bg-input border border-border text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary/50 transition-all resize-none shadow-sm min-h-[300px]" />
-                  </div>
+                  <MField label="Isi Konten / Artikel Lengkap" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <MTextarea
+                      value={form.isi_konten}
+                      onChange={e => setForm({ ...form, isi_konten: e.target.value })}
+                      placeholder="Tulis konten lengkap artikel di sini..."
+                      rows={14}
+                      style={{ flex: 1, minHeight: 280 }}
+                    />
+                  </MField>
                 )}
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-border flex justify-end">
-              <button onClick={handleSave} className="btn-primary px-10 py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold shadow-xl shadow-primary/30 active:scale-95 transition-all">
-                <FiSave size={18} /> Simpan Data
+            {/* ── Footer ── */}
+            <div style={{
+              marginTop: 24, paddingTop: 18,
+              borderTop: '1px solid var(--ad-border)',
+              display: 'flex', justifyContent: 'flex-end', gap: 10,
+            }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  padding: '10px 20px', borderRadius: 12, fontSize: 13, fontWeight: 600,
+                  background: 'var(--ad-input)',
+                  border: '1px solid var(--ad-border)',
+                  color: 'var(--ad-text-sec)',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--ad-card-hover)'; e.currentTarget.style.color = 'var(--ad-text)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--ad-input)'; e.currentTarget.style.color = 'var(--ad-text-sec)'; }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleSave}
+                style={{
+                  padding: '10px 28px', borderRadius: 12, fontSize: 13, fontWeight: 700,
+                  background: 'linear-gradient(135deg,#6C63FF,#9B59FF)',
+                  border: 'none', color: '#fff', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  boxShadow: '0 6px 20px rgba(108,99,255,0.4)',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(108,99,255,0.5)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(108,99,255,0.4)'; }}
+              >
+                <FiSave size={16} /> Simpan Data
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   Helper sub-components untuk form modal
+   Semua pakai CSS variables admin
+══════════════════════════════════════════ */
+function MField({ label, children, style }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, ...style }}>
+      <label style={{
+        fontSize: 10, fontWeight: 800, letterSpacing: '0.1em',
+        textTransform: 'uppercase', color: 'var(--ad-text-muted)',
+      }}>
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function MInput({ value, onChange, placeholder, type = 'text' }) {
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      style={{
+        width: '100%', padding: '10px 14px',
+        borderRadius: 12, fontSize: 13,
+        background: 'var(--ad-input)',
+        border: '1px solid var(--ad-border)',
+        color: 'var(--ad-text)',
+        outline: 'none', transition: 'border 0.2s, box-shadow 0.2s',
+        boxSizing: 'border-box',
+      }}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(108,99,255,0.6)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(108,99,255,0.1)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'var(--ad-border)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function MTextarea({ value, onChange, placeholder, rows = 4, style }) {
+  return (
+    <textarea
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={rows}
+      style={{
+        width: '100%', padding: '10px 14px',
+        borderRadius: 12, fontSize: 13,
+        background: 'var(--ad-input)',
+        border: '1px solid var(--ad-border)',
+        color: 'var(--ad-text)',
+        outline: 'none', resize: 'vertical',
+        transition: 'border 0.2s, box-shadow 0.2s',
+        boxSizing: 'border-box',
+        fontFamily: 'inherit',
+        ...style,
+      }}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(108,99,255,0.6)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(108,99,255,0.1)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'var(--ad-border)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function MSelect({ value, onChange, options }) {
+  return (
+    <select
+      value={value}
+      onChange={onChange}
+      style={{
+        width: '100%', padding: '10px 14px',
+        borderRadius: 12, fontSize: 13,
+        background: 'var(--ad-input)',
+        border: '1px solid var(--ad-border)',
+        color: 'var(--ad-text)',
+        outline: 'none', cursor: 'pointer',
+        transition: 'border 0.2s',
+        boxSizing: 'border-box',
+        appearance: 'none',
+      }}
+      onFocus={e => { e.target.style.borderColor = 'rgba(108,99,255,0.6)'; }}
+      onBlur={e  => { e.target.style.borderColor = 'var(--ad-border)'; }}
+    >
+      {options.map(o => (
+        <option key={o} value={o} style={{ background: 'var(--ad-surface)', color: 'var(--ad-text)' }}>
+          {o}
+        </option>
+      ))}
+    </select>
   );
 }
