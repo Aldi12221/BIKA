@@ -256,7 +256,7 @@ export default function ManageContentPage({ kategoriProp }) {
   const someSelected = selected.size > 0 && !allSelected;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-text-primary">
       {/* Category Tab Bar */}
       <div className="flex items-center gap-1 p-1 bg-bg-card rounded-2xl border border-border overflow-x-auto">
         {KATEGORI_TABS.map(tab => {

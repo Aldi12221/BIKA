@@ -11,7 +11,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://bikawebsite.vercel.app',
+        target: 'http://localhost:3001', // url testing backend
         changeOrigin: true,
       }
     }
