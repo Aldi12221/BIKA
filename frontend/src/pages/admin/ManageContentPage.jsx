@@ -1,5 +1,5 @@
-﻿import { useState, useEffect, useMemo } from 'react';
-import { FiPlus, FiTrash2, FiEdit3, FiX, FiSave, FiSearch, FiExternalLink, FiCheckSquare, FiSquare, FiAlertTriangle, FiBriefcase, FiBookOpen, FiActivity, FiDollarSign, FiFilter, FiRefreshCw, FiChevronDown } from 'react-icons/fi';
+import { useState, useEffect, useMemo } from 'react';
+import { FiPlus, FiTrash2, FiEdit3, FiX, FiSave, FiSearch, FiExternalLink, FiCheckSquare, FiSquare, FiAlertTriangle, FiBriefcase, FiBookOpen, FiActivity, FiDollarSign, FiFilter, FiRefreshCw, FiChevronDown, FiPaperclip, FiFile, FiFileText } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
@@ -35,6 +35,24 @@ async function validateAndReadImage(file) {
   return readFileAsDataUrl(file);
 }
 
+const MAX_FILE_MB = 5;
+const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024;
+
+async function validateAndReadFile(file) {
+  if (file.size > MAX_FILE_BYTES) {
+    toast.error(
+      `Ukuran file terlalu besar! Maksimal ${MAX_FILE_MB}MB, file kamu ${(file.size / 1024 / 1024).toFixed(1)}MB.`,
+      { duration: 5000 }
+    );
+    return null;
+  }
+  return {
+    name: file.name,
+    type: file.type,
+    data: await readFileAsDataUrl(file)
+  };
+}
+
 function confirmToast(message, onConfirm) {
   toast((t) => (
     <div className="flex flex-col gap-3">
@@ -61,7 +79,7 @@ export default function ManageContentPage({ kategoriProp }) {
   const [contents, setContents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
-  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '' });
+  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
   const [search, setSearch] = useState('');
 
   // Per-category filters
@@ -205,13 +223,13 @@ export default function ManageContentPage({ kategoriProp }) {
   // ── Single CRUD ──
   const openAdd = () => {
     setEditItem(null);
-    setForm({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '' });
+    setForm({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
     setShowModal(true);
   };
 
   const openEdit = (item) => {
     setEditItem(item);
-    setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: kategoriProp, link_eksternal: item.link_eksternal || '', gambar: item.gambar || '', perusahaan: item.perusahaan || '', lokasi: item.lokasi || '', tipe_pekerjaan: item.tipe_pekerjaan || 'Full-Time', isi_konten: item.isi_konten || '' });
+    setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: kategoriProp, link_eksternal: item.link_eksternal || '', gambar: item.gambar || '', perusahaan: item.perusahaan || '', lokasi: item.lokasi || '', tipe_pekerjaan: item.tipe_pekerjaan || 'Full-Time', isi_konten: item.isi_konten || '', file_tambahan: item.file_tambahan || '[]' });
     setShowModal(true);
   };
 
@@ -687,6 +705,73 @@ export default function ManageContentPage({ kategoriProp }) {
                       Hapus Gambar
                     </button>
                   )}
+                </MField>
+
+                {/* File Tambahan */}
+                <MField label="File Tambahan (PDF, Excel, dll)">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <label
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '12px 16px', borderRadius: 12,
+                        background: 'rgba(108,99,255,0.08)',
+                        border: '1px dashed rgba(108,99,255,0.3)',
+                        cursor: 'pointer', transition: 'all 0.2s',
+                        fontSize: 12, fontWeight: 700, color: '#6C63FF'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = 'rgba(108,99,255,0.6)';
+                        e.currentTarget.style.background = 'rgba(108,99,255,0.12)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = 'rgba(108,99,255,0.3)';
+                        e.currentTarget.style.background = 'rgba(108,99,255,0.08)';
+                      }}
+                    >
+                      <FiPaperclip size={16} />
+                      Tambah File Lampiran
+                      <input type="file" style={{ display: 'none' }} onChange={async e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const fileData = await validateAndReadFile(file);
+                          if (fileData) {
+                            const currentFiles = JSON.parse(form.file_tambahan || '[]');
+                            setForm({ ...form, file_tambahan: JSON.stringify([...currentFiles, fileData]) });
+                          }
+                          e.target.value = '';
+                        }
+                      }} />
+                    </label>
+
+                    {/* List Files */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {JSON.parse(form.file_tambahan || '[]').map((f, i) => (
+                        <div key={i} style={{
+                          display: 'flex', alignItems: 'center', justifyBetween: 'space-between',
+                          padding: '8px 12px', borderRadius: 10,
+                          background: 'var(--ad-input)', border: '1px solid var(--ad-border)',
+                          gap: 10
+                        }}>
+                          <FiFile size={14} style={{ color: 'var(--ad-text-muted)', flexShrink: 0 }} />
+                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ad-text-sec)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {f.name}
+                          </span>
+                          <button
+                            onClick={() => {
+                              const currentFiles = JSON.parse(form.file_tambahan);
+                              setForm({ ...form, file_tambahan: JSON.stringify(currentFiles.filter((_, idx) => idx !== i)) });
+                            }}
+                            style={{
+                              padding: 4, borderRadius: 6, background: 'none', border: 'none',
+                              color: '#FF5252', cursor: 'pointer', display: 'flex'
+                            }}
+                          >
+                            <FiTrash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </MField>
               </div>
 

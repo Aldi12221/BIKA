@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { FiPlus, FiTrash2, FiX, FiExternalLink, FiArrowRight } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiX, FiExternalLink, FiArrowRight, FiDownload, FiFileText } from 'react-icons/fi';
 import api from '../utils/api';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
@@ -298,6 +298,39 @@ export default function UsahaPage() {
                   >
                     Kunjungi Sumber Eksternal <FiExternalLink />
                   </button>
+                </div>
+              )}
+
+              {/* File Tambahan */}
+              {selectedContent.file_tambahan && JSON.parse(selectedContent.file_tambahan).length > 0 && (
+                <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5">
+                  <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider mb-4">File Lampiran</h4>
+                  <div className="flex flex-col gap-3">
+                    {JSON.parse(selectedContent.file_tambahan).map((file, i) => (
+                      <div key={i} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-black/40 rounded-2xl border border-slate-100 dark:border-white/5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-white dark:bg-zinc-800 rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+                            <FiFileText size={20} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-1">{file.name}</p>
+                            <p className="text-[10px] font-medium text-slate-400 uppercase">{file.type?.split('/')[1] || 'File'}</p>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = file.data;
+                            link.download = file.name;
+                            link.click();
+                          }}
+                          className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20 cursor-pointer border-none"
+                        >
+                          <FiDownload size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

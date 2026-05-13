@@ -17,6 +17,9 @@ const Business = db.define('Business', {
   },
   link_eksternal: {
     type: DataTypes.STRING
+  },
+  file_tambahan: {
+    type: DataTypes.TEXT('long') // JSON string for multiple attachments
   }
 });
 

@@ -17,6 +17,9 @@ const Tutorial = db.define('Tutorial', {
   },
   link_eksternal: {
     type: DataTypes.STRING
+  },
+  file_tambahan: {
+    type: DataTypes.TEXT('long') // JSON string for multiple attachments
   }
 });
 

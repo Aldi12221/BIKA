@@ -23,6 +23,9 @@ const Job = db.define('Job', {
   },
   link_eksternal: {
     type: DataTypes.STRING
+  },
+  file_tambahan: {
+    type: DataTypes.TEXT('long') // JSON string for multiple attachments
   }
 });
 
