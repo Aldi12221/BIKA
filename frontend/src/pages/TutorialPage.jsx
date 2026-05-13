@@ -178,16 +178,16 @@ export default function TutorialPage() {
 
           <div className="flex flex-col items-center justify-center mb-8 relative z-10">
             <h2 className="text-2xl font-black text-white tracking-tight mb-6">Test Psikotes</h2>
-            <button className="bg-indigo-400 dark:bg-blue-600 text-white font-black text-sm px-8 py-3 rounded-full hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20">
+            <button className="bg-blue-600 dark:bg-blue-600/50 border border-blue-600 text-white font-black text-sm px-8 py-3 rounded-full hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20">
               Start now
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
             {[
-              { title: "Info", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-              { title: "Video", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-              { title: "Info", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." }
+              { title: "Info", desc: "BIKA sekarang memiliki fitur pengelolaan keuangan untuk membantu teman-teman dalam menglola pengeluaran dan pemasukan sehari-hari" },
+              { title: "Info", desc: "Jangan lupa lengkapi profil kamu agar terlihat lebih profesional" },
+              { title: "Info", desc: "Page tutorial memuat kuis dan tips yang akan bermanfaat untuk masa depan teman teman yang lebih cerah kedepannya" }
             ].map((box, idx) => (
               <div key={idx} className="bg-white/90 dark:bg-white/10 rounded-2xl p-5 text-left hover:-translate-y-1 transition-transform cursor-pointer shadow-sm">
                 <h4 className="font-black text-sm text-slate-800 dark:text-white mb-2">{box.title}</h4>

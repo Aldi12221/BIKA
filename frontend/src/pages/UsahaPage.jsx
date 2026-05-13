@@ -202,7 +202,7 @@ export default function UsahaPage() {
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Keterangan</label>
                   <input type="text" value={trxForm.keterangan} onChange={e => setTrxForm({...trxForm, keterangan: e.target.value})} placeholder="Misal: Penjualan produk" className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all" />
                 </div>
-                <button onClick={addTransaction} className="w-full bg-blue-600 text-white font-bold text-sm py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95">
+                <button onClick={addTransaction} className="w-full bg-blue-600 dark:bg-blue-600/50 border border-blue-600 text-white font-bold text-sm py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95">
                   <FiPlus /> Tambah Data
                 </button>
               </div>
@@ -243,13 +243,12 @@ export default function UsahaPage() {
               <p className="text-[13px] text-slate-500 dark:text-slate-400 font-bold mb-6 tracking-wide transition-colors">Visualisasi pemasukan dan pengeluaran per bulan</p>
               <div className="bg-white dark:bg-black rounded-[24px] p-4 border border-slate-100 dark:border-zinc-800 shadow-sm transition-colors">
                 <div className="h-[300px] w-full">
-                  <Line data={dynamicChartData} options={chartOptions} />
+                  <Line data={dynamicChartData} options={chartOptions} className="" />
                 </div>
               </div>
             </div>
           </div>
         </section>
-
       </div>
 
       {/* ===== ARTICLE DETAIL MODAL ===== */}
