@@ -137,11 +137,11 @@ export default function ManageUserPage() {
           {batchMode ? (
             <>
               <button onClick={exitBatchMode}
-                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
+                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
                 <FiX size={14} /> Batal
               </button>
               <button onClick={handleBatchDelete} disabled={selected.size === 0}
-                className="text-sm flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer">
+                className="admin-danger-soft text-sm flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20 hover:text-red-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer">
                 <FiTrash2 size={14} />
                 Hapus {selected.size > 0 ? `(${selected.size})` : 'Terpilih'}
               </button>
@@ -149,7 +149,7 @@ export default function ManageUserPage() {
           ) : (
             <>
               <button onClick={() => setBatchMode(true)}
-                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
+                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
                 <FiCheckSquare size={14} /> Pilih
               </button>
               <button onClick={load} className="btn-primary text-sm flex items-center gap-2">
@@ -188,12 +188,12 @@ export default function ManageUserPage() {
       <div className="glass rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border">
+            <tr className="border-b border-border bg-bg-card/50">
               {batchMode && <th className="p-4 w-10" />}
-              <th className="text-left p-4 text-xs text-text-muted font-medium uppercase min-w-[250px]">Nama</th>
-              <th className="text-left p-4 text-xs text-text-muted font-medium uppercase hidden md:table-cell">Email</th>
-              <th className="text-left p-4 text-xs text-text-muted font-medium uppercase hidden sm:table-cell">CV</th>
-              <th className="text-right p-4 text-xs text-text-muted font-medium uppercase">Aksi</th>
+              <th className="text-left p-4 text-xs text-text-primary font-bold uppercase tracking-wider min-w-[250px]">Nama</th>
+              <th className="text-left p-4 text-xs text-text-primary font-bold uppercase tracking-wider hidden md:table-cell">Email</th>
+              <th className="text-left p-4 text-xs text-text-primary font-bold uppercase tracking-wider hidden sm:table-cell">CV</th>
+              <th className="text-right p-4 text-xs text-text-primary font-bold uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -221,14 +221,14 @@ export default function ManageUserPage() {
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <img src={item.foto || 'https://via.placeholder.com/40'} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
-                      <span className="text-sm text-text-primary font-medium">{item.nama}</span>
+                      <span className="text-sm text-text-primary font-semibold">{item.nama}</span>
                     </div>
                   </td>
                   <td className="p-4 text-sm text-text-secondary truncate max-w-[200px] hidden md:table-cell">{item.email}</td>
-                  <td className="p-4 text-sm text-text-muted truncate max-w-[150px] hidden sm:table-cell">
+                  <td className="p-4 text-sm text-text-secondary truncate max-w-[150px] hidden sm:table-cell">
                     {item.cv_path ? (
-                      <a href={item.cv_path} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-blue-500 hover:underline">Lihat CV</a>
-                    ) : '-'}
+                      <a href={item.cv_path} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="text-primary font-semibold hover:underline">Lihat CV</a>
+                    ) : <span className="text-text-muted">—</span>}
                   </td>
                   <td className="p-4 text-right">
                     {!batchMode && (

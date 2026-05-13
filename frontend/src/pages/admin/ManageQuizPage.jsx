@@ -191,11 +191,11 @@ export default function ManageQuizPage() {
           {batchMode ? (
             <>
               <button onClick={exitBatchMode}
-                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
+                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
                 <FiX size={14} /> Batal
               </button>
               <button onClick={handleBatchDelete} disabled={selected.size === 0}
-                className="text-sm flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer">
+                className="admin-danger-soft text-sm flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20 hover:text-red-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer">
                 <FiTrash2 size={14} />
                 Hapus {selected.size > 0 ? `(${selected.size})` : 'Terpilih'}
               </button>
@@ -203,7 +203,7 @@ export default function ManageQuizPage() {
           ) : (
             <>
               <button onClick={() => setBatchMode(true)}
-                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
+                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer">
                 <FiCheckSquare size={14} /> Pilih
               </button>
               <button onClick={openAdd} className="btn-primary text-sm flex items-center gap-2">

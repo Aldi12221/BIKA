@@ -5,17 +5,17 @@
 /* ── CSS Variables ── */
 .admin-dark {
     --ad-bg: #0F1123;
-    --ad-surface: #161832;
-    --ad-card: #1C1F3A;
-    --ad-card-hover: #232650;
-    --ad-border: rgba(255,255,255,0.07);
+    --ad-surface: #171A36;
+    --ad-card: #202447;
+    --ad-card-hover: #2A2F59;
+    --ad-border: rgba(255,255,255,0.14);
     --ad-text: #E8E8F0;
-    --ad-text-sec: #9A9BBF;
-    --ad-text-muted: #6B6D8A;
+    --ad-text-sec: #C2C6E4;
+    --ad-text-muted: #8F94B8;
     --ad-sidebar: #0B0E1A;
-    --ad-header: #161832;
-    --ad-input: #1A1D35;
-    --ad-shadow: rgba(0,0,0,0.4);
+    --ad-header: #171A36;
+    --ad-input: #212649;
+    --ad-shadow: rgba(0,0,0,0.46);
   
     /* Override tailwind theme for admin pages */
     --color-bg-body: var(--ad-bg);
@@ -27,21 +27,22 @@
     --color-text-secondary: var(--ad-text-sec);
     --color-text-muted: var(--ad-text-muted);
     --color-border: var(--ad-border);
+    --color-border-light: rgba(255,255,255,0.24);
   }
   
   .admin-light {
-    --ad-bg: #F4F6FB;
+    --ad-bg: #F0F2F8;
     --ad-surface: #FFFFFF;
     --ad-card: #FFFFFF;
-    --ad-card-hover: #F0F2FF;
-    --ad-border: rgba(0,0,0,0.07);
-    --ad-text: #1A1D35;
-    --ad-text-sec: #5A5C7A;
-    --ad-text-muted: #9A9BAF;
+    --ad-card-hover: #EEF0FF;
+    --ad-border: rgba(0,0,0,0.10);
+    --ad-text: #0F1123;
+    --ad-text-sec: #3A3C5A;
+    --ad-text-muted: #6B6D8A;
     --ad-sidebar: #FFFFFF;
     --ad-header: #FFFFFF;
-    --ad-input: #F4F6FB;
-    --ad-shadow: rgba(100,100,150,0.12);
+    --ad-input: #ECEEF6;
+    --ad-shadow: rgba(80,80,130,0.10);
   
     /* Override tailwind theme for admin pages */
     --color-bg-body: var(--ad-bg);
@@ -53,8 +54,9 @@
     --color-text-secondary: var(--ad-text-sec);
     --color-text-muted: var(--ad-text-muted);
     --color-border: var(--ad-border);
+    --color-border-light: rgba(15,17,35,0.24);
   }
-  
+
   /* ── Layout ── */
   .admin-layout {
     display: flex;
@@ -79,7 +81,7 @@
   .admin-sidebar--collapsed ~ * .admin-main {
     margin-left: 68px;
   }
-  
+
   /* ── Sidebar ── */
   .admin-sidebar {
     position: fixed;
@@ -199,7 +201,7 @@
     display: flex; align-items: center; gap: 11px;
     padding: 9px 10px; border-radius: 10px;
     text-decoration: none; color: var(--ad-text-sec);
-    font-size: 13.5px; font-weight: 500;
+    font-size: 13.5px; font-weight: 600;
     transition: all 0.18s ease;
     position: relative; overflow: hidden;
     white-space: nowrap;
@@ -228,7 +230,7 @@
   }
   
   .admin-sidebar__spacer { flex: 1; min-height: 8px; }
-  
+
   /* Support card — compact */
   .admin-sidebar__support {
     margin: 0 10px 10px;
@@ -255,7 +257,7 @@
     cursor: pointer; transition: opacity 0.2s; width: 100%;
   }
   .admin-sidebar__support-btn:hover { opacity: 0.85; }
-  
+
   /* Footer */
   .admin-sidebar__footer {
     display: flex; align-items: center; gap: 8px;
@@ -286,7 +288,7 @@
     display: flex; align-items: center; transition: all 0.2s; flex-shrink: 0;
   }
   .admin-sidebar__logout:hover { color: #FF5252; background: rgba(255,82,82,0.12); }
-  
+
   /* ── Header ── */
   .admin-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -331,7 +333,7 @@
     transition: all 0.2s; position: relative;
   }
   .admin-header__icon-btn:hover { border-color: #6C63FF55; color: #6C63FF; }
-  
+
   /* Toggle switch */
   .admin-header__toggle-track {
     width: 40px; height: 22px; border-radius: 11px;
@@ -361,16 +363,16 @@
     font-weight: 700; font-size: 15px; color: #fff; cursor: pointer;
     box-shadow: 0 2px 10px rgba(108,99,255,0.35);
   }
-  
+
   /* ── Page Content ── */
   .admin-content {
     padding: 28px;
     flex: 1;
   }
-  
+
   /* ── Dashboard ── */
   .admin-dashboard { display: flex; flex-direction: column; gap: 20px; }
-  
+
   /* ── Stat Cards ── */
   .admin-stat-grid {
     display: grid;
@@ -423,7 +425,7 @@
   .admin-stat-card__trend.down { color: #FF5252; background: rgba(255,82,82,0.12); }
   .admin-stat-card__trend-sub  { font-size: 11px; color: var(--ad-text-muted); }
   .admin-stat-card__spark      { margin-left: auto; }
-  
+
   /* ── Mid Grid: bar chart + donut ── */
   .admin-mid-grid {
     display: grid;
@@ -431,7 +433,7 @@
     gap: 16px;
     align-items: start;
   }
-  
+
   /* ── Panel ── */
   .admin-panel {
     background: var(--ad-card);
@@ -457,7 +459,7 @@
     display: flex; align-items: center; transition: color 0.2s;
   }
   .admin-panel__refresh:hover { color: #6C63FF; }
-  
+
   /* ── Bar Chart ── */
   .admin-bar-wrap { display: flex; flex-direction: column; gap: 8px; }
   .admin-bar-chart {
@@ -476,7 +478,7 @@
     display: flex; justify-content: space-between;
     font-size: 9px; color: var(--ad-text-muted);
   }
-  
+
   /* ── Donut Charts ── */
   .admin-donut-grid {
     display: grid;
@@ -494,7 +496,7 @@
   }
   .admin-donut-item__dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .admin-donut-item__info strong { color: var(--ad-text); font-weight: 700; }
-  
+
   /* ── Bot Grid: activity + quick info ── */
   .admin-bot-grid {
     display: grid;
@@ -502,11 +504,11 @@
     gap: 16px;
     align-items: start;
   }
-  
+
   /* ── Activity Chart ── */
   .admin-activity-wrap { height: 100px; }
   .admin-activity-chart { width: 100%; height: 100%; display: block; }
-  
+
   /* ── Info List ── */
   .admin-info-list { display: flex; flex-direction: column; gap: 10px; }
   .admin-info-item {
@@ -530,7 +532,7 @@
     display: flex; align-items: center; flex-shrink: 0;
   }
   .admin-info-item__link:hover { color: #6C63FF; background: rgba(108,99,255,0.1); }
-  
+
   /* ── Loading ── */
   .admin-loading {
     display: flex; flex-direction: column; align-items: center;
@@ -543,7 +545,7 @@
     border-top-color: #6C63FF;
     animation: adminSpin 0.8s linear infinite;
   }
-  
+
   /* ── Animations ── */
   @keyframes adminFadeUp {
     from { opacity: 0; transform: translateY(16px); }
@@ -552,7 +554,7 @@
   @keyframes adminSpin {
     to { transform: rotate(360deg); }
   }
-  
+
   /* ── Responsive Tablet (768–1200px) ── */
   @media (max-width: 1200px) {
     .admin-stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -568,7 +570,7 @@
     .admin-main    { margin-left: 0 !important; }
     .admin-content { padding: 12px 10px 24px; }
 
-    /* ── Header ── */
+  /* ── Header ── */
     .admin-header         { padding: 0 12px; height: 54px; gap: 6px; }
     .admin-header__title  { font-size: 15px; }
     .admin-header__date   { font-size: 10px; }
@@ -587,10 +589,10 @@
     .admin-header__avatar   { width: 30px; height: 30px; font-size: 12px; }
     .admin-header__icon-btn { width: 32px; height: 32px; }
 
-    /* ── Dashboard wrapper ── */
+  /* ── Dashboard wrapper ── */
     .admin-dashboard { gap: 12px; }
 
-    /* ── Stat grid: 2 kolom fluid ── */
+  /* ── Stat grid: 2 kolom fluid ── */
     .admin-stat-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
@@ -613,13 +615,14 @@
     .admin-stat-card__icon {
       width: 34px; height: 34px; border-radius: 10px;
     }
-    /* Sembunyikan sparkline & trend-sub di mobile kecil */
+
+  /* Sembunyikan sparkline & trend-sub di mobile kecil */
     .admin-stat-card__spark    { display: none; }
     .admin-stat-card__trend-sub { display: none; }
     .admin-stat-card__bottom   { gap: 6px; }
     .admin-stat-card__trend    { font-size: 10px; padding: 2px 6px; }
 
-    /* ── Panels ── */
+  /* ── Panels ── */
     .admin-mid-grid, .admin-bot-grid {
       grid-template-columns: 1fr;
       gap: 10px;
@@ -631,16 +634,17 @@
     .admin-panel__title { font-size: 13px; }
     .admin-panel__sub   { font-size: 10px; }
 
-    /* ── Bar chart ── */
+  /* ── Bar chart ── */
     .admin-bar-chart { height: 72px; gap: 3px; }
-    /* Hanya tampilkan label bulan pendek selang-seling */
+
+  /* Hanya tampilkan label bulan pendek selang-seling */
     .admin-bar-labels {
       font-size: 8px;
       gap: 0;
     }
     .admin-bar-labels span:nth-child(even) { visibility: hidden; }
 
-    /* ── Donut grid: 2×2, ukuran lebih kecil ── */
+  /* ── Donut grid: 2×2, ukuran lebih kecil ── */
     .admin-donut-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
@@ -651,10 +655,10 @@
       gap: 3px;
     }
 
-    /* ── Activity chart ── */
+  /* ── Activity chart ── */
     .admin-activity-wrap { height: 72px; }
 
-    /* ── Info list ── */
+  /* ── Info list ── */
     .admin-info-list { gap: 8px; }
     .admin-info-item {
       padding: 9px 10px;
@@ -710,7 +714,7 @@
     .admin-header__search--desktop { display: flex; }
     .admin-header__search-mobile-btn { display: none; }
   }
-  
+
   /* ── Tables & Lists ── */
   .admin-table-wrap {
     overflow-x: auto;
@@ -726,8 +730,8 @@
     padding: 12px 16px;
     text-align: left;
     font-size: 11px;
-    font-weight: 600;
-    color: var(--ad-text-muted);
+    font-weight: 700;
+    color: var(--ad-text);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     border-bottom: 1px solid var(--ad-border);
@@ -749,7 +753,98 @@
     color: var(--ad-text);
     font-weight: 600;
   }
+
+  /* Dark mode contrast tune for utility-heavy admin pages */
+  .admin-dark .glass {
+    background: rgba(32,36,71,0.92) !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.34) !important;
+  }
+  .admin-dark .glass-strong {
+    background: #24294f !important;
+    border: 1px solid rgba(255,255,255,0.18) !important;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.44) !important;
+  }
+  .admin-dark .admin-danger-soft {
+    color: #FF8F8F !important;
+    background: rgba(255,82,82,0.16) !important;
+    border-color: rgba(255,82,82,0.45) !important;
+  }
+  .admin-dark .admin-danger-soft:hover {
+    color: #FFC1C1 !important;
+    background: rgba(255,82,82,0.24) !important;
+    border-color: rgba(255,82,82,0.62) !important;
+  }
+
+  /* ── Light mode: fix low-contrast Tailwind utility overrides ── */
+  .admin-light {
+    /* Tailwind text-text-muted → readable on white */
+    --color-text-muted: #5A5C78;
+    /* Tailwind text-text-secondary → strong enough on white */
+    --color-text-secondary: #3A3C5A;
+    /* border-border → visible on white */
+    --color-border: rgba(0,0,0,0.12);
+    /* bg-bg-surface → slightly off-white so it contrasts with bg-bg-card */
+    --color-bg-surface: #ECEEF6;
+  }
+
+  /* glass / glass-strong in light mode need solid backgrounds */
+  .admin-light .glass {
+    background: rgba(255,255,255,0.98) !important;
+    border: 1px solid rgba(0,0,0,0.10) !important;
+    box-shadow: 0 2px 16px rgba(80,80,130,0.08) !important;
+  }
+  .admin-light .glass-strong {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0,0,0,0.12) !important;
+    box-shadow: 0 8px 32px rgba(80,80,130,0.14) !important;
+  }
+
+  /* Tab bar inactive buttons in light mode */
+  .admin-light .hover\:bg-bg-surface:hover {
+    background: #ECEEF6 !important;
+  }
+
+  /* Table header cells in light mode — use text-text-primary via CSS var */
+  .admin-light thead th {
+    color: var(--ad-text) !important;
+    background: var(--ad-input) !important;
+  }
+
+  /* Batch info bar text in light mode */
+  .admin-light .text-text-muted {
+    color: #5A5C78 !important;
+  }
+  .admin-light .text-text-secondary {
+    color: #3A3C5A !important;
+  }
   
+  .admin-light .admin-danger-soft {
+    color: #DC2626 !important;
+  }
+  .admin-light .admin-danger-soft:hover {
+    color: #B91C1C !important;
+  }
+
+  /* "Pilih" / "Batal" outline buttons in light mode */
+  .admin-light button.bg-transparent {
+    color: #3A3C5A;
+  }
+  .admin-light button.bg-transparent:hover {
+    color: #0F1123;
+  }
+
+  /* Internal Content badge in light mode */
+  .admin-light .bg-bg-surface {
+    background: #ECEEF6 !important;
+    color: #3A3C5A !important;
+  }
+
+  /* Result count badge */
+  .admin-light .text-text-muted.bg-bg-surface {
+    color: #3A3C5A !important;
+  }
+
   /* ── Modals ── */
   .admin-modal-overlay {
     position: fixed;
@@ -815,7 +910,7 @@
   .admin-label {
     display: block;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--ad-text-sec);
     margin-bottom: 6px;
   }
@@ -838,3 +933,6 @@
     opacity: 0.9;
   }
   
+
+
+

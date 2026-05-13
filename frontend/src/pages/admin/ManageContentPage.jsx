@@ -269,7 +269,7 @@ export default function ManageContentPage({ kategoriProp }) {
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border-none cursor-pointer flex-1 justify-center
                 ${active
                   ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                  : 'text-text-muted hover:text-text-primary hover:bg-bg-surface'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-surface'
                 }`}
             >
               <Icon size={14} />
@@ -290,14 +290,14 @@ export default function ManageContentPage({ kategoriProp }) {
             <>
               <button
                 onClick={exitBatchMode}
-                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer"
+                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer"
               >
                 <FiX size={14} /> Batal
               </button>
               <button
                 onClick={handleBatchDelete}
                 disabled={selected.size === 0}
-                className="text-sm flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                className="admin-danger-soft text-sm flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 hover:bg-red-500/20 hover:text-red-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
               >
                 <FiTrash2 size={14} />
                 Hapus {selected.size > 0 ? `(${selected.size})` : 'Terpilih'}
@@ -307,7 +307,7 @@ export default function ManageContentPage({ kategoriProp }) {
             <>
               <button
                 onClick={() => setBatchMode(true)}
-                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-muted hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer"
+                className="text-sm flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:border-border-light transition-all bg-transparent cursor-pointer"
               >
                 <FiCheckSquare size={14} /> Pilih
               </button>
@@ -460,10 +460,10 @@ export default function ManageContentPage({ kategoriProp }) {
             <thead>
               <tr className="bg-bg-card/50 border-b border-border">
                 {batchMode && <th className="p-4 w-10" />}
-                <th className="p-4 text-xs text-text-muted font-bold uppercase tracking-wider">Judul / Detail</th>
-                <th className="p-4 text-xs text-text-muted font-bold uppercase tracking-wider hidden md:table-cell">Deskripsi</th>
-                <th className="p-4 text-xs text-text-muted font-bold uppercase tracking-wider hidden sm:table-cell">Link / Media</th>
-                <th className="p-4 text-xs text-text-muted font-bold uppercase tracking-wider text-right">Aksi</th>
+                <th className="p-4 text-xs text-text-primary font-bold uppercase tracking-wider">Judul / Detail</th>
+                <th className="p-4 text-xs text-text-primary font-bold uppercase tracking-wider hidden md:table-cell">Deskripsi</th>
+                <th className="p-4 text-xs text-text-primary font-bold uppercase tracking-wider hidden sm:table-cell">Link / Media</th>
+                <th className="p-4 text-xs text-text-primary font-bold uppercase tracking-wider text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
