@@ -122,7 +122,7 @@ export default function LoginPage() {
 
   const finishLogin = (userData) => {
     loginUser(userData);
-    navigate('/masa-depan');
+    navigate('/');
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
