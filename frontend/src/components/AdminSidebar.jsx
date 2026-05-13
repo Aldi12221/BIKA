@@ -173,16 +173,25 @@ export default function AdminSidebar() {
 
         {/* ── Support Card ── */}
         {!collapsed && (
-          <div className="admin-sidebar__support">
-            <div className="admin-sidebar__support-avatar">👤</div>
-            <p className="admin-sidebar__support-title">Butuh bantuan?</p>
-            <p className="admin-sidebar__support-sub">Hubungi developer</p>
-            <button className="admin-sidebar__support-btn">
-              <FiMessageCircle size={12} style={{ marginRight: 5, verticalAlign: 'middle' }} />
-              Hubungi
-            </button>
-          </div>
-        )}
+  <div className="admin-sidebar__support">
+    <div className="admin-sidebar__support-avatar">👤</div>
+    <p className="admin-sidebar__support-title">Butuh bantuan?</p>
+    <p className="admin-sidebar__support-sub">Hubungi developer</p>
+    
+    {/* Bungkus button dengan tag anchor */}
+    <a 
+      href="https://wa.me/+6287762006122" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      style={{ textDecoration: 'none' }}
+    >
+      <button className="admin-sidebar__support-btn">
+        <FiMessageCircle size={12} style={{ marginRight: 5, verticalAlign: 'middle' }} /> 
+        Hubungi
+      </button>
+    </a>
+  </div>
+)}
 
         {/* ── Admin Footer ── */}
         <div className="admin-sidebar__footer">
