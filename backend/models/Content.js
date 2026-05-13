@@ -30,6 +30,9 @@ const Content = sequelize.define('Content', {
   },
   link_eksternal: {
     type: DataTypes.STRING
+  },
+  file_tambahan: {
+    type: DataTypes.TEXT('long')
   }
 });
 

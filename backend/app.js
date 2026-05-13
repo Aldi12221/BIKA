@@ -19,7 +19,21 @@ app.use(async (req, res, next) => {
   if (!isDbSynced) {
     try {
       await sequelize.sync();
-      
+
+      // Manual alter untuk menambahkan kolom file_tambahan jika belum ada
+      const tables = ['Jobs', 'Tutorials', 'Businesses', 'Finances', 'Contents'];
+      for (const table of tables) {
+        try {
+          await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`file_tambahan\` LONGTEXT;`);
+          console.log(`Added file_tambahan column to ${table}`);
+        } catch (err) {
+          // Jika error karena kolom sudah ada, abaikan saja
+          if (!err.message.includes('Duplicate column name')) {
+            console.error(`Failed to alter table ${table}:`, err.message);
+          }
+        }
+      }
+
       // Seed default admin jika belum ada
       const adminCount = await Admin.count({ where: { username: 'admin' } });
       if (adminCount === 0) {
