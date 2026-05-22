@@ -177,7 +177,7 @@ export default function TutorialPage() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
 
           <div className="flex flex-col items-center justify-center mb-8 relative z-10">
-            <h2 className="text-2xl font-black text-white tracking-tight mb-6">Test Psikotes</h2>
+            <h2 className="text-2xl font-black text-white tracking-tight mb-6">Test asesmen</h2>
             <button className="bg-blue-600 dark:bg-blue-600/50 border border-blue-600 text-white font-black text-sm px-8 py-3 rounded-full hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20">
               Start now
             </button>
