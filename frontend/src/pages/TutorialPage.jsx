@@ -9,6 +9,15 @@ export default function TutorialPage() {
   const [selectedContent, setSelectedContent] = useState(null);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const navigate = useNavigate();
+  const regularQuizzes = quizzes.filter((quiz) => quiz.kategori !== 'psikotes');
+  const assessmentQuizzes = quizzes.filter((quiz) => quiz.kategori === 'psikotes');
+
+  const getQuizLabel = (kategori) => {
+    if (kategori === 'psikotes') return 'Psikotes';
+    if (kategori === 'umum') return 'Quiz Biasa';
+    return kategori || 'Quiz';
+  };
+  const isPsychotestQuiz = selectedQuiz?.kategori === 'psikotes';
 
   useEffect(() => {
     api.getQuizzes().then(d => {
@@ -21,13 +30,13 @@ export default function TutorialPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedContent) {
+    if (selectedContent || selectedQuiz) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
     return () => { document.body.style.overflow = 'unset'; };
-  }, [selectedContent]);
+  }, [selectedContent, selectedQuiz]);
 
   const openContentDetail = (item) => {
     setSelectedContent(item);
@@ -79,7 +88,7 @@ export default function TutorialPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {quizzes.length > 0 ? quizzes.map((quiz) => (
+            {regularQuizzes.length > 0 ? regularQuizzes.map((quiz) => (
               <div
                 key={quiz.id}
                 onClick={() => openQuizDetail(quiz)}
@@ -91,12 +100,12 @@ export default function TutorialPage() {
                     <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-5xl opacity-50">
-                      {quiz.kategori === 'psikotes' ? '🧠' : '📝'}
+                      📝
                     </div>
                   )}
                   <div className="absolute top-3 right-3">
-                    <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-sm ${quiz.kategori === 'psikotes' ? 'bg-purple-500/80 text-white' : 'bg-white/80 text-rose-600 dark:bg-black/50 dark:text-rose-300'}`}>
-                      {quiz.kategori}
+                    <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-sm bg-white/80 text-rose-600 dark:bg-black/50 dark:text-rose-300">
+                      {getQuizLabel(quiz.kategori)}
                     </span>
                   </div>
                 </div>
@@ -119,8 +128,8 @@ export default function TutorialPage() {
               </div>
             )) : (
               <div className="col-span-full py-8 text-center text-white/80">
-                <p className="text-lg font-bold mb-1">Belum ada kuis tersedia</p>
-                <p className="text-sm opacity-70">Kuis akan segera ditambahkan</p>
+                <p className="text-lg font-bold mb-1">Belum ada quiz biasa tersedia</p>
+                <p className="text-sm opacity-70">Quiz biasa akan segera ditambahkan</p>
               </div>
             )}
           </div>
@@ -172,30 +181,67 @@ export default function TutorialPage() {
           </div>
         </div>
 
-        {/* 3. Test Psikotes Section */}
-        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors text-center relative overflow-hidden">
+        {/* 3. Tes Asesmen Section */}
+        <div className="bg-violet-600/85 dark:bg-violet-950/45 rounded-[32px] p-8 shadow-sm border border-violet-200/60 dark:border-violet-900/50 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
 
-          <div className="flex flex-col items-center justify-center mb-8 relative z-10">
-            <h2 className="text-2xl font-black text-white tracking-tight mb-6">Test asesmen</h2>
-            <button className="bg-blue-600 dark:bg-blue-600/50 border border-blue-600 text-white font-black text-sm px-8 py-3 rounded-full hover:bg-blue-400 dark:hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20">
-              Start now
-            </button>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 relative z-10">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-white/20 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
+                  <FiFileText className="text-xl" />
+                </div>
+                <h2 className="text-2xl font-black text-white tracking-tight">Tes Asesmen</h2>
+              </div>
+              <p className="text-white/80 text-sm md:text-base max-w-2xl">
+                Latihan psikotes untuk persiapan seleksi, asesmen, dan proses rekrutmen.
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
-            {[
-              { title: "Info", desc: "BIKA sekarang memiliki fitur pengelolaan keuangan untuk membantu teman-teman dalam menglola pengeluaran dan pemasukan sehari-hari" },
-              { title: "Info", desc: "Jangan lupa lengkapi profil kamu agar terlihat lebih profesional" },
-              { title: "Info", desc: "Page tutorial memuat kuis dan tips yang akan bermanfaat untuk masa depan teman teman yang lebih cerah kedepannya" }
-            ].map((box, idx) => (
-              <div key={idx} className="bg-white/90 dark:bg-white/10 rounded-2xl p-5 text-left hover:-translate-y-1 transition-transform cursor-pointer shadow-sm">
-                <h4 className="font-black text-sm text-slate-800 dark:text-white mb-2">{box.title}</h4>
-                <p className="text-[11px] font-medium text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {box.desc}
-                </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 relative z-10">
+            {assessmentQuizzes.length > 0 ? assessmentQuizzes.map((quiz) => (
+              <div
+                key={quiz.id}
+                onClick={() => openQuizDetail(quiz)}
+                className="group bg-white/95 dark:bg-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] hover:shadow-xl transition-all duration-300 cursor-pointer shadow-sm"
+              >
+                <div className="relative w-full h-40 bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 overflow-hidden">
+                  {quiz.gambar ? (
+                    <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-5xl opacity-50">
+                      🧠
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3">
+                    <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-sm bg-violet-500/80 text-white">
+                      {getQuizLabel(quiz.kategori)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  <h4 className="font-black text-[15px] text-slate-800 dark:text-white leading-tight mb-2 line-clamp-2">
+                    {quiz.judul}
+                  </h4>
+                  <p className="text-[12px] font-medium text-slate-500 dark:text-slate-300 leading-relaxed line-clamp-2">
+                    {quiz.deskripsi || 'Klik untuk melihat detail psikotes'}
+                  </p>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-white/10">
+                    <span className="text-[11px] font-bold text-violet-500 dark:text-violet-300">Lihat Detail</span>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-violet-100 dark:bg-violet-900/50 text-violet-500 dark:text-violet-300 group-hover:bg-violet-500 group-hover:text-white transition-colors">
+                      <FiArrowRight className="text-sm" />
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+            )) : (
+              <div className="col-span-full py-8 text-center text-white/80">
+                <p className="text-lg font-bold mb-1">Belum ada tes asesmen tersedia</p>
+                <p className="text-sm opacity-70">Psikotes akan ditampilkan di sini</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -209,7 +255,7 @@ export default function TutorialPage() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header/Image */}
-            <div className="relative w-full h-48 bg-gradient-to-br from-rose-100 to-orange-100 dark:from-rose-900/40 dark:to-orange-900/40 shrink-0">
+            <div className={`relative w-full h-48 shrink-0 ${isPsychotestQuiz ? 'bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/40 dark:to-indigo-900/40' : 'bg-gradient-to-br from-rose-100 to-orange-100 dark:from-rose-900/40 dark:to-orange-900/40'}`}>
               {selectedContent.gambar ? (
                 <img src={selectedContent.gambar} alt={selectedContent.judul} className="w-full h-full object-cover" />
               ) : (
@@ -307,15 +353,15 @@ export default function TutorialPage() {
                 <img src={selectedQuiz.gambar} alt={selectedQuiz.judul} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-6xl opacity-40">
-                  {selectedQuiz.kategori === 'psikotes' ? '🧠' : '📝'}
+                  {isPsychotestQuiz ? '🧠' : '📝'}
                 </div>
               )}
               <button onClick={closeQuizModal} className="absolute top-4 right-4 w-10 h-10 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-md border-none cursor-pointer transition-all">
                 <FiX size={20} />
               </button>
               <div className="absolute bottom-4 left-6">
-                <span className={`text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-lg ${selectedQuiz.kategori === 'psikotes' ? 'bg-purple-500 text-white' : 'bg-rose-500 text-white'}`}>
-                  {selectedQuiz.kategori}
+                <span className={`text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-lg ${isPsychotestQuiz ? 'bg-violet-500 text-white' : 'bg-rose-500 text-white'}`}>
+                  {getQuizLabel(selectedQuiz.kategori)}
                 </span>
               </div>
             </div>
@@ -348,10 +394,10 @@ export default function TutorialPage() {
                       navigate(`/quiz/${selectedQuiz.id}`);
                     }
                   }}
-                  className="flex-1 py-3 rounded-2xl text-sm font-black text-white flex items-center justify-center gap-2 transition-all cursor-pointer border-none shadow-lg shadow-rose-500/30"
-                  style={{ background: 'linear-gradient(135deg, #f43f5e, #fb923c)' }}
+                  className={`flex-1 py-3 rounded-2xl text-sm font-black text-white flex items-center justify-center gap-2 transition-all cursor-pointer border-none shadow-lg ${isPsychotestQuiz ? 'shadow-violet-500/30' : 'shadow-rose-500/30'}`}
+                  style={{ background: isPsychotestQuiz ? 'linear-gradient(135deg, #8b5cf6, #6366f1)' : 'linear-gradient(135deg, #f43f5e, #fb923c)' }}
                 >
-                  <FiPlay size={14} fill="currentColor" /> Mulai Kuis
+                  <FiPlay size={14} fill="currentColor" /> {isPsychotestQuiz ? 'Mulai Tes' : 'Mulai Kuis'}
                 </button>
               </div>
             </div>
