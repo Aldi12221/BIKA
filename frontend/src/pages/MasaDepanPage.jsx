@@ -28,6 +28,9 @@ export default function MasaDepanPage() {
   const [tutorials, setTutorials] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedJob, setSelectedJob] = useState(null);
+  const [lightboxImg, setLightboxImg] = useState(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Filter states
   const [filterLokasi, setFilterLokasi] = useState('');
@@ -382,8 +385,8 @@ export default function MasaDepanPage() {
             >
               <div className="flex items-center justify-between mb-5">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm overflow-hidden shrink-0 ${idx % 3 === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
-                    idx % 3 === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
-                      'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
+                  idx % 3 === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
+                    'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
                   }`}>
                   {item.gambar ? <img src={item.gambar} alt={item.judul} className="w-full h-full object-cover" /> : <FiFileText />}
                 </div>

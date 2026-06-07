@@ -80,7 +80,7 @@ app.use((err, req, res, next) => {
 
 // Jalankan server hanya jika dijalankan langsung (bukan di-import oleh Vercel)
 if (require.main === module) {
-  const PORT = process.env.PORT || 3001;
+  const PORT = 3001;
   app.listen(PORT, () => {
     console.log(`Server BiKA running on: http://localhost:${PORT}`);
   });
