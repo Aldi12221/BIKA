@@ -28,6 +28,9 @@ const api = {
   getLoginStats: () =>
     fetch(`${API_BASE}/stats/login`).then(r => r.json()),
 
+  getPublicStats: () =>
+    fetch(`${API_BASE}/stats/public`).then(r => r.json()),
+
   createContent: (data) =>
     fetch(`${API_BASE}/contents`, {
       method: 'POST',

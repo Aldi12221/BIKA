@@ -3,6 +3,9 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { Line } from 'react-chartjs-2';
 import { FiPlus, FiTrash2, FiX, FiExternalLink, FiArrowRight, FiDownload, FiFileText } from 'react-icons/fi';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -19,7 +22,9 @@ export default function UsahaPage() {
   const [usahaItems, setUsahaItems] = useState([]);
   const [keuanganItems, setKeuanganItems] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
-  
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   // Pengelola Keuangan State
   const [transactions, setTransactions] = useState([]);
   const [trxForm, setTrxForm] = useState({ jenis: 'pemasukan', nominal: '', keterangan: '', bulan: '1' });
@@ -28,7 +33,7 @@ export default function UsahaPage() {
     api.getContents('usaha').then(d => { if (Array.isArray(d)) setUsahaItems(d); }).catch(console.error);
     api.getContents('keuangan').then(d => { if (Array.isArray(d)) setKeuanganItems(d); }).catch(console.error);
   }, []);
-  
+
   useEffect(() => {
     if (selectedContent) {
       document.body.style.overflow = 'hidden';
@@ -47,19 +52,29 @@ export default function UsahaPage() {
   };
 
   const addTransaction = () => {
+    if (!user) {
+      toast.error('Silakan login untuk mengelola keuangan');
+      navigate('/login');
+      return;
+    }
     if (!trxForm.nominal || !trxForm.keterangan) return;
     setTransactions([...transactions, { ...trxForm, id: Date.now(), nominal: Number(trxForm.nominal) }]);
     setTrxForm({ ...trxForm, nominal: '', keterangan: '' });
   };
-  
+
   const deleteTransaction = (id) => {
+    if (!user) {
+      toast.error('Silakan login untuk mengelola keuangan');
+      navigate('/login');
+      return;
+    }
     setTransactions(transactions.filter(t => t.id !== id));
   };
 
   // Kalkulasi data chart
   const incomeData = Array(12).fill(0);
   const expenseData = Array(12).fill(0);
-  
+
   transactions.forEach(t => {
     const idx = parseInt(t.bulan) - 1;
     if (t.jenis === 'pemasukan') incomeData[idx] += t.nominal;
@@ -177,30 +192,30 @@ export default function UsahaPage() {
           <div className="bg-white dark:bg-zinc-900 rounded-[36px] p-8 md:p-10 shadow-xl shadow-slate-200/40 dark:shadow-none border border-slate-100 dark:border-zinc-800 transition-colors">
             <h2 className="text-xl font-black text-blue-950 dark:text-white mb-1">Pengelola Keuangan</h2>
             <p className="text-[13px] text-slate-500 dark:text-slate-400 font-bold mb-6">Catat pemasukan dan pengeluaran usahamu</p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Form Input */}
               <div className="md:col-span-1 space-y-4">
                 <div>
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Jenis</label>
-                  <select value={trxForm.jenis} onChange={e => setTrxForm({...trxForm, jenis: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition-all">
+                  <select value={trxForm.jenis} onChange={e => setTrxForm({ ...trxForm, jenis: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition-all">
                     <option value="pemasukan" className="bg-white dark:bg-zinc-900">Pemasukan</option>
                     <option value="pengeluaran" className="bg-white dark:bg-zinc-900">Pengeluaran</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Bulan ke-</label>
-                  <select value={trxForm.bulan} onChange={e => setTrxForm({...trxForm, bulan: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition-all">
-                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(b => <option key={b} value={b} className="bg-white dark:bg-zinc-900">Bulan {b}</option>)}
+                  <select value={trxForm.bulan} onChange={e => setTrxForm({ ...trxForm, bulan: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500 transition-all">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(b => <option key={b} value={b} className="bg-white dark:bg-zinc-900">Bulan {b}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Nominal (Rp)</label>
-                  <input type="number" value={trxForm.nominal} onChange={e => setTrxForm({...trxForm, nominal: e.target.value})} placeholder="0" className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all" />
+                  <input type="number" value={trxForm.nominal} onChange={e => setTrxForm({ ...trxForm, nominal: e.target.value })} placeholder="0" className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 block mb-1">Keterangan</label>
-                  <input type="text" value={trxForm.keterangan} onChange={e => setTrxForm({...trxForm, keterangan: e.target.value})} placeholder="Misal: Penjualan produk" className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all" />
+                  <input type="text" value={trxForm.keterangan} onChange={e => setTrxForm({ ...trxForm, keterangan: e.target.value })} placeholder="Misal: Penjualan produk" className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-black border border-slate-200 dark:border-zinc-800 text-sm font-medium text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all" />
                 </div>
                 <button onClick={addTransaction} className="w-full bg-blue-600 dark:bg-blue-600/50 border border-blue-600 text-white font-bold text-sm py-3 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-95">
                   <FiPlus /> Tambah Data
@@ -283,7 +298,7 @@ export default function UsahaPage() {
               <p className="text-slate-500 dark:text-slate-400 font-bold text-sm mb-8 pb-4 border-b border-slate-100 dark:border-white/5">
                 {selectedContent.deskripsi}
               </p>
-              
+
               <div className="prose dark:prose-invert max-w-none">
                 <div className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap text-base font-medium">
                   {selectedContent.isi_konten}
@@ -292,7 +307,7 @@ export default function UsahaPage() {
 
               {selectedContent.link_eksternal && (
                 <div className="mt-10 pt-6 border-t border-slate-100 dark:border-white/5">
-                  <button 
+                  <button
                     onClick={() => window.open(selectedContent.link_eksternal, '_blank')}
                     className="flex items-center gap-2 text-blue-600 font-black text-sm hover:gap-3 transition-all cursor-pointer bg-transparent border-none"
                   >
@@ -317,8 +332,13 @@ export default function UsahaPage() {
                             <p className="text-[10px] font-medium text-slate-400 uppercase">{file.type?.split('/')[1] || 'File'}</p>
                           </div>
                         </div>
-                        <button 
+                        <button
                           onClick={() => {
+                            if (!user) {
+                              toast.error('Silakan login untuk mendownload lampiran');
+                              navigate('/login');
+                              return;
+                            }
                             const link = document.createElement('a');
                             link.href = file.data;
                             link.download = file.name;

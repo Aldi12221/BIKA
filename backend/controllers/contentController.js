@@ -50,7 +50,7 @@ exports.updateContent = async (req, res) => {
 };
 
 exports.deleteContent = async (req, res) => {
-  const { kategori } = req.query; 
+  const { kategori } = req.query;
   console.log('Delete Request - ID:', req.params.id, 'Kategori:', kategori);
   const Model = getModel(kategori);
   if (!Model) return res.status(400).json({ error: `Kategori '${kategori}' tidak valid atau tidak ditemukan` });
@@ -67,6 +67,19 @@ exports.getLoginStats = async (req, res) => {
   try {
     const total = await User.count();
     res.json({ totalUsers: total });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getPublicStats = async (req, res) => {
+  try {
+    const [totalJobs, totalTutorials, totalUsers] = await Promise.all([
+      Job.count(),
+      Tutorial.count(),
+      User.count()
+    ]);
+    res.json({ totalJobs, totalTutorials, totalUsers });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

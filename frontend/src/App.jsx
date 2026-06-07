@@ -70,12 +70,16 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/admin/login" element={<AdminLoginPage />} />
 
-              {/* User Pages */}
-              <Route element={<UserRouteGuard />}>
+              {/* Public & Guest Access Pages */}
+              <Route element={<Layout />}>
                 <Route path="/" element={<Beranda />} />
                 <Route path="/masa-depan" element={<MasaDepanPage />} />
                 <Route path="/tutorial" element={<TutorialPage />} />
                 <Route path="/usaha" element={<UsahaPage />} />
+              </Route>
+
+              {/* Protected User Pages */}
+              <Route element={<UserRouteGuard />}>
                 <Route path="/profil" element={<ProfilPage />} />
                 <Route path="/quiz/:id" element={<QuizPlayPage />} />
               </Route>

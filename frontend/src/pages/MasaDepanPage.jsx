@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FiArrowRight, FiFileText, FiClock, FiSearch, FiChevronDown, FiMapPin, FiBriefcase, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiDownload } from 'react-icons/fi';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 // Breakpoints: mobile < 640px → 2, tablet 640–1023px → 3, desktop ≥ 1024px → 4
 function getJobsPerPage() {
@@ -25,6 +28,8 @@ export default function MasaDepanPage() {
   const [tutorials, setTutorials] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedJob, setSelectedJob] = useState(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Filter states
   const [filterLokasi, setFilterLokasi] = useState('');
@@ -278,7 +283,18 @@ export default function MasaDepanPage() {
                   <span className="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
                     <FiClock className="text-slate-300 dark:text-zinc-600" /> Aktif
                   </span>
-                  <button className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-bold px-5 py-2.5 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-colors shadow-sm cursor-pointer">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!user) {
+                        toast.error('Silakan login untuk melamar lowongan');
+                        navigate('/login');
+                        return;
+                      }
+                      setSelectedJob(job);
+                    }}
+                    className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-bold px-5 py-2.5 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-colors shadow-sm cursor-pointer"
+                  >
                     Apply Now
                   </button>
                 </div>
@@ -367,11 +383,10 @@ export default function MasaDepanPage() {
               className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[28px] p-6 flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-between mb-5">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm overflow-hidden shrink-0 ${
-                  idx % 3 === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
-                  idx % 3 === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
-                  'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
-                }`}>
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm overflow-hidden shrink-0 ${idx % 3 === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
+                    idx % 3 === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
+                      'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
+                  }`}>
                   {item.gambar ? <img src={item.gambar} alt={item.judul} className="w-full h-full object-cover" /> : <FiFileText />}
                 </div>
                 <div className="w-10 h-10 rounded-full border border-slate-100 dark:border-zinc-800 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 dark:group-hover:bg-blue-500 transition-all">
@@ -444,8 +459,13 @@ export default function MasaDepanPage() {
                               <p className="text-[10px] font-medium text-slate-400 uppercase">{file.type?.split('/')[1] || 'File'}</p>
                             </div>
                           </div>
-                          <button 
+                          <button
                             onClick={() => {
+                              if (!user) {
+                                toast.error('Silakan login untuk mendownload lampiran');
+                                navigate('/login');
+                                return;
+                              }
                               const link = document.createElement('a');
                               link.href = file.data;
                               link.download = file.name;
@@ -463,8 +483,15 @@ export default function MasaDepanPage() {
               </div>
 
               <button
-                onClick={() => selectedJob.link_eksternal ? window.open(selectedJob.link_eksternal, '_blank') : alert('Link lamaran tidak tersedia')}
-                className="w-full bg-blue-600 text-white text-sm font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30 text-center"
+                onClick={() => {
+                  if (!user) {
+                    toast.error('Silakan login untuk melamar lowongan');
+                    navigate('/login');
+                    return;
+                  }
+                  selectedJob.link_eksternal ? window.open(selectedJob.link_eksternal, '_blank') : alert('Link lamaran tidak tersedia');
+                }}
+                className="w-full bg-blue-600 text-white text-sm font-bold py-4 rounded-2xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30 text-center cursor-pointer border-none"
               >
                 Apply Sekarang
               </button>

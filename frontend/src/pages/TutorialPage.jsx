@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiPlay, FiBookOpen, FiMessageCircle, FiX, FiExternalLink, FiArrowRight, FiDownload, FiFileText } from 'react-icons/fi';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 export default function TutorialPage() {
   const [quizzes, setQuizzes] = useState([]);
@@ -9,6 +11,7 @@ export default function TutorialPage() {
   const [selectedContent, setSelectedContent] = useState(null);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
   const regularQuizzes = quizzes.filter((quiz) => quiz.kategori !== 'psikotes');
   const assessmentQuizzes = quizzes.filter((quiz) => quiz.kategori === 'psikotes');
 
@@ -277,7 +280,7 @@ export default function TutorialPage() {
               <p className="text-slate-500 dark:text-slate-400 font-bold text-sm mb-8 pb-4 border-b border-slate-100 dark:border-white/5">
                 {selectedContent.deskripsi}
               </p>
-              
+
               <div className="prose dark:prose-invert max-w-none">
                 <div className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap text-base font-medium">
                   {selectedContent.isi_konten}
@@ -286,7 +289,7 @@ export default function TutorialPage() {
 
               {selectedContent.link_eksternal && (
                 <div className="mt-10 pt-6 border-t border-slate-100 dark:border-white/5">
-                  <button 
+                  <button
                     onClick={() => window.open(selectedContent.link_eksternal, '_blank')}
                     className="flex items-center gap-2 text-rose-500 font-black text-sm hover:gap-3 transition-all cursor-pointer bg-transparent border-none"
                   >
@@ -311,8 +314,13 @@ export default function TutorialPage() {
                             <p className="text-[10px] font-medium text-slate-400 uppercase">{file.type?.split('/')[1] || 'File'}</p>
                           </div>
                         </div>
-                        <button 
+                        <button
                           onClick={() => {
+                            if (!user) {
+                              toast.error('Silakan login untuk mendownload lampiran');
+                              navigate('/login');
+                              return;
+                            }
                             const link = document.createElement('a');
                             link.href = file.data;
                             link.download = file.name;
@@ -387,6 +395,12 @@ export default function TutorialPage() {
                 </button>
                 <button
                   onClick={() => {
+                    if (!user) {
+                      toast.error('Silakan login untuk memulai kuis');
+                      closeQuizModal();
+                      navigate('/login');
+                      return;
+                    }
                     closeQuizModal();
                     if (selectedQuiz.link_eksternal) {
                       window.open(selectedQuiz.link_eksternal, '_blank');

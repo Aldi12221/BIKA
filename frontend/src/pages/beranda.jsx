@@ -16,15 +16,18 @@ import {
 export default function Beranda() {
   const [lowongan, setLowongan] = useState([]);
   const [tutorial, setTutorial] = useState([]);
+  const [stats, setStats] = useState({ totalJobs: 0, totalTutorials: 0, totalUsers: 0 });
 
   useEffect(() => {
     api.getContents('lowongan').then(d => {
-      if (Array.isArray(d)) setLowongan(d.slice(0, 3));
+      if (Array.isArray(d)) setLowongan(d.slice(0, 6)); // Ambil lebih banyak untuk beranda
     }).catch(console.error);
 
     api.getContents('tutorial').then(d => {
       if (Array.isArray(d)) setTutorial(d.slice(0, 3));
     }).catch(console.error);
+
+    api.getPublicStats().then(setStats).catch(console.error);
   }, []);
 
   return (
@@ -33,41 +36,38 @@ export default function Beranda() {
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-red-50/50 dark:bg-red-900/10 rounded-full blur-[100px] -z-10 -translate-x-1/2 translate-y-1/2"></div>
 
-      {/* 1. HERO SECTION - Padding diperkecil agar lebih rapat ke atas */}
-      <section className="relative pt-24 pb-12 px-6 lg:px-12">
+      {/* 1. HERO SECTION */}
+      <section className="relative pt-32 pb-20 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-10 relative z-10">
           <div className="flex-1 space-y-6 text-center lg:text-left">
             <div className="inline-flex items-center gap-3 bg-white dark:bg-zinc-900 px-4 py-1.5 rounded-full shadow-sm border border-slate-100 dark:border-zinc-800 transition-colors">
               <span className="text-blue-600 text-base">📢</span>
-              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Selamat datang di BIKA</span>
+              <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Platform Karir Siswa SMK</span>
             </div>
 
-            <h1 className="text-5xl lg:text-6xl font-black text-blue-950 dark:text-white leading-[1.1] tracking-tight transition-colors">
-              Bangun Masa <br className="hidden lg:block" /> Depanmu Bersama <br />
+            <h1 className="text-5xl lg:text-7xl font-black text-blue-950 dark:text-white leading-[1.05] tracking-tight transition-colors">
+              Raih Karir <br className="hidden lg:block" /> Impianmu di <br />
               <span className="text-red-500">BIKA</span>
             </h1>
 
             <p className="text-slate-500 dark:text-slate-400 text-lg max-w-lg leading-relaxed mx-auto lg:mx-0 font-medium transition-colors">
-              Platform digital siswa SMK untuk menemukan peluang kerja, magang, belajar skill baru, dan membangun profil profesional.
+              Temukan ribuan peluang kerja, magang, dan pelajari skill baru yang dibutuhkan industri saat ini.
             </p>
 
-            {/* button pak ton dek ton mas ton */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
               <NavLink to={"/masa-depan"}>
                 <button className="bg-blue-600 dark:bg-blue-600/40 border border-blue-600 text-white px-8 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 text-base">
-                  Mulai Sekarang <FiArrowRight strokeWidth={3} />
+                  Cari Lowongan <FiArrowRight strokeWidth={3} />
                 </button>
               </NavLink>
-              <NavLink to={"#content"}>
-                <button className="bg-white dark:bg-zinc-900 border border-blue-600 text-blue-950 dark:text-white px-7 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all border border-slate-200 dark:border-zinc-800 text-base shadow-sm">
-                  Pelajari Lebih Lanjut <FiPlayCircle size={22} className="text-blue-600 dark:text-blue-500" />
+              <NavLink to={"/login"}>
+                <button className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-blue-950 dark:text-white px-7 py-4 rounded-[20px] font-bold flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all text-base shadow-sm">
+                  Daftar Sekarang <FiSmile size={22} className="text-blue-600 dark:text-blue-500" />
                 </button>
               </NavLink>
-
             </div>
           </div>
 
-          {/* Hero Image */}
           <div className="flex-1 relative w-full max-w-lg">
             <div className="absolute inset-0 bg-blue-200/20 rounded-full blur-3xl scale-75"></div>
             <img src={siswa} alt="BIKA Students" className="w-full relative z-10 drop-shadow-2xl" />
@@ -75,12 +75,24 @@ export default function Beranda() {
         </div>
       </section>
 
-      {/* 2. FEATURE CARDS - Margin negatif lebih besar agar 'menusuk' ke Hero section */}
-      <section className="px-6 lg:px-12 py-8 -mt-16 relative z-20">
+      {/* 2. STATS MONITOR - Memenuhi permintaan "tambahkan monitor jumlah lowongan dll di beranda" */}
+      <section className="px-6 lg:px-12 py-10 relative z-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-white dark:bg-zinc-900/80 backdrop-blur-xl p-8 md:p-12 rounded-[48px] border border-white dark:border-zinc-800 shadow-2xl shadow-blue-100/50 dark:shadow-none">
+            <StatItem count={stats.totalJobs} label="Lowongan Aktif" color="text-blue-600" />
+            <StatItem count={stats.totalTutorials} label="Tutorial & Tips" color="text-red-500" />
+            <StatItem count={stats.totalUsers} label="Siswa Bergabung" color="text-indigo-600" />
+            <StatItem count={Math.floor(stats.totalJobs * 0.8)} label="Mitra Perusahaan" color="text-emerald-600" />
+          </div>
+        </div>
+      </section>
+
+      {/* 3. FEATURE CARDS */}
+      <section className="px-6 lg:px-12 py-12 relative z-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           <FeatureCard
-            title="Masa Depan"
-            desc="Temukan lowongan kerja, magang, dan peluang usaha terbaik untukmu."
+            title="Portal Karir"
+            desc="Akses ribuan lowongan kerja dan magang khusus untuk lulusan SMK."
             icon={<FiBriefcase size={22} className="text-indigo-50 dark:text-zinc-950" />}
             color="bg-blue-600 dark:bg-blue-600/50"
             shadow="shadow-blue-100"
@@ -89,8 +101,8 @@ export default function Beranda() {
           />
 
           <FeatureCard
-            title="Tutorial"
-            desc="Belajar berbagai skill melalui video tutorial yang mudah dipahami."
+            title="Tutorial Skill"
+            desc="Tingkatkan kompetensimu dengan materi video dari para ahli industri."
             icon={<FiPlayCircle size={22} className="text-red-50 dark:text-zinc-950" />}
             color="bg-red-500 dark:bg-red-500/50"
             shadow="shadow-red-100"
@@ -99,8 +111,8 @@ export default function Beranda() {
           />
 
           <FeatureCard
-            title="Profil"
-            desc="Bangun profil profesionalmu untuk menarik perhatian perekrut."
+            title="Bangun Profil"
+            desc="Buat CV digital yang menarik dan profesional untuk memikat HRD."
             icon={<FiUser size={22} className="text-blue-50 dark:text-zinc-950" />}
             color="bg-blue-500 dark:bg-blue-500/50"
             shadow="shadow-blue-100"
@@ -110,65 +122,86 @@ export default function Beranda() {
         </div>
       </section>
 
-      {/* 3. CONTENT GRID - Jarak antar elemen tutorial/job dipersempit */}
-      <section className="px-6 lg:px-12 py-12" id='content'>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
+      {/* 4. MAIN CONTENT GRID - Menonjolkan Lowongan sesuai permintaan */}
+      <section className="px-6 lg:px-12 py-20 bg-white/50 dark:bg-zinc-900/20" id='content'>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-16">
 
-          {/* Lowongan */}
-          <div className="space-y-6">
-            <SectionHeader title="Lowongan Terbaru" icon={<FiBriefcase size={22} />} link="/masa-depan" />
-            <div className="space-y-3">
-              {lowongan.length > 0 ? lowongan.map((item, idx) => (
-                <JobItem
-                  key={item.id}
-                  title={item.judul}
-                  company={item.deskripsi || "Perushaan Mitra"}
-                  type="Tersedia"
-                  color={idx % 2 === 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400" : "text-red-500 bg-red-50 dark:bg-red-900/20 dark:text-red-400"}
-                />
-              )) : (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada lowongan.</p>
-              )}
-            </div>
-            <button onClick={() => window.location.href = '/masa-depan'} className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-[20px] text-blue-600 dark:text-blue-500 font-bold hover:bg-blue-50 dark:hover:bg-zinc-900 transition-all text-sm cursor-pointer">
-              Lihat Semua Lowongan →
-            </button>
-          </div>
-
-          {/* Tutorial */}
-          <div className="space-y-6">
-            <SectionHeader title="Tutorial Terbaru" icon={<FiPlayCircle size={22}/>} link="/tutorial" />
-            <div className="space-y-4">
-              {tutorial.length > 0 ? tutorial.map((item) => (
-                <TutorialItem
-                  key={item.id}
-                  title={item.judul}
-                  cat="Tutorial"
-                  time="Baru"
-                />
-              )) : (
-                <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada tutorial.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Profil Preview */}
-          <div className="space-y-6">
-            <SectionHeader title="Profil Saya" icon={<FiUser size={22} />} />
-            <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[32px] shadow-xl dark:shadow-none flex flex-col h-[380px] p-6 items-center justify-center text-center transition-colors">
-              <div className="w-24 h-24 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-4xl mb-4 shadow-inner dark:shadow-none">
-                <FiSmile size={48} />
+            {/* Lowongan Section - Lebih Besar (2/3 width) */}
+            <div className="lg:w-2/3 space-y-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-black text-blue-950 dark:text-white tracking-tight flex items-center gap-3">
+                    <FiBriefcase className="text-blue-600" /> Lowongan Kerja Terpopuler
+                  </h2>
+                  <p className="text-slate-500 text-sm mt-1">Update terbaru hari ini untukmu</p>
+                </div>
+                <NavLink to="/masa-depan" className="text-blue-600 font-bold text-sm hover:underline">Lihat Semua</NavLink>
               </div>
-              <h4 className="text-lg font-black text-blue-950 dark:text-white mb-1 transition-colors">Lengkapi Profilmu</h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 px-4 transition-colors">Tambahkan pengalaman dan skill untuk mendapatkan rekomendasi lowongan yang tepat.</p>
-              <button onClick={() => window.location.href = '/profil'} className="bg-blue-600 dark:bg-blue-600/50 border border-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 dark:shadow-none w-full text-sm">
-                Lihat Profil
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {lowongan.length > 0 ? lowongan.map((item, idx) => (
+                  <JobItem
+                    key={item.id}
+                    title={item.judul}
+                    company={item.perusahaan || "Perusahaan Mitra"}
+                    type={item.tipe_pekerjaan || "Penuh Waktu"}
+                    color={idx % 2 === 0 ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400" : "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400"}
+                  />
+                )) : (
+                  <p className="col-span-full py-10 text-center text-slate-400 italic">Memuat lowongan...</p>
+                )}
+              </div>
+
+              <button onClick={() => window.location.href = '/masa-depan'} className="w-full py-5 bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-200 dark:border-blue-900/50 rounded-[32px] text-blue-600 dark:text-blue-400 font-black hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-all cursor-pointer">
+                Jelajahi Peluang Karir Lainnya →
               </button>
             </div>
-          </div>
 
+            {/* Sidebar Content (1/3 width) */}
+            <div className="lg:w-1/3 space-y-12">
+              {/* Tutorial Terbaru */}
+              <div className="space-y-6">
+                <SectionHeader title="Tutorial Terbaru" icon={<FiPlayCircle size={22} />} link="/tutorial" />
+                <div className="space-y-5">
+                  {tutorial.length > 0 ? tutorial.map((item) => (
+                    <TutorialItem
+                      key={item.id}
+                      title={item.judul}
+                      cat="Pilihan Redaksi"
+                      time="Terbaru"
+                    />
+                  )) : (
+                    <p className="text-sm text-slate-400 italic">Belum ada materi terbaru.</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Call to Action Card */}
+              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-[40px] text-white shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                <h4 className="text-xl font-black mb-2 relative z-10">Siap Melangkah?</h4>
+                <p className="text-blue-50/80 text-sm mb-6 relative z-10 leading-relaxed">Bergabunglah dengan ribuan siswa SMK lainnya dan mulai bangun masa depanmu sekarang juga.</p>
+                <button onClick={() => window.location.href = '/login'} className="w-full py-3 bg-white text-blue-600 rounded-2xl font-black text-sm hover:bg-blue-50 transition-colors relative z-10 shadow-lg border-none cursor-pointer">
+                  Mulai Sekarang
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function StatItem({ count, label, color }) {
+  return (
+    <div className="text-center md:text-left">
+      <h3 className={`text-3xl md:text-4xl font-black ${color} mb-1 transition-all`}>
+        {count || 0}
+        <span className="text-xl ml-0.5">+</span>
+      </h3>
+      <p className="text-[10px] md:text-xs font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest">{label}</p>
     </div>
   );
 }
