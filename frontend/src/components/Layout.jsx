@@ -1,39 +1,31 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
+import { Outlet, useLocation } from 'react-router-dom';
 import UserSidebar from './UserSidebar';
-import Footer from './footer';
 import { useAuth } from '../context/AuthContext';
 
 export default function Layout() {
-  const { user } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { user } = useAuth();
+  const location = useLocation();
+
+  // Do not show sidebar on Beranda if user is not logged in
+  const isBeranda = location.pathname === '/';
+  const showSidebar = user || !isBeranda;
 
   return (
-    <div className="min-h-screen bg-bg-body flex flex-col">
-      {/* Jika user login, tampilkan Sidebar. Jika tidak, tampilkan Navbar biasa (Guest View) */}
-      {user ? (
-        <div className="flex flex-1">
-          <UserSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-          <main
-            className={`flex-1 transition-all duration-300 min-h-screen ${sidebarCollapsed ? 'ml-20' : 'ml-64'
-              }`}
-          >
-            <div className="p-0">
-              <Outlet />
-            </div>
-            <Footer />
-          </main>
-        </div>
-      ) : (
-        <>
-          <Navbar />
-          <div className="flex-1">
-            <Outlet />
-          </div>
-          <Footer />
-        </>
+    <div className="flex bg-[#F8FAFC] dark:bg-black min-h-screen font-sans selection:bg-blue-500/30">
+      {showSidebar && (
+        <UserSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
       )}
+
+      <main
+        className={`flex-1 transition-all duration-300 min-h-screen ${showSidebar ? (sidebarCollapsed ? 'ml-20' : 'ml-64') : ''
+          }`}
+      >
+        <div className="w-full h-full pb-20 overflow-x-hidden">
+          <Outlet />
+        </div>
+      </main>
     </div>
   );
 }

@@ -149,7 +149,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#F8FAFC] dark:bg-black transition-colors duration-300 overflow-hidden">
+    <div className="min-h-screen flex bg-[#F8FAFC] dark:bg-black transition-colors duration-300">
       <div className="fixed top-6 right-6 z-50">
         <ThemeToggleButton />
       </div>
@@ -157,7 +157,7 @@ export default function LoginPage() {
       {/* ═══════════════════════════════════════
           LEFT PANEL — Animated Branding
       ═══════════════════════════════════════ */}
-      <div className="hidden lg:flex lg:w-[58%] relative flex-col justify-between p-12 overflow-hidden"
+      <div className="hidden lg:flex lg:w-[58%] relative flex-col justify-between p-8 xl:p-12 overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #0c1445 0%, #0f2060 40%, #0a1a4f 70%, #0d1238 100%)' }}>
 
         {/* Animated background orbs */}
@@ -312,7 +312,7 @@ export default function LoginPage() {
       {/* ═══════════════════════════════════════
           RIGHT PANEL — Login Form
       ═══════════════════════════════════════ */}
-      <div className="w-full lg:w-[42%] flex flex-col items-center justify-center px-6 py-12 sm:px-10 relative bg-[#F8FAFC] dark:bg-zinc-950 overflow-hidden" >
+      <div className="w-full lg:w-[42%] flex flex-col items-center justify-center px-4 py-8 sm:px-8 sm:py-12 relative bg-[#F8FAFC] dark:bg-zinc-950 min-h-screen lg:min-h-0" >
 
         {/* Subtle background decoration (right panel) */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-100/60 dark:bg-blue-900/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -324,11 +324,11 @@ export default function LoginPage() {
         <div className="absolute top-1/3 right-6 w-1.5 h-1.5 rounded-full bg-blue-400/40" />
 
         <div
-          className="w-full max-w-sm relative z-10"
+          className="w-full max-w-sm sm:max-w-md lg:max-w-sm relative z-10"
           style={anim('slide-in-right', 0.1)}
         >
           {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-10 lg:hidden">
+          <div className="flex items-center gap-3 mb-6 sm:mb-10 lg:hidden">
             <div className="relative">
               <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-blue-100 dark:shadow-blue-900/30">B</div>
               <div className="absolute inset-0 rounded-xl bg-blue-500/40" style={{ animation: 'pulse-ring 2.5s ease-out infinite' }} />
@@ -340,14 +340,14 @@ export default function LoginPage() {
           </div>
 
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-5 sm:mb-8">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-1 rounded-full bg-blue-600" />
               <div className="w-4 h-1 rounded-full bg-red-400" />
               <div className="w-2 h-1 rounded-full bg-blue-300" />
             </div>
-            <h2 className="text-3xl font-black text-blue-950 dark:text-white tracking-tight leading-tight">
-              Selamat Datang 👋 
+            <h2 className="text-2xl sm:text-3xl font-black text-blue-950 dark:text-white tracking-tight leading-tight">
+              Selamat Datang 👋
             </h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mt-2">
               Masuk dan mulai perjalanan karirmu bersama ribuan siswa SMK se-Indonesia.
@@ -357,8 +357,8 @@ export default function LoginPage() {
           <div
             className="
               relative
-              rounded-[28px]
-              p-7
+              rounded-[20px] sm:rounded-[28px]
+              p-5 sm:p-7
               overflow-hidden
               transition-all
               duration-500
@@ -478,7 +478,7 @@ export default function LoginPage() {
           </div>
 
           {/* Footer note */}
-          <p className="text-center text-[11px] text-slate-400 dark:text-slate-600 mt-6 leading-relaxed">
+          <p className="text-center text-[11px] text-slate-400 dark:text-slate-600 mt-4 sm:mt-6 leading-relaxed pb-2">
             Dengan masuk, kamu menyetujui{' '}
             <span className="text-blue-600 dark:text-blue-500 cursor-pointer hover:underline font-semibold">Syarat & Ketentuan</span>
             {' '}dan{' '}

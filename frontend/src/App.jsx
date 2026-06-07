@@ -12,7 +12,10 @@ import ProfilPage from './pages/ProfilPage';
 import TutorialPage from './pages/TutorialPage';
 import QuizPlayPage from './pages/QuizPlayPage';
 import UsahaPage from './pages/UsahaPage';
+import TipsUsahaPage from './pages/TipsUsahaPage';
+import TipsKeuanganPage from './pages/TipsKeuanganPage';
 import Beranda from './pages/beranda';
+import UserDashboard from './pages/UserDashboard';
 
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -27,6 +30,11 @@ function UserRouteGuard() {
   if (!user) return <Navigate to="/login" replace />;
   return <Layout />;
 }
+
+const Home = () => {
+  const { user } = useAuth();
+  return user ? <UserDashboard /> : <Beranda />;
+};
 
 function App() {
   return (
@@ -72,10 +80,12 @@ function App() {
 
               {/* Public & Guest Access Pages */}
               <Route element={<Layout />}>
-                <Route path="/" element={<Beranda />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/masa-depan" element={<MasaDepanPage />} />
                 <Route path="/tutorial" element={<TutorialPage />} />
                 <Route path="/usaha" element={<UsahaPage />} />
+                <Route path="/usaha/memulai" element={<TipsUsahaPage />} />
+                <Route path="/usaha/keuangan" element={<TipsKeuanganPage />} />
               </Route>
 
               {/* Protected User Pages */}
