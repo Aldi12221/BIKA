@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { FiArrowRight, FiFileText, FiClock, FiSearch, FiChevronDown, FiMapPin, FiBriefcase, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiDownload } from 'react-icons/fi';
+import { useState, useEffect, useMemo } from 'react';
+import { FiArrowRight, FiFileText, FiClock, FiSearch, FiChevronDown, FiMapPin, FiBriefcase, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiDownload, FiZoomIn } from 'react-icons/fi';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -28,8 +28,6 @@ export default function MasaDepanPage() {
   const [tutorials, setTutorials] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedJob, setSelectedJob] = useState(null);
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
   // Filter states
   const [filterLokasi, setFilterLokasi] = useState('');
@@ -419,9 +417,32 @@ export default function MasaDepanPage() {
             </div>
 
             <div className="p-8">
-              <div className="flex items-start gap-6 mb-8">
-                <div className="w-20 h-20 bg-slate-50 dark:bg-black border border-slate-100 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-4xl shadow-sm overflow-hidden shrink-0">
-                  {selectedJob.gambar ? <img src={selectedJob.gambar} alt="logo" className="w-full h-full object-cover" /> : '💼'}
+              {/* Gambar besar di atas — klikable untuk lightbox */}
+              {selectedJob.gambar && (
+                <div
+                  onClick={() => setLightboxImg(selectedJob.gambar)}
+                  className="relative w-full h-52 rounded-2xl overflow-hidden mb-6 cursor-zoom-in group border border-slate-100 dark:border-zinc-800"
+                >
+                  <img
+                    src={selectedJob.gambar}
+                    alt={selectedJob.judul}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {/* Hover hint */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-all duration-200 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/60 text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2">
+                      <FiZoomIn size={14} /> Klik untuk perbesar
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-start gap-4 mb-8">
+                {/* Thumbnail kecil — tetap ada sebagai identitas */}
+                <div className="w-14 h-14 bg-slate-50 dark:bg-black border border-slate-100 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-3xl shadow-sm overflow-hidden shrink-0">
+                  {selectedJob.gambar
+                    ? <img src={selectedJob.gambar} alt="logo" className="w-full h-full object-cover" />
+                    : '💼'}
                 </div>
                 <div className="flex-1 pt-2">
                   <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight mb-2">{selectedJob.judul}</h2>
@@ -439,13 +460,13 @@ export default function MasaDepanPage() {
 
               <div className="mb-8">
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Deskripsi Pekerjaan</h4>
-                <div className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap mb-8">
+                <div className="text-sm font-medium text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">
                   {selectedJob.deskripsi || 'Tidak ada spesifikasi deskripsi detail yang dilampirkan.'}
                 </div>
 
                 {/* File Tambahan */}
                 {selectedJob.file_tambahan && JSON.parse(selectedJob.file_tambahan).length > 0 && (
-                  <div className="mt-8 pt-6 border-t border-slate-100 dark:border-zinc-800">
+                  <div className="mt-6 pt-6 border-t border-slate-100 dark:border-zinc-800">
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">File Lampiran</h4>
                     <div className="flex flex-col gap-3">
                       {JSON.parse(selectedJob.file_tambahan).map((file, i) => (
@@ -497,6 +518,37 @@ export default function MasaDepanPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {/* Lightbox — full screen image viewer */}
+      {lightboxImg && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+          onClick={() => setLightboxImg(null)}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxImg(null)}
+            className="absolute top-5 right-5 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border-none cursor-pointer z-10"
+          >
+            <FiX size={20} />
+          </button>
+
+          {/* Image — stop propagation so clicking image itself doesn't close */}
+          <img
+            src={lightboxImg}
+            alt="Gambar Lowongan"
+            onClick={e => e.stopPropagation()}
+            className="max-w-full max-h-[88vh] object-contain rounded-2xl shadow-2xl"
+            style={{ animation: 'lightboxPop 0.25s cubic-bezier(0.16,1,0.3,1) both' }}
+          />
+
+          <style>{`
+            @keyframes lightboxPop {
+              from { opacity: 0; transform: scale(0.88); }
+              to   { opacity: 1; transform: scale(1); }
+            }
+          `}</style>
         </div>
       )}
     </div>
