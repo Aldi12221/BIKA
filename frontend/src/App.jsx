@@ -81,15 +81,15 @@ function App() {
               {/* Public & Guest Access Pages */}
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
+              </Route>
+
+              {/* Protected User Pages */}
+              <Route element={<UserRouteGuard />}>
                 <Route path="/masa-depan" element={<MasaDepanPage />} />
                 <Route path="/tutorial" element={<TutorialPage />} />
                 <Route path="/usaha" element={<UsahaPage />} />
                 <Route path="/usaha/memulai" element={<TipsUsahaPage />} />
                 <Route path="/usaha/keuangan" element={<TipsKeuanganPage />} />
-              </Route>
-
-              {/* Protected User Pages */}
-              <Route element={<UserRouteGuard />}>
                 <Route path="/profil" element={<ProfilPage />} />
                 <Route path="/quiz/:id" element={<QuizPlayPage />} />
               </Route>

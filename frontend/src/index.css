@@ -109,3 +109,7 @@
   scrollbar-width: none;
 }
 
+body {
+  @apply bg-[#F8FAFC] dark:bg-black text-slate-900 dark:text-white;
+}
+

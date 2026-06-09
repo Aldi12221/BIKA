@@ -65,7 +65,7 @@ export default function UserDashboard() {
         });
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-6 lg:p-10">
+        <div className="min-h-[100dvh] bg-slate-50 dark:bg-zinc-950 p-6 lg:p-10">
             {/* 1. TOP HEADER */}
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                 <div className="relative flex-1 max-w-xl">
@@ -80,10 +80,6 @@ export default function UserDashboard() {
                 </div>
                 {/* User info — hidden on mobile (already in top bar) */}
                 <div className="hidden md:flex items-center gap-6">
-                    <button className="relative p-2.5 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-xl text-slate-500 hover:text-blue-600 transition-all shadow-sm cursor-pointer border-none">
-                        <FiBell size={20} />
-                        <span className="absolute top-2 right-2 w-4 h-4 bg-red-500 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white dark:border-zinc-900">3</span>
-                    </button>
                     <div className="flex items-center gap-4 border-l border-slate-200 dark:border-zinc-800 pl-6">
                         <div className="text-right">
                             <p className="text-sm font-black text-slate-800 dark:text-white leading-tight">{user?.nama || 'Pengguna'}</p>
@@ -100,7 +96,9 @@ export default function UserDashboard() {
                 </div>
             </header>
 
-            {/* 2. HERO BANNER */}
+            {searchQuery.trim() === '' && (
+                <>
+                    {/* 2. HERO BANNER */}
             <section className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-[32px] p-8 md:p-12 mb-10 overflow-hidden relative border border-white dark:border-zinc-800 shadow-sm">
                 <div className="relative z-10 max-w-xl">
                     <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">
@@ -109,9 +107,9 @@ export default function UserDashboard() {
                     <p className="text-slate-500 dark:text-slate-400 text-lg font-medium mb-8 leading-relaxed">
                         Siap kerja, siap usaha, siap masa depan. Mari mulai langkahmu hari ini.
                     </p>
-                    <NavLink to="/profil">
+                    <NavLink to="/masa-depan">
                         <button className="bg-blue-600 text-white px-8 py-3.5 rounded-2xl font-bold flex items-center gap-3 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 border-none cursor-pointer">
-                            Lengkapi Profil <FiArrowRight strokeWidth={3} />
+                            Jelajahi <FiArrowRight strokeWidth={3} />
                         </button>
                     </NavLink>
                 </div>
@@ -123,11 +121,10 @@ export default function UserDashboard() {
             </section>
 
             {/* 3. QUICK STATS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                 <StatCard icon={<FiBriefcase />} count={stats.totalJobs.toString()} label="Lowongan Tersedia" color="blue" sub="Lihat semua lowongan" />
                 <StatCard icon={<FiPlayCircle />} count={stats.totalTutorials.toString()} label="Tutorial & Kuis" color="emerald" sub="Mulai belajar sekarang" />
                 <StatCard icon={<FiLayers />} count={stats.totalUsers.toString()} label="User Terdaftar" color="indigo" sub="Komunitas BIKA" />
-                <StatProgressBar icon={<FiTrendingUp />} progress={68} label="Progress Kesiapan" color="amber" sub="Terus tingkatkan!" />
             </div>
 
             {/* 4. RECOMMENDATIONS */}
@@ -159,13 +156,17 @@ export default function UserDashboard() {
                     />
                 </div>
             </section>
+                </>
+            )}
 
             {/* 5. MAIN GRID */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 gap-10">
                 {/* Lowongan Terbaru */}
-                <div className="xl:col-span-2 space-y-6">
+                <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Lowongan Terbaru</h3>
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                            {searchQuery.trim() !== '' ? 'Hasil Pencarian' : 'Lowongan Terbaru'}
+                        </h3>
                         <NavLink to="/masa-depan" className="text-xs font-bold text-blue-600 hover:underline uppercase tracking-widest">Lihat Semua Lowongan</NavLink>
                     </div>
                     <div className="bg-white dark:bg-zinc-900 rounded-[32px] overflow-hidden border border-slate-100 dark:border-zinc-800 shadow-sm">
@@ -214,36 +215,6 @@ export default function UserDashboard() {
                         <button className="w-full py-4 bg-slate-50/50 dark:bg-zinc-800/50 text-[11px] font-black text-blue-600 uppercase tracking-widest border-t border-slate-50 dark:border-zinc-800 hover:bg-slate-100 transition-colors border-none cursor-pointer">
                             Lihat Semua Lowongan
                         </button>
-                    </div>
-                </div>
-
-                {/* Sidebar Info */}
-                <div className="space-y-10">
-                    {/* Progress Belajar */}
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Progress Belajar</h3>
-                            <button className="text-[10px] font-black text-blue-600 hover:underline uppercase border-none bg-transparent cursor-pointer">Lihat Semua</button>
-                        </div>
-                        <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-slate-100 dark:border-zinc-800 shadow-sm space-y-6">
-                            <ProgressItem title="Dasar-Dasar Digital Marketing" progress={80} icon={<FiPlayCircle className="text-blue-500" />} />
-                            <ProgressItem title="Microsoft Excel Dasar untuk Karir" progress={60} icon={<FiBookOpen className="text-emerald-500" />} />
-                            <ProgressItem title="Teknik Interview Kerja untuk SMK" progress={45} icon={<FiBriefcase className="text-indigo-500" />} />
-                        </div>
-                    </div>
-
-                    {/* Jadwal Agenda */}
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Jadwal / Agenda</h3>
-                            <button className="text-[10px] font-black text-blue-600 hover:underline uppercase border-none bg-transparent cursor-pointer">Lihat Semua</button>
-                        </div>
-                        <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-6 border border-slate-100 dark:border-zinc-800 shadow-sm space-y-6">
-                            <AgendaItem date="20" month="Mei" title="Kelas: Komunikasi Efektif" time="10.00 - 11.30 WIB" tag="Kelas Online" tagColor="blue" />
-                            <AgendaItem date="22" month="Mei" title="Latihan Wawancara dengan AI" time="13.00 - 14.00 WIB" tag="Sesi Latihan" tagColor="emerald" />
-                            <AgendaItem date="24" month="Mei" title="Webinar: Tips Lolos Interview" time="19.00 - 20.30 WIB" tag="Webinar" tagColor="indigo" />
-                        </div>
-                        <button className="w-full text-center text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline border-none bg-transparent cursor-pointer">Lihat Semua Agenda</button>
                     </div>
                 </div>
             </div>

@@ -31,10 +31,10 @@ const navLinks = [
     { path: '/profil', label: 'Profil Saya', icon: FiUser },
 ];
 
-export default function UserSidebar({ collapsed, setCollapsed }) {
+export default function UserSidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
     const { user, logoutUser } = useAuth();
     const location = useLocation();
-    const [openSubmenu, setOpenSubmenu] = useState('Tips Usaha');
+    const [openSubmenu, setOpenSubmenu] = useState(null);
 
     const isActive = (path) => {
         if (path.includes('#')) {
@@ -54,8 +54,8 @@ export default function UserSidebar({ collapsed, setCollapsed }) {
 
     return (
         <aside
-            className={`fixed top-0 left-0 h-screen bg-white dark:bg-zinc-950 border-r border-slate-100 dark:border-zinc-900 transition-all duration-300 z-50 flex flex-col ${collapsed ? 'w-20' : 'w-64'
-                }`}
+            className={`fixed top-0 left-0 h-screen bg-white dark:bg-zinc-950 border-r border-slate-100 dark:border-zinc-900 transition-all duration-300 z-50 flex flex-col ${collapsed ? 'md:w-20' : 'md:w-64'
+                } w-64 ${mobileOpen ? 'max-md:translate-x-0' : 'max-md:-translate-x-full'}`}
         >
             {/* Header / Logo */}
             <div className="p-6 flex items-center justify-between">

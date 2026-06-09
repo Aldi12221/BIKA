@@ -36,6 +36,18 @@ export default function Beranda() {
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-red-50/50 dark:bg-red-900/10 rounded-full blur-[100px] -z-10 -translate-x-1/2 translate-y-1/2"></div>
 
+      {/* HEADER GUEST */}
+      <header className="absolute top-0 left-0 right-0 py-6 px-6 lg:px-12 z-50 flex items-center justify-between">
+        <div className="text-3xl font-black text-blue-950 dark:text-white tracking-tighter">
+          BIKA<span className="text-blue-600">.</span>
+        </div>
+        <NavLink to="/login">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-blue-600/30 transition-all text-sm flex items-center gap-2">
+            Login <FiUser size={16} />
+          </button>
+        </NavLink>
+      </header>
+
       {/* 1. HERO SECTION */}
       <section className="relative pt-32 pb-20 px-6 lg:px-12">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-10 relative z-10">
