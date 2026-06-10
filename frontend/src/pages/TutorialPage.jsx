@@ -79,51 +79,51 @@ export default function TutorialPage() {
         </p>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 space-y-8 relative z-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6 sm:space-y-8 relative z-10">
 
         {/* 1. Bank Kuis Section */}
-        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
+        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+          <div className="flex items-center gap-3 mb-4 sm:mb-6">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiBookOpen className="text-xl" />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Bank Kuis</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Bank Kuis</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
             {regularQuizzes.length > 0 ? regularQuizzes.map((quiz) => (
               <div
                 key={quiz.id}
                 onClick={() => openQuizDetail(quiz)}
-                className="group bg-white/95 dark:bg-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] hover:shadow-xl transition-all duration-300 cursor-pointer shadow-sm"
+                className="group flex items-center gap-3 bg-white/95 dark:bg-white/10 rounded-2xl overflow-hidden p-2 shadow-sm hover:shadow-lg sm:block sm:p-0 sm:hover:scale-[1.03] sm:hover:shadow-xl transition-all duration-300 cursor-pointer"
               >
                 {/* Quiz Image */}
-                <div className="relative w-full h-40 bg-gradient-to-br from-rose-100 to-orange-100 dark:from-rose-900/30 dark:to-orange-900/30 overflow-hidden">
+                <div className="relative h-20 w-20 shrink-0 rounded-xl bg-gradient-to-br from-rose-100 to-orange-100 dark:from-rose-900/30 dark:to-orange-900/30 overflow-hidden sm:h-40 sm:w-full sm:rounded-none">
                   {quiz.gambar ? (
-                    <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover sm:group-hover:scale-110 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl opacity-50">
+                    <div className="w-full h-full flex items-center justify-center text-3xl sm:text-5xl opacity-50">
                       📝
                     </div>
                   )}
-                  <div className="absolute top-3 right-3">
-                    <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-sm bg-white/80 text-rose-600 dark:bg-black/50 dark:text-rose-300">
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
+                    <span className="block max-w-[4.5rem] truncate rounded-full bg-white/80 px-2 py-0.5 text-[8px] font-black uppercase text-rose-600 backdrop-blur-sm dark:bg-black/50 dark:text-rose-300 sm:max-w-none sm:px-3 sm:py-1 sm:text-[10px]">
                       {getQuizLabel(quiz.kategori)}
                     </span>
                   </div>
                 </div>
 
                 {/* Quiz Info */}
-                <div className="p-4">
-                  <h4 className="font-black text-[15px] text-slate-800 dark:text-white leading-tight mb-2 line-clamp-2">
+                <div className="min-w-0 flex-1 p-2 sm:p-4">
+                  <h4 className="font-black text-[13px] sm:text-[15px] text-slate-800 dark:text-white leading-tight mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2">
                     {quiz.judul}
                   </h4>
-                  <p className="text-[12px] font-medium text-slate-500 dark:text-slate-300 leading-relaxed line-clamp-2">
+                  <p className="text-[10px] sm:text-[12px] font-medium text-slate-500 dark:text-slate-300 leading-relaxed line-clamp-1 sm:line-clamp-2">
                     {quiz.deskripsi || 'Klik untuk melihat detail quiz'}
                   </p>
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-white/10">
+                  <div className="flex items-center justify-between mt-2 pt-2 sm:mt-3 sm:pt-3 border-t border-slate-100 dark:border-white/10">
                     <span className="text-[11px] font-bold text-rose-500 dark:text-rose-400">Lihat Detail</span>
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-rose-100 dark:bg-rose-900/50 text-rose-500 dark:text-rose-300 group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center bg-rose-100 dark:bg-rose-900/50 text-rose-500 dark:text-rose-300 group-hover:bg-rose-500 group-hover:text-white transition-colors">
                       <FiArrowRight className="text-sm" />
                     </div>
                   </div>
@@ -139,25 +139,25 @@ export default function TutorialPage() {
         </div>
 
         {/* 2. Tips & Trick Wawancara Section */}
-        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[32px] p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
+        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+          <div className="flex items-center gap-3 mb-4 sm:mb-8">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiMessageCircle className="text-xl" />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Tips & Trick Wawancara</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Tips & Trick Wawancara</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
             {/* Left Column - Articles */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {tutorials.length > 0 ? tutorials.map((item) => (
-                <div key={item.id} onClick={() => openContentDetail(item)} className="flex items-center gap-4 bg-white/90 dark:bg-white/10 rounded-2xl p-3 hover:shadow-md hover:scale-[1.02] transition-all cursor-pointer">
-                  <div className="w-16 h-16 bg-slate-200 dark:bg-black/30 rounded-xl overflow-hidden shrink-0">
+                <div key={item.id} onClick={() => openContentDetail(item)} className="flex items-center gap-3 sm:gap-4 bg-white/90 dark:bg-white/10 rounded-2xl p-2 sm:p-3 hover:shadow-md sm:hover:scale-[1.02] transition-all cursor-pointer">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-200 dark:bg-black/30 rounded-xl overflow-hidden shrink-0">
                     <img src={item.gambar || `https://ui-avatars.com/api/?name=${item.judul}&background=cbd5e1&color=475569`} alt="Thumbnail" className="w-full h-full object-cover opacity-80" />
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-black text-[13px] text-slate-800 dark:text-white leading-tight mb-1">{item.judul}</h4>
-                    <p className="text-[10px] font-bold text-slate-500 dark:text-slate-300">{item.deskripsi ? item.deskripsi.substring(0, 50) + '...' : 'Klik untuk membaca selengkapnya'}</p>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-black text-[13px] text-slate-800 dark:text-white leading-tight mb-1 line-clamp-1">{item.judul}</h4>
+                    <p className="text-[10px] font-bold text-slate-500 dark:text-slate-300 line-clamp-1">{item.deskripsi ? item.deskripsi.substring(0, 50) + '...' : 'Klik untuk membaca selengkapnya'}</p>
                   </div>
                   <FiArrowRight className="text-slate-400 group-hover:text-rose-500" />
                 </div>
@@ -167,15 +167,15 @@ export default function TutorialPage() {
             </div>
 
             {/* Right Column - Videos */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {tutorials.length > 0 ? tutorials.slice(0, 3).map((video) => (
-                <div key={video.id} onClick={() => video.link_eksternal && window.open(video.link_eksternal, '_blank')} className="flex items-center gap-4 bg-[#4A3B3B] dark:bg-zinc-900 rounded-2xl p-3 hover:shadow-md transition-shadow cursor-pointer border border-[#5A4B4B] dark:border-zinc-800">
-                  <div className="w-16 h-16 bg-black/50 rounded-xl flex items-center justify-center text-white shrink-0 relative overflow-hidden">
+                <div key={video.id} onClick={() => video.link_eksternal && window.open(video.link_eksternal, '_blank')} className="flex items-center gap-3 sm:gap-4 bg-[#4A3B3B] dark:bg-zinc-900 rounded-2xl p-2 sm:p-3 hover:shadow-md transition-shadow cursor-pointer border border-[#5A4B4B] dark:border-zinc-800">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-black/50 rounded-xl flex items-center justify-center text-white shrink-0 relative overflow-hidden">
                     {video.gambar ? <img src={video.gambar} className="absolute inset-0 w-full h-full object-cover opacity-60" alt="" /> : <div className="absolute inset-0 bg-rose-500/20"></div>}
                     <FiPlay className="text-xl relative z-10 ml-1" fill="currentColor" />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-[13px] text-white leading-tight mb-1">{video.judul}</h4>
+                  <div className="min-w-0">
+                    <h4 className="font-bold text-[13px] text-white leading-tight mb-1 line-clamp-1">{video.judul}</h4>
                     <p className="text-[10px] font-medium text-slate-400">Tonton Sekarang</p>
                   </div>
                 </div>
@@ -185,55 +185,55 @@ export default function TutorialPage() {
         </div>
 
         {/* 3. Tes Asesmen Section */}
-        <div className="bg-violet-600/85 dark:bg-violet-950/45 rounded-[32px] p-8 shadow-sm border border-violet-200/60 dark:border-violet-900/50 transition-colors relative overflow-hidden">
+        <div className="bg-violet-600/85 dark:bg-violet-950/45 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-violet-200/60 dark:border-violet-900/50 transition-colors relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
 
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-4 sm:mb-8 relative z-10">
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-white/20 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/20 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
                   <FiFileText className="text-xl" />
                 </div>
-                <h2 className="text-2xl font-black text-white tracking-tight">Tes Asesmen</h2>
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">Tes Asesmen</h2>
               </div>
-              <p className="text-white/80 text-sm md:text-base max-w-2xl">
+              <p className="text-white/80 text-xs sm:text-sm md:text-base max-w-2xl">
                 Latihan psikotes untuk persiapan seleksi, asesmen, dan proses rekrutmen.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 relative z-10">
             {assessmentQuizzes.length > 0 ? assessmentQuizzes.map((quiz) => (
               <div
                 key={quiz.id}
                 onClick={() => openQuizDetail(quiz)}
-                className="group bg-white/95 dark:bg-white/10 rounded-2xl overflow-hidden hover:scale-[1.03] hover:shadow-xl transition-all duration-300 cursor-pointer shadow-sm"
+                className="group flex items-center gap-3 bg-white/95 dark:bg-white/10 rounded-2xl overflow-hidden p-2 shadow-sm hover:shadow-lg sm:block sm:p-0 sm:hover:scale-[1.03] sm:hover:shadow-xl transition-all duration-300 cursor-pointer"
               >
-                <div className="relative w-full h-40 bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 overflow-hidden">
+                <div className="relative h-20 w-20 shrink-0 rounded-xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 overflow-hidden sm:h-40 sm:w-full sm:rounded-none">
                   {quiz.gambar ? (
-                    <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img src={quiz.gambar} alt={quiz.judul} className="w-full h-full object-cover sm:group-hover:scale-110 transition-transform duration-500" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-5xl opacity-50">
+                    <div className="w-full h-full flex items-center justify-center text-3xl sm:text-5xl opacity-50">
                       🧠
                     </div>
                   )}
-                  <div className="absolute top-3 right-3">
-                    <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-sm bg-violet-500/80 text-white">
+                  <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
+                    <span className="block max-w-[4.5rem] truncate rounded-full bg-violet-500/80 px-2 py-0.5 text-[8px] font-black uppercase text-white backdrop-blur-sm sm:max-w-none sm:px-3 sm:py-1 sm:text-[10px]">
                       {getQuizLabel(quiz.kategori)}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-4">
-                  <h4 className="font-black text-[15px] text-slate-800 dark:text-white leading-tight mb-2 line-clamp-2">
+                <div className="min-w-0 flex-1 p-2 sm:p-4">
+                  <h4 className="font-black text-[13px] sm:text-[15px] text-slate-800 dark:text-white leading-tight mb-1 sm:mb-2 line-clamp-1 sm:line-clamp-2">
                     {quiz.judul}
                   </h4>
-                  <p className="text-[12px] font-medium text-slate-500 dark:text-slate-300 leading-relaxed line-clamp-2">
+                  <p className="text-[10px] sm:text-[12px] font-medium text-slate-500 dark:text-slate-300 leading-relaxed line-clamp-1 sm:line-clamp-2">
                     {quiz.deskripsi || 'Klik untuk melihat detail psikotes'}
                   </p>
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-white/10">
+                  <div className="flex items-center justify-between mt-2 pt-2 sm:mt-3 sm:pt-3 border-t border-slate-100 dark:border-white/10">
                     <span className="text-[11px] font-bold text-violet-500 dark:text-violet-300">Lihat Detail</span>
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-violet-100 dark:bg-violet-900/50 text-violet-500 dark:text-violet-300 group-hover:bg-violet-500 group-hover:text-white transition-colors">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center bg-violet-100 dark:bg-violet-900/50 text-violet-500 dark:text-violet-300 group-hover:bg-violet-500 group-hover:text-white transition-colors">
                       <FiArrowRight className="text-sm" />
                     </div>
                   </div>

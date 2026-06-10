@@ -23,12 +23,93 @@ function useJobsPerPage() {
   return perPage;
 }
 
+function SearchableFilter({ label, allLabel, value, options, isOpen, onToggle, onClose, onChange }) {
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    if (!isOpen) setQuery('');
+  }, [isOpen]);
+
+  const filteredOptions = useMemo(() => {
+    const keyword = query.trim().toLowerCase();
+    if (!keyword) return options;
+    return options.filter(option => String(option).toLowerCase().includes(keyword));
+  }, [options, query]);
+
+  const selectValue = (nextValue) => {
+    onChange(nextValue);
+    onClose();
+  };
+
+  return (
+    <div className="relative min-w-0">
+      <button
+        type="button"
+        onClick={onToggle}
+        title={value || allLabel}
+        className={`inline-flex h-8 max-w-[10.5rem] sm:max-w-[12rem] items-center gap-1.5 rounded-xl border px-3 text-[11px] font-black transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20
+          ${value
+            ? 'bg-blue-600 text-white border-blue-600'
+            : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-zinc-700 hover:border-blue-400'
+          }`}
+      >
+        <span className="truncate">{value || label}</span>
+        <FiChevronDown className={`shrink-0 text-[11px] transition-transform ${isOpen ? 'rotate-180' : ''} ${value ? 'text-white' : 'text-slate-400'}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 top-full z-40 mt-2 w-60 max-w-[calc(100vw-3rem)] rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-slate-900/10 dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/40">
+          <div className="relative mb-2">
+            <FiSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder={`Cari ${label.toLowerCase()}...`}
+              className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 dark:border-zinc-700 dark:bg-black/40 dark:text-white dark:placeholder:text-zinc-500"
+              autoFocus
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => selectValue('')}
+            className={`mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs font-bold transition-colors ${!value ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-zinc-800'}`}
+          >
+            <span className="truncate">{allLabel}</span>
+            {!value && <span className="text-[10px] uppercase">Aktif</span>}
+          </button>
+
+          <div className="max-h-48 overflow-y-auto pr-1">
+            {filteredOptions.length > 0 ? filteredOptions.map(option => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => selectValue(option)}
+                title={option}
+                className={`mb-1 flex w-full items-center rounded-xl px-3 py-2 text-left text-xs font-bold transition-colors ${value === option ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-zinc-800'}`}
+              >
+                <span className="truncate">{option}</span>
+              </button>
+            )) : (
+              <div className="px-3 py-4 text-center text-xs font-semibold text-slate-400">
+                Tidak ada pilihan
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function MasaDepanPage() {
   const [lowongans, setLowongans] = useState([]);
   const [tutorials, setTutorials] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedJob, setSelectedJob] = useState(null);
   const [lightboxImg, setLightboxImg] = useState(null);
+  const [openFilter, setOpenFilter] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -100,6 +181,7 @@ export default function MasaDepanPage() {
     setFilterLokasi('');
     setFilterTipe('');
     setFilterPerusahaan('');
+    setOpenFilter(null);
   };
 
   // Page number array for pagination bar
@@ -139,8 +221,8 @@ export default function MasaDepanPage() {
       </div>
 
       {/* Lowongan Section */}
-      <div className="max-w-6xl mx-auto px-6 mb-16 relative z-10">
-        <div className="bg-white dark:bg-zinc-900 rounded-[32px] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-zinc-800 transition-colors">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-16 relative z-10">
+        <div className="w-full min-w-0 bg-white dark:bg-zinc-900 rounded-[28px] sm:rounded-[32px] p-5 sm:p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-zinc-800 transition-colors">
 
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight transition-colors">Lowongan Kerja</h2>
@@ -155,7 +237,7 @@ export default function MasaDepanPage() {
           </div>
 
           {/* Search Bar */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 mb-5">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
                 <FiSearch className="text-slate-400 text-lg" />
@@ -165,86 +247,68 @@ export default function MasaDepanPage() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Cari posisi, perusahaan, atau kata kunci..."
-                className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-zinc-800 rounded-2xl pl-12 pr-5 py-4 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                className="w-full bg-slate-50 dark:bg-black/50 border border-slate-200 dark:border-zinc-800 rounded-2xl pl-12 pr-5 py-3.5 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
               />
             </div>
           </div>
 
           {/* Filter Bar */}
-          <div className="flex flex-wrap gap-3 mb-8 p-4 bg-slate-50 dark:bg-black/30 rounded-2xl border border-slate-100 dark:border-zinc-800">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 mr-1">
+          <div className="flex flex-wrap items-center gap-2 mb-8 p-3 bg-slate-50 dark:bg-black/30 rounded-2xl border border-slate-100 dark:border-zinc-800">
+            <div className="flex items-center gap-2 text-[11px] font-black text-slate-500 dark:text-slate-400 mr-1">
               <FiFilter size={13} /> Filter:
             </div>
 
-            {/* Tipe Pekerjaan */}
-            <div className="relative">
-              <select
-                value={filterTipe}
-                onChange={e => setFilterTipe(e.target.value)}
-                className={`appearance-none pl-4 pr-8 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20
-                  ${filterTipe
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-zinc-700 hover:border-blue-400'
-                  }`}
-              >
-                <option value="">Tipe Pekerjaan</option>
-                {tipeOptions.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-              <FiChevronDown className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[11px] ${filterTipe ? 'text-white' : 'text-slate-400'}`} />
-            </div>
+            <SearchableFilter
+              label="Tipe"
+              allLabel="Semua Tipe"
+              value={filterTipe}
+              options={tipeOptions}
+              isOpen={openFilter === 'tipe'}
+              onToggle={() => setOpenFilter(openFilter === 'tipe' ? null : 'tipe')}
+              onClose={() => setOpenFilter(null)}
+              onChange={setFilterTipe}
+            />
 
-            {/* Lokasi */}
-            <div className="relative">
-              <select
-                value={filterLokasi}
-                onChange={e => setFilterLokasi(e.target.value)}
-                className={`appearance-none pl-4 pr-8 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20
-                  ${filterLokasi
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-zinc-700 hover:border-blue-400'
-                  }`}
-              >
-                <option value="">Semua Lokasi</option>
-                {lokasiOptions.map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-              <FiChevronDown className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[11px] ${filterLokasi ? 'text-white' : 'text-slate-400'}`} />
-            </div>
+            <SearchableFilter
+              label="Lokasi"
+              allLabel="Semua Lokasi"
+              value={filterLokasi}
+              options={lokasiOptions}
+              isOpen={openFilter === 'lokasi'}
+              onToggle={() => setOpenFilter(openFilter === 'lokasi' ? null : 'lokasi')}
+              onClose={() => setOpenFilter(null)}
+              onChange={setFilterLokasi}
+            />
 
-            {/* Perusahaan */}
-            <div className="relative">
-              <select
-                value={filterPerusahaan}
-                onChange={e => setFilterPerusahaan(e.target.value)}
-                className={`appearance-none pl-4 pr-8 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20
-                  ${filterPerusahaan
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white dark:bg-zinc-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-zinc-700 hover:border-blue-400'
-                  }`}
-              >
-                <option value="">Semua Perusahaan</option>
-                {perusahaanOptions.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-              <FiChevronDown className={`absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[11px] ${filterPerusahaan ? 'text-white' : 'text-slate-400'}`} />
-            </div>
+            <SearchableFilter
+              label="Perusahaan"
+              allLabel="Semua Perusahaan"
+              value={filterPerusahaan}
+              options={perusahaanOptions}
+              isOpen={openFilter === 'perusahaan'}
+              onToggle={() => setOpenFilter(openFilter === 'perusahaan' ? null : 'perusahaan')}
+              onClose={() => setOpenFilter(null)}
+              onChange={setFilterPerusahaan}
+            />
 
             {/* Active filter chips */}
             {filterTipe && (
-              <button onClick={() => setFilterTipe('')} className="flex items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
-                {filterTipe} <FiX size={11} />
+              <button onClick={() => setFilterTipe('')} title={filterTipe} className="flex min-w-0 max-w-full items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[11px] font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                <span className="max-w-[10rem] truncate">{filterTipe}</span> <FiX className="shrink-0" size={11} />
               </button>
             )}
             {filterLokasi && (
-              <button onClick={() => setFilterLokasi('')} className="flex items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
-                {filterLokasi} <FiX size={11} />
+              <button onClick={() => setFilterLokasi('')} title={filterLokasi} className="flex min-w-0 max-w-full items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[11px] font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                <span className="max-w-[10rem] truncate">{filterLokasi}</span> <FiX className="shrink-0" size={11} />
               </button>
             )}
             {filterPerusahaan && (
-              <button onClick={() => setFilterPerusahaan('')} className="flex items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
-                {filterPerusahaan} <FiX size={11} />
+              <button onClick={() => setFilterPerusahaan('')} title={filterPerusahaan} className="flex min-w-0 max-w-full items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[11px] font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                <span className="max-w-[10rem] truncate">{filterPerusahaan}</span> <FiX className="shrink-0" size={11} />
               </button>
             )}
 
-            <span className="ml-auto text-xs font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-zinc-800 px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 self-center">
+            <span className="sm:ml-auto text-[11px] font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-zinc-800 px-3 py-2 rounded-xl border border-slate-200 dark:border-zinc-700 self-center">
               {filteredLowongans.length} hasil
             </span>
           </div>
@@ -255,15 +319,15 @@ export default function MasaDepanPage() {
               <div
                 key={job.id}
                 onClick={() => setSelectedJob(job)}
-                className="group bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[24px] p-6 flex flex-col hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                className="group min-w-0 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[24px] p-5 sm:p-6 flex flex-col hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-900/50 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
               >
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-14 h-14 bg-slate-50 dark:bg-black border border-slate-100 dark:border-zinc-800 rounded-2xl flex items-center justify-center text-2xl shadow-sm group-hover:scale-110 transition-transform overflow-hidden shrink-0">
                     {job.gambar ? <img src={job.gambar} alt="logo" className="w-full h-full object-cover" /> : '💼'}
                   </div>
-                  <div className="flex-1 pt-1">
-                    <h4 className="font-black text-[16px] text-slate-900 dark:text-white leading-tight mb-1 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{job.judul}</h4>
-                    <p className="text-[13px] font-bold text-blue-600 dark:text-blue-400 transition-colors mb-1">{job.perusahaan || 'Mitra Bika'}</p>
+                  <div className="min-w-0 flex-1 pt-1">
+                    <h4 className="font-black text-[16px] text-slate-900 dark:text-white leading-tight mb-1 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2 break-words">{job.judul}</h4>
+                    <p className="text-[13px] font-bold text-blue-600 dark:text-blue-400 transition-colors mb-1 truncate">{job.perusahaan || 'Mitra Bika'}</p>
                   </div>
                 </div>
 
@@ -271,16 +335,17 @@ export default function MasaDepanPage() {
                   {job.deskripsi || 'Tidak ada spesifikasi deskripsi detail yang dilampirkan.'}
                 </p>
 
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
-                    <FiMapPin /> {job.lokasi || 'Nasional / Remote'}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
-                    <FiBriefcase /> {job.tipe_pekerjaan || 'Full-Time'}
+                <div className="flex flex-wrap items-center gap-2 mb-6 min-w-0">
+                  <span className="flex min-w-0 max-w-full items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
+                      <FiMapPin className="shrink-0" />
+                      <span className="max-w-[12rem] block truncate">{job.lokasi || 'Nasional / Remote'}</span>
+                    </span>
+                  <span className="flex min-w-0 max-w-full items-center gap-1.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
+                    <FiBriefcase className="shrink-0" /> <span className="max-w-[10rem] block truncate">{job.tipe_pekerjaan || 'Full-Time'}</span>
                   </span>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100 dark:border-zinc-800">
+                <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
                   <span className="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
                     <FiClock className="text-slate-300 dark:text-zinc-600" /> Aktif
                   </span>
@@ -294,7 +359,7 @@ export default function MasaDepanPage() {
                       }
                       setSelectedJob(job);
                     }}
-                    className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-bold px-5 py-2.5 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-colors shadow-sm cursor-pointer"
+                    className="shrink-0 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[11px] font-bold px-5 py-2.5 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-colors shadow-sm cursor-pointer"
                   >
                     Apply Now
                   </button>
@@ -383,8 +448,8 @@ export default function MasaDepanPage() {
               onClick={() => window.location.href = '/tutorial'}
               className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[28px] p-6 flex flex-col hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all cursor-pointer group"
             >
-              <div className="flex items-center justify-between mb-5">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm overflow-hidden shrink-0 ${idx % 3 === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
+                <div className="flex items-center justify-between mb-5 md:flex-row flex-row">
+                <div className={`md:w-14 md:h-14 w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm overflow-hidden shrink-0 ${idx % 3 === 0 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' :
                   idx % 3 === 1 ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400' :
                     'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400'
                   }`}>
@@ -395,8 +460,8 @@ export default function MasaDepanPage() {
                 </div>
               </div>
               <div className="flex-1">
-                <h4 className="font-black text-[15px] text-slate-900 dark:text-white leading-tight mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{item.judul}</h4>
-                <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed transition-colors line-clamp-2">{item.deskripsi || 'Pelajari materi ini lebih lanjut di halaman tutorial.'}</p>
+                <h4 className="font-black text-[15px] text-slate-900 dark:text-white leading-tight mb-2 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">{item.judul}</h4>
+                <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed transition-colors line-clamp-1 md:line-clamp-2">{item.deskripsi || 'Pelajari materi ini lebih lanjut di halaman tutorial.'}</p>
               </div>
             </div>
           )) : (
@@ -452,7 +517,8 @@ export default function MasaDepanPage() {
                   <p className="text-base font-bold text-blue-600 dark:text-blue-400 mb-3">{selectedJob.perusahaan || 'Mitra Bika'}</p>
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
-                      <FiMapPin /> {selectedJob.lokasi || 'Nasional / Remote'}
+                      <FiMapPin />
+                      <span className="max-w-[18rem] block truncate">{selectedJob.lokasi || 'Nasional / Remote'}</span>
                     </span>
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
                       <FiBriefcase /> {selectedJob.tipe_pekerjaan || 'Full-Time'}
