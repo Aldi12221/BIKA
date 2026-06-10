@@ -199,9 +199,9 @@ export default function UserDashboard() {
                                                 {job.lokasi}{job.detail_lokasi ? `, ${job.detail_lokasi}` : ''}
                                             </td>
                                             <td className="px-6 py-5">
-                                                <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tight ${job.tipe_pekerjaan === 'Magang' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
+                                                <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tight ${job.is_magang ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
                                                     }`}>
-                                                    {job.tipe_pekerjaan || 'Full Time'}
+                                                    {job.is_magang ? 'Magang' : (job.tipe_pekerjaan || 'Profesional')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-5 text-right">

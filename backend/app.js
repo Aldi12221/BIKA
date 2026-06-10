@@ -33,7 +33,7 @@ app.use(async (req, res, next) => {
         }
 
         try {
-          // Hanya table Job dan Content yang mungkin butuh detail_lokasi
+          // Hanya table Job dan Content yang mungkin butuh detail_lokasi dan is_magang
           if (table === 'Jobs' || table === 'Contents') {
             await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`detail_lokasi\` VARCHAR(255);`);
             console.log(`Added detail_lokasi column to ${table}`);
@@ -41,6 +41,17 @@ app.use(async (req, res, next) => {
         } catch (err) {
           if (!err.message.includes('Duplicate column name')) {
             console.error(`Failed to add detail_lokasi to ${table}:`, err.message);
+          }
+        }
+
+        try {
+          if (table === 'Jobs' || table === 'Contents') {
+            await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`is_magang\` BOOLEAN DEFAULT false;`);
+            console.log(`Added is_magang column to ${table}`);
+          }
+        } catch (err) {
+          if (!err.message.includes('Duplicate column name')) {
+            console.error(`Failed to add is_magang to ${table}:`, err.message);
           }
         }
       }

@@ -21,6 +21,10 @@ const Job = db.define('Job', {
   detail_lokasi: {
     type: DataTypes.STRING
   },
+  is_magang: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
   tipe_pekerjaan: {
     type: DataTypes.STRING
   },

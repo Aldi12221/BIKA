@@ -340,8 +340,8 @@ export default function MasaDepanPage() {
                       <FiMapPin className="shrink-0" />
                       <span className="max-w-[12rem] block truncate">{job.lokasi || 'Nasional / Remote'}{job.detail_lokasi ? ` - ${job.detail_lokasi}` : ''}</span>
                     </span>
-                  <span className="flex min-w-0 max-w-full items-center gap-1.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
-                    <FiBriefcase className="shrink-0" /> <span className="max-w-[10rem] block truncate">{job.tipe_pekerjaan || 'Full-Time'}</span>
+                  <span className={`flex min-w-0 max-w-full items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full border ${job.is_magang ? 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-900/50' : 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-900/50'}`}>
+                    <FiBriefcase className="shrink-0" /> <span className="max-w-[10rem] block truncate">{job.is_magang ? 'Magang' : (job.tipe_pekerjaan || 'Profesional')}</span>
                   </span>
                 </div>
 
@@ -520,8 +520,8 @@ export default function MasaDepanPage() {
                       <FiMapPin />
                       <span className="max-w-[18rem] block truncate">{selectedJob.lokasi || 'Nasional / Remote'}{selectedJob.detail_lokasi ? `, ${selectedJob.detail_lokasi}` : ''}</span>
                     </span>
-                    <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
-                      <FiBriefcase /> {selectedJob.tipe_pekerjaan || 'Full-Time'}
+                    <span className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${selectedJob.is_magang ? 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-900/50' : 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-900/50'}`}>
+                      <FiBriefcase /> {selectedJob.is_magang ? 'Magang' : (selectedJob.tipe_pekerjaan || 'Profesional')}
                     </span>
                   </div>
                 </div>

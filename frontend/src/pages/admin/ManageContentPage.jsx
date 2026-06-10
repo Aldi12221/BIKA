@@ -79,7 +79,7 @@ export default function ManageContentPage({ kategoriProp }) {
   const [contents, setContents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
-  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', detail_lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
+  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', detail_lokasi: '', tipe_pekerjaan: 'Full-Time', is_magang: false, isi_konten: '', file_tambahan: '[]' });
   const [search, setSearch] = useState('');
 
   // Per-category filters
@@ -223,13 +223,13 @@ export default function ManageContentPage({ kategoriProp }) {
   // ── Single CRUD ──
   const openAdd = () => {
     setEditItem(null);
-    setForm({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', detail_lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
+    setForm({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', detail_lokasi: '', tipe_pekerjaan: 'Full-Time', is_magang: false, isi_konten: '', file_tambahan: '[]' });
     setShowModal(true);
   };
 
   const openEdit = (item) => {
     setEditItem(item);
-    setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: kategoriProp, link_eksternal: item.link_eksternal || '', gambar: item.gambar || '', perusahaan: item.perusahaan || '', lokasi: item.lokasi || '', detail_lokasi: item.detail_lokasi || '', tipe_pekerjaan: item.tipe_pekerjaan || 'Full-Time', isi_konten: item.isi_konten || '', file_tambahan: item.file_tambahan || '[]' });
+    setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: kategoriProp, link_eksternal: item.link_eksternal || '', gambar: item.gambar || '', perusahaan: item.perusahaan || '', lokasi: item.lokasi || '', detail_lokasi: item.detail_lokasi || '', tipe_pekerjaan: item.tipe_pekerjaan || 'Full-Time', is_magang: item.is_magang || false, isi_konten: item.isi_konten || '', file_tambahan: item.file_tambahan || '[]' });
     setShowModal(true);
   };
 
@@ -797,7 +797,15 @@ export default function ManageContentPage({ kategoriProp }) {
                       <MSelect
                         value={form.lokasi}
                         onChange={e => setForm({ ...form, lokasi: e.target.value })}
-                        options={['Ponorogo', 'Madiun', 'Magetan', 'Ngawi', 'Pacitan', 'Surabaya', 'Malang', 'Sidoarjo', 'Kediri', 'Jakarta', 'Bandung', 'Yogyakarta', 'Semarang', 'Nasional', 'Remote']}
+                        options={[
+                          'Nasional', 'Remote', 'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Kepulauan Riau',
+                          'Jambi', 'Bengkulu', 'Sumatera Selatan', 'Kepulauan Bangka Belitung', 'Lampung',
+                          'Banten', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur',
+                          'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Kalimantan Barat', 'Kalimantan Tengah',
+                          'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara', 'Gorontalo', 'Sulawesi Utara',
+                          'Sulawesi Barat', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Maluku',
+                          'Maluku Utara', 'Papua Barat', 'Papua', 'Papua Selatan', 'Papua Tengah', 'Papua Pegunungan', 'Papua Barat Daya'
+                        ]}
                       />
                     </MField>
                     <MField label="Detail Lokasi">
@@ -807,7 +815,14 @@ export default function ManageContentPage({ kategoriProp }) {
                       <MSelect
                         value={form.tipe_pekerjaan}
                         onChange={e => setForm({ ...form, tipe_pekerjaan: e.target.value })}
-                        options={['Full-Time', 'Part-Time', 'Contract', 'Freelance', 'Magang']}
+                        options={['Full-Time', 'Part-Time', 'Contract', 'Freelance']}
+                      />
+                    </MField>
+                    <MField label="Kategori Job">
+                      <MSelect
+                        value={form.is_magang ? 'true' : 'false'}
+                        onChange={e => setForm({ ...form, is_magang: e.target.value === 'true' })}
+                        options={[{label: 'Bukan Magang (Profesional)', value: 'false'}, {label: 'Magang (Internship)', value: 'true'}]}
                       />
                     </MField>
                   </div>
@@ -964,11 +979,16 @@ function MSelect({ value, onChange, options }) {
       onFocus={e => { e.target.style.borderColor = 'rgba(108,99,255,0.6)'; }}
       onBlur={e  => { e.target.style.borderColor = 'var(--ad-border)'; }}
     >
-      {options.map(o => (
-        <option key={o} value={o} style={{ background: 'var(--ad-surface)', color: 'var(--ad-text)' }}>
-          {o}
-        </option>
-      ))}
+      {options.map(o => {
+        const isObj = typeof o === 'object';
+        const val = isObj ? o.value : o;
+        const lbl = isObj ? o.label : o;
+        return (
+          <option key={val} value={val} style={{ background: 'var(--ad-surface)', color: 'var(--ad-text)' }}>
+            {lbl}
+          </option>
+        );
+      })}
     </select>
   );
 }

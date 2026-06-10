@@ -28,6 +28,10 @@ const Content = sequelize.define('Content', {
   detail_lokasi: {
     type: DataTypes.STRING // Detail lokasi (kecamatan, jalan, dll)
   },
+  is_magang: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
   tipe_pekerjaan: {
     type: DataTypes.STRING // Khusus lowongan (e.g. Remote, Magang)
   },
