@@ -79,7 +79,7 @@ export default function ManageContentPage({ kategoriProp }) {
   const [contents, setContents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
-  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
+  const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', detail_lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
   const [search, setSearch] = useState('');
 
   // Per-category filters
@@ -223,13 +223,13 @@ export default function ManageContentPage({ kategoriProp }) {
   // ── Single CRUD ──
   const openAdd = () => {
     setEditItem(null);
-    setForm({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
+    setForm({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', detail_lokasi: '', tipe_pekerjaan: 'Full-Time', isi_konten: '', file_tambahan: '[]' });
     setShowModal(true);
   };
 
   const openEdit = (item) => {
     setEditItem(item);
-    setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: kategoriProp, link_eksternal: item.link_eksternal || '', gambar: item.gambar || '', perusahaan: item.perusahaan || '', lokasi: item.lokasi || '', tipe_pekerjaan: item.tipe_pekerjaan || 'Full-Time', isi_konten: item.isi_konten || '', file_tambahan: item.file_tambahan || '[]' });
+    setForm({ judul: item.judul, deskripsi: item.deskripsi || '', kategori: kategoriProp, link_eksternal: item.link_eksternal || '', gambar: item.gambar || '', perusahaan: item.perusahaan || '', lokasi: item.lokasi || '', detail_lokasi: item.detail_lokasi || '', tipe_pekerjaan: item.tipe_pekerjaan || 'Full-Time', isi_konten: item.isi_konten || '', file_tambahan: item.file_tambahan || '[]' });
     setShowModal(true);
   };
 
@@ -793,8 +793,15 @@ export default function ManageContentPage({ kategoriProp }) {
                     <MField label="Nama Perusahaan">
                       <MInput value={form.perusahaan} onChange={e => setForm({ ...form, perusahaan: e.target.value })} placeholder="Misal: Google Inc" />
                     </MField>
-                    <MField label="Lokasi">
-                      <MInput value={form.lokasi} onChange={e => setForm({ ...form, lokasi: e.target.value })} placeholder="Misal: Jakarta / Remote" />
+                    <MField label="Lokasi Utama">
+                      <MSelect
+                        value={form.lokasi}
+                        onChange={e => setForm({ ...form, lokasi: e.target.value })}
+                        options={['Ponorogo', 'Madiun', 'Magetan', 'Ngawi', 'Pacitan', 'Surabaya', 'Malang', 'Sidoarjo', 'Kediri', 'Jakarta', 'Bandung', 'Yogyakarta', 'Semarang', 'Nasional', 'Remote']}
+                      />
+                    </MField>
+                    <MField label="Detail Lokasi">
+                      <MInput value={form.detail_lokasi} onChange={e => setForm({ ...form, detail_lokasi: e.target.value })} placeholder="Kecamatan, Jalan, Gedung, dll" />
                     </MField>
                     <MField label="Tipe Pekerjaan">
                       <MSelect

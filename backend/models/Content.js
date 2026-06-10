@@ -23,7 +23,10 @@ const Content = sequelize.define('Content', {
     type: DataTypes.STRING // Khusus lowongan
   },
   lokasi: {
-    type: DataTypes.STRING // Khusus lowongan
+    type: DataTypes.STRING // Khusus lowongan (kota/kabupaten utama)
+  },
+  detail_lokasi: {
+    type: DataTypes.STRING // Detail lokasi (kecamatan, jalan, dll)
   },
   tipe_pekerjaan: {
     type: DataTypes.STRING // Khusus lowongan (e.g. Remote, Magang)

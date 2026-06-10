@@ -195,7 +195,9 @@ export default function UserDashboard() {
                                                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{job.perusahaan}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-5 text-xs font-medium text-slate-500 dark:text-slate-400">{job.lokasi}</td>
+                                            <td className="px-6 py-5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                                                {job.lokasi}{job.detail_lokasi ? `, ${job.detail_lokasi}` : ''}
+                                            </td>
                                             <td className="px-6 py-5">
                                                 <span className={`text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tight ${job.tipe_pekerjaan === 'Magang' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'
                                                     }`}>

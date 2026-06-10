@@ -18,6 +18,9 @@ const Job = db.define('Job', {
   lokasi: {
     type: DataTypes.STRING
   },
+  detail_lokasi: {
+    type: DataTypes.STRING
+  },
   tipe_pekerjaan: {
     type: DataTypes.STRING
   },

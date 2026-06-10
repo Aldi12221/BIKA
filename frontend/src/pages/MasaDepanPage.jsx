@@ -338,7 +338,7 @@ export default function MasaDepanPage() {
                 <div className="flex flex-wrap items-center gap-2 mb-6 min-w-0">
                   <span className="flex min-w-0 max-w-full items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
                       <FiMapPin className="shrink-0" />
-                      <span className="max-w-[12rem] block truncate">{job.lokasi || 'Nasional / Remote'}</span>
+                      <span className="max-w-[12rem] block truncate">{job.lokasi || 'Nasional / Remote'}{job.detail_lokasi ? ` - ${job.detail_lokasi}` : ''}</span>
                     </span>
                   <span className="flex min-w-0 max-w-full items-center gap-1.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
                     <FiBriefcase className="shrink-0" /> <span className="max-w-[10rem] block truncate">{job.tipe_pekerjaan || 'Full-Time'}</span>
@@ -518,7 +518,7 @@ export default function MasaDepanPage() {
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
                       <FiMapPin />
-                      <span className="max-w-[18rem] block truncate">{selectedJob.lokasi || 'Nasional / Remote'}</span>
+                      <span className="max-w-[18rem] block truncate">{selectedJob.lokasi || 'Nasional / Remote'}{selectedJob.detail_lokasi ? `, ${selectedJob.detail_lokasi}` : ''}</span>
                     </span>
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/50">
                       <FiBriefcase /> {selectedJob.tipe_pekerjaan || 'Full-Time'}

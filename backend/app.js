@@ -27,9 +27,20 @@ app.use(async (req, res, next) => {
           await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`file_tambahan\` LONGTEXT;`);
           console.log(`Added file_tambahan column to ${table}`);
         } catch (err) {
-          // Jika error karena kolom sudah ada, abaikan saja
           if (!err.message.includes('Duplicate column name')) {
-            console.error(`Failed to alter table ${table}:`, err.message);
+            console.error(`Failed to add file_tambahan to ${table}:`, err.message);
+          }
+        }
+
+        try {
+          // Hanya table Job dan Content yang mungkin butuh detail_lokasi
+          if (table === 'Jobs' || table === 'Contents') {
+            await sequelize.query(`ALTER TABLE \`${table}\` ADD COLUMN \`detail_lokasi\` VARCHAR(255);`);
+            console.log(`Added detail_lokasi column to ${table}`);
+          }
+        } catch (err) {
+          if (!err.message.includes('Duplicate column name')) {
+            console.error(`Failed to add detail_lokasi to ${table}:`, err.message);
           }
         }
       }
