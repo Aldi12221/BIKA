@@ -3,6 +3,13 @@ import { FiPlus, FiTrash2, FiEdit3, FiX, FiSave, FiSearch, FiExternalLink, FiChe
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
+import citiesData from '../../utils/cities.json';
+
+const ALL_LOCATIONS = [
+  'Nasional',
+  'Remote',
+  ...citiesData.map(c => c.toLowerCase().replace(/\b\w/g, l => l.toUpperCase()))
+];
 
 const KATEGORI_TABS = [
   { key: 'lowongan', label: 'Lowongan',       icon: FiBriefcase,  path: '/admin/lowongan' },
@@ -794,18 +801,11 @@ export default function ManageContentPage({ kategoriProp }) {
                       <MInput value={form.perusahaan} onChange={e => setForm({ ...form, perusahaan: e.target.value })} placeholder="Misal: Google Inc" />
                     </MField>
                     <MField label="Lokasi Utama">
-                      <MSelect
+                      <MSearchableSelect
                         value={form.lokasi}
-                        onChange={e => setForm({ ...form, lokasi: e.target.value })}
-                        options={[
-                          'Nasional', 'Remote', 'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Kepulauan Riau',
-                          'Jambi', 'Bengkulu', 'Sumatera Selatan', 'Kepulauan Bangka Belitung', 'Lampung',
-                          'Banten', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'DI Yogyakarta', 'Jawa Timur',
-                          'Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Kalimantan Barat', 'Kalimantan Tengah',
-                          'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara', 'Gorontalo', 'Sulawesi Utara',
-                          'Sulawesi Barat', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara', 'Maluku',
-                          'Maluku Utara', 'Papua Barat', 'Papua', 'Papua Selatan', 'Papua Tengah', 'Papua Pegunungan', 'Papua Barat Daya'
-                        ]}
+                        onChange={val => setForm({ ...form, lokasi: val })}
+                        options={ALL_LOCATIONS}
+                        placeholder="Cari Kota/Kabupaten..."
                       />
                     </MField>
                     <MField label="Detail Lokasi">
@@ -990,5 +990,85 @@ function MSelect({ value, onChange, options }) {
         );
       })}
     </select>
+  );
+}
+
+function MSearchableSelect({ value, onChange, options, placeholder = 'Pilih atau cari...' }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const filtered = options.filter(o => o.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%', padding: '10px 14px',
+          borderRadius: 12, fontSize: 13,
+          background: 'var(--ad-input)',
+          border: `1px solid ${open ? 'rgba(108,99,255,0.6)' : 'var(--ad-border)'}`,
+          color: value ? 'var(--ad-text)' : 'var(--ad-text-muted)',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          transition: 'all 0.2s',
+          boxShadow: open ? '0 0 0 3px rgba(108,99,255,0.1)' : 'none'
+        }}
+      >
+        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {value || placeholder}
+        </span>
+        <FiChevronDown size={14} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
+      </div>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4,
+          background: 'var(--ad-card)', border: '1px solid var(--ad-border)',
+          borderRadius: 12, zIndex: 50,
+          boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+        }}>
+          <div style={{ padding: 8, borderBottom: '1px solid var(--ad-border)' }}>
+            <input
+              type="text"
+              autoFocus
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Ketik untuk mencari..."
+              style={{
+                width: '100%', padding: '8px 12px',
+                borderRadius: 8, fontSize: 12,
+                background: 'var(--ad-input)',
+                border: '1px solid var(--ad-border)',
+                color: 'var(--ad-text)', outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+          </div>
+          <div style={{ maxHeight: 200, overflowY: 'auto', padding: 4 }}>
+            {filtered.length > 0 ? filtered.map(o => (
+              <div
+                key={o}
+                onClick={() => { onChange(o); setOpen(false); setSearch(''); }}
+                style={{
+                  padding: '8px 12px', fontSize: 12, borderRadius: 8,
+                  cursor: 'pointer', color: value === o ? '#6C63FF' : 'var(--ad-text)',
+                  background: value === o ? 'rgba(108,99,255,0.1)' : 'transparent',
+                  fontWeight: value === o ? 700 : 500,
+                  transition: 'background 0.1s'
+                }}
+                onMouseEnter={e => { if (value !== o) e.currentTarget.style.background = 'var(--ad-input)'; }}
+                onMouseLeave={e => { if (value !== o) e.currentTarget.style.background = 'transparent'; }}
+              >
+                {o}
+              </div>
+            )) : (
+              <div style={{ padding: '12px', fontSize: 12, color: 'var(--ad-text-muted)', textAlign: 'center' }}>
+                Tidak ada hasil
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

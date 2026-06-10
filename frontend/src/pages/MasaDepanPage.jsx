@@ -117,6 +117,7 @@ export default function MasaDepanPage() {
   const [filterLokasi, setFilterLokasi] = useState('');
   const [filterTipe, setFilterTipe] = useState('');
   const [filterPerusahaan, setFilterPerusahaan] = useState('');
+  const [filterMagang, setFilterMagang] = useState('');
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -158,14 +159,15 @@ export default function MasaDepanPage() {
       const matchLokasi = filterLokasi ? l.lokasi === filterLokasi : true;
       const matchTipe = filterTipe ? l.tipe_pekerjaan === filterTipe : true;
       const matchPerusahaan = filterPerusahaan ? l.perusahaan === filterPerusahaan : true;
-      return matchSearch && matchLokasi && matchTipe && matchPerusahaan;
+      const matchMagang = filterMagang === 'Magang' ? l.is_magang === true : filterMagang === 'Profesional' ? l.is_magang === false : true;
+      return matchSearch && matchLokasi && matchTipe && matchPerusahaan && matchMagang;
     });
-  }, [lowongans, search, filterLokasi, filterTipe, filterPerusahaan]);
+  }, [lowongans, search, filterLokasi, filterTipe, filterPerusahaan, filterMagang]);
 
   // Reset to page 1 whenever filters or perPage change
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, filterLokasi, filterTipe, filterPerusahaan, jobsPerPage]);
+  }, [search, filterLokasi, filterTipe, filterPerusahaan, filterMagang, jobsPerPage]);
 
   // Pagination math
   const totalPages = Math.max(1, Math.ceil(filteredLowongans.length / jobsPerPage));
@@ -174,13 +176,14 @@ export default function MasaDepanPage() {
     currentPage * jobsPerPage
   );
 
-  const hasActiveFilters = search || filterLokasi || filterTipe || filterPerusahaan;
+  const hasActiveFilters = search || filterLokasi || filterTipe || filterPerusahaan || filterMagang;
 
   const resetFilters = () => {
     setSearch('');
     setFilterLokasi('');
     setFilterTipe('');
     setFilterPerusahaan('');
+    setFilterMagang('');
     setOpenFilter(null);
   };
 
@@ -270,6 +273,17 @@ export default function MasaDepanPage() {
             />
 
             <SearchableFilter
+              label="Kategori"
+              allLabel="Semua Kategori"
+              value={filterMagang}
+              options={['Magang', 'Profesional']}
+              isOpen={openFilter === 'magang'}
+              onToggle={() => setOpenFilter(openFilter === 'magang' ? null : 'magang')}
+              onClose={() => setOpenFilter(null)}
+              onChange={setFilterMagang}
+            />
+
+            <SearchableFilter
               label="Lokasi"
               allLabel="Semua Lokasi"
               value={filterLokasi}
@@ -295,6 +309,11 @@ export default function MasaDepanPage() {
             {filterTipe && (
               <button onClick={() => setFilterTipe('')} title={filterTipe} className="flex min-w-0 max-w-full items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[11px] font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
                 <span className="max-w-[10rem] truncate">{filterTipe}</span> <FiX className="shrink-0" size={11} />
+              </button>
+            )}
+            {filterMagang && (
+              <button onClick={() => setFilterMagang('')} title={filterMagang} className="flex min-w-0 max-w-full items-center gap-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[11px] font-bold px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                <span className="max-w-[10rem] truncate">{filterMagang}</span> <FiX className="shrink-0" size={11} />
               </button>
             )}
             {filterLokasi && (
@@ -518,12 +537,17 @@ export default function MasaDepanPage() {
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-700">
                       <FiMapPin />
-                      <span className="max-w-[18rem] block truncate">{selectedJob.lokasi || 'Nasional / Remote'}{selectedJob.detail_lokasi ? `, ${selectedJob.detail_lokasi}` : ''}</span>
+                      <span className="max-w-[18rem] block truncate">{selectedJob.lokasi || 'Nasional / Remote'}</span>
                     </span>
                     <span className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${selectedJob.is_magang ? 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-900/50' : 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-900/50'}`}>
                       <FiBriefcase /> {selectedJob.is_magang ? 'Magang' : (selectedJob.tipe_pekerjaan || 'Profesional')}
                     </span>
                   </div>
+                  {selectedJob.detail_lokasi && (
+                    <div className="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                      <strong>Detail Lokasi:</strong> {selectedJob.detail_lokasi}
+                    </div>
+                  )}
                 </div>
               </div>
 

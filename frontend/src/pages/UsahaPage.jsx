@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiExternalLink, FiArrowRight, FiDownload, FiFileText, FiX } from 'react-icons/fi';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 export default function UsahaPage() {
@@ -11,6 +11,18 @@ export default function UsahaPage() {
   const [selectedContent, setSelectedContent] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Sync activeTab with URL hash
+  const getTabFromHash = (hash) => {
+    const map = { '#memulai': 'memulai', '#resources': 'resources', '#keuangan': 'keuangan' };
+    return map[hash] || 'memulai';
+  };
+  const [activeTab, setActiveTab] = useState(() => getTabFromHash(location.hash));
+
+  useEffect(() => {
+    setActiveTab(getTabFromHash(location.hash));
+  }, [location.hash]);
 
   useEffect(() => {
     api.getContents('usaha').then(d => { if (Array.isArray(d)) setUsahaItems(d); }).catch(console.error);
@@ -57,8 +69,31 @@ export default function UsahaPage() {
       {/* CONTENT */}
       <div className="max-w-5xl mx-auto px-6 space-y-12 relative z-10">
 
+        {/* Tab Sub Menu */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          <button
+            onClick={() => navigate('/usaha#memulai', { replace: true })}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'memulai' ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-blue-200/50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`}
+          >
+            Tips Memulai Usaha
+          </button>
+          <button
+            onClick={() => navigate('/usaha#resources', { replace: true })}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'resources' ? 'bg-red-500 text-white border-red-500 shadow-md shadow-red-500/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-red-200/50 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-900/20'}`}
+          >
+            Resources
+          </button>
+          <button
+            onClick={() => navigate('/usaha#keuangan', { replace: true })}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'keuangan' ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-blue-200/50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`}
+          >
+            Tips Mengatur Keuangan
+          </button>
+        </div>
+
         {/* Tips memulai usaha */}
-        <section id="memulai-usaha" className="scroll-mt-32">
+        {activeTab === 'memulai' && (
+        <section className="scroll-mt-32 animate-[slideUp_0.35s_ease-out]">
           <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips Memulai Usaha</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {usahaItems.length > 0 ? usahaItems.map((item, idx) => (
@@ -79,9 +114,11 @@ export default function UsahaPage() {
             )}
           </div>
         </section>
+        )}
 
         {/* Resources Articles */}
-        <section>
+        {activeTab === 'resources' && (
+        <section className="animate-[slideUp_0.35s_ease-out]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-red-50 dark:bg-zinc-900 rounded-[24px] p-6 text-center border border-red-100 dark:border-zinc-800 hover:shadow-md transition-all cursor-pointer">
               <h4 className="font-bold text-red-600 dark:text-red-400 text-base mb-2">Articles</h4>
@@ -100,9 +137,11 @@ export default function UsahaPage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* Tips mengatur keuangan grid */}
-        <section id="mengatur-keuangan" className="scroll-mt-32">
+        {activeTab === 'keuangan' && (
+        <section className="scroll-mt-32 animate-[slideUp_0.35s_ease-out]">
           <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips Mengatur Keuangan</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {keuanganItems.length > 0 ? keuanganItems.map((item) => (
@@ -123,6 +162,7 @@ export default function UsahaPage() {
             )}
           </div>
         </section>
+        )}
       </div>
 
       {/* ===== ARTICLE DETAIL MODAL ===== */}

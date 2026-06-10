@@ -18,14 +18,24 @@ import logoBika from '../assets/loog.svg';
 const navLinks = [
     { path: '/', label: 'Dashboard', icon: FiHome },
     { path: '/masa-depan', label: 'Lowongan Kerja', icon: FiBriefcase },
-    { path: '/tutorial', label: 'Tutorial & Kuis', icon: FiPlay },
+    {
+        path: '/tutorial',
+        label: 'Tutorial & Kuis',
+        icon: FiPlay,
+        children: [
+            { path: '/tutorial#bank_kuis', label: 'Bank Kuis' },
+            { path: '/tutorial#wawancara', label: 'Tips & Trick Wawancara' },
+            { path: '/tutorial#asesmen', label: 'Tes Asesmen' }
+        ]
+    },
     {
         path: '/usaha',
         label: 'Tips Usaha',
         icon: FiZap,
         children: [
-            { path: '/usaha/memulai', label: 'Tips Memulai Usaha' },
-            { path: '/usaha/keuangan', label: 'Tips Mengatur Keuangan' }
+            { path: '/usaha#memulai', label: 'Tips Memulai Usaha' },
+            { path: '/usaha#resources', label: 'Resources' },
+            { path: '/usaha#keuangan', label: 'Tips Mengatur Keuangan' }
         ]
     },
     { path: '/profil', label: 'Profil Saya', icon: FiUser },

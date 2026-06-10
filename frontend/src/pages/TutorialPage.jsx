@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FiPlay, FiBookOpen, FiMessageCircle, FiX, FiExternalLink, FiArrowRight, FiDownload, FiFileText } from 'react-icons/fi';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +11,18 @@ export default function TutorialPage() {
   const [selectedContent, setSelectedContent] = useState(null);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Sync activeTab with URL hash (e.g. /tutorial#bank_kuis)
+  const getTabFromHash = (hash) => {
+    const map = { '#bank_kuis': 'bank_kuis', '#wawancara': 'wawancara', '#asesmen': 'asesmen' };
+    return map[hash] || 'bank_kuis';
+  };
+  const [activeTab, setActiveTab] = useState(() => getTabFromHash(location.hash));
+
+  useEffect(() => {
+    setActiveTab(getTabFromHash(location.hash));
+  }, [location.hash]);
   const { user } = useAuth();
   const regularQuizzes = quizzes.filter((quiz) => quiz.kategori !== 'psikotes');
   const assessmentQuizzes = quizzes.filter((quiz) => quiz.kategori === 'psikotes');
@@ -81,8 +93,31 @@ export default function TutorialPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6 sm:space-y-8 relative z-10">
 
+        {/* Tab Sub Menu */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          <button 
+            onClick={() => navigate('/tutorial#bank_kuis', { replace: true })}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'bank_kuis' ? 'bg-rose-500 text-white border-rose-500 shadow-md shadow-rose-500/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-rose-200/50 dark:border-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-900/20'}`}
+          >
+            Bank Kuis
+          </button>
+          <button 
+            onClick={() => navigate('/tutorial#wawancara', { replace: true })}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'wawancara' ? 'bg-rose-500 text-white border-rose-500 shadow-md shadow-rose-500/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-rose-200/50 dark:border-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-900/20'}`}
+          >
+            Tips & Trick Wawancara
+          </button>
+          <button 
+            onClick={() => navigate('/tutorial#asesmen', { replace: true })}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'asesmen' ? 'bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-600/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-violet-200/50 dark:border-violet-900/30 hover:bg-violet-50 dark:hover:bg-violet-900/20'}`}
+          >
+            Tes Asesmen
+          </button>
+        </div>
+
         {/* 1. Bank Kuis Section */}
-        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+        {activeTab === 'bank_kuis' && (
+        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors animate-[slideUp_0.35s_ease-out]">
           <div className="flex items-center gap-3 mb-4 sm:mb-6">
             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiBookOpen className="text-xl" />
@@ -137,9 +172,11 @@ export default function TutorialPage() {
             )}
           </div>
         </div>
+        )}
 
         {/* 2. Tips & Trick Wawancara Section */}
-        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors">
+        {activeTab === 'wawancara' && (
+        <div className="bg-rose-500/80 dark:bg-rose-900/40 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-rose-200 dark:border-rose-900/50 transition-colors animate-[slideUp_0.35s_ease-out]">
           <div className="flex items-center gap-3 mb-4 sm:mb-8">
             <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/30 dark:bg-black/20 rounded-xl flex items-center justify-center text-white">
               <FiMessageCircle className="text-xl" />
@@ -183,9 +220,11 @@ export default function TutorialPage() {
             </div>
           </div>
         </div>
+        )}
 
         {/* 3. Tes Asesmen Section */}
-        <div className="bg-violet-600/85 dark:bg-violet-950/45 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-violet-200/60 dark:border-violet-900/50 transition-colors relative overflow-hidden">
+        {activeTab === 'asesmen' && (
+        <div className="bg-violet-600/85 dark:bg-violet-950/45 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 shadow-sm border border-violet-200/60 dark:border-violet-900/50 transition-colors relative overflow-hidden animate-[slideUp_0.35s_ease-out]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
 
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-4 sm:mb-8 relative z-10">
@@ -247,6 +286,7 @@ export default function TutorialPage() {
             )}
           </div>
         </div>
+        )}
 
       </div>
 
@@ -352,7 +392,7 @@ export default function TutorialPage() {
       {selectedQuiz && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={closeQuizModal}>
           <div
-            className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg shadow-2xl animate-[slideUp_0.35s_ease-out] flex flex-col overflow-hidden"
+            className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-lg max-h-[90vh] shadow-2xl animate-[slideUp_0.35s_ease-out] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Cover image */}
@@ -375,7 +415,7 @@ export default function TutorialPage() {
             </div>
 
             {/* Body */}
-            <div className="p-8">
+            <div className="p-8 overflow-y-auto custom-scrollbar">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight mb-3 tracking-tight">
                 {selectedQuiz.judul}
               </h2>
