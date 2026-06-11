@@ -72,7 +72,6 @@ export default function UserSidebar({ collapsed, setCollapsed, mobileOpen, setMo
                 {!collapsed && (
                     <Link to="/" className="flex items-center gap-2 no-underline">
                         <img src={logoBika} alt="BIKA" className="h-7 w-auto" />
-                        <span className="font-black text-xl text-blue-600 tracking-tighter">BIKA</span>
                     </Link>
                 )}
                 <button

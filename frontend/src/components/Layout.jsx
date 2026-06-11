@@ -3,6 +3,8 @@ import { Outlet, useLocation } from 'react-router-dom';
 import UserSidebar from './UserSidebar';
 import { useAuth } from '../context/AuthContext';
 import { FiMenu } from 'react-icons/fi';
+import logoBika from '../assets/loog.svg';
+import { Link } from 'react-router-dom';
 
 export default function Layout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -44,7 +46,10 @@ export default function Layout() {
       >
         {showSidebar && (
           <div className="md:hidden flex items-center justify-between bg-white dark:bg-zinc-950 p-4 border-b border-slate-100 dark:border-zinc-900 sticky top-0 z-30">
-            <span className="font-black text-xl text-blue-600 tracking-tighter">BIKA</span>
+            
+            <Link to="/">
+              <img src={logoBika} alt="BIKA Logo" className="h-8" />
+            </Link>
             <button 
               onClick={() => setMobileOpen(true)}
               className="p-2 text-slate-500 hover:text-blue-600 border-none bg-transparent cursor-pointer"

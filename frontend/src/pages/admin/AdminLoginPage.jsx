@@ -134,119 +134,7 @@ export default function AdminLoginPage() {
         style={{ background: 'var(--color-bg-body,#0F1123)', fontFamily:"'Inter',system-ui,sans-serif" }}
       >
 
-        {/* ══════════════════════════════════════════
-            LEFT PANEL — hidden on mobile, shown lg+
-        ══════════════════════════════════════════ */}
-        <div
-          className="hidden lg:flex lg:w-[52%] relative flex-col justify-between p-14 overflow-hidden flex-shrink-0"
-          style={{
-            background: 'linear-gradient(145deg,#0B0D1F 0%,#0F1230 45%,#0A0C1A 100%)',
-            animation: mounted ? 'alSlideLeft .7s cubic-bezier(.16,1,.3,1) both' : 'none',
-          }}
-        >
-          {/* Orbs */}
-          <Orb size="500px" style={{ top:'-120px', right:'-100px',
-            background:'radial-gradient(circle,rgba(108,99,255,.22) 0%,transparent 70%)',
-            animation:'alOrbFloat 9s ease-in-out infinite' }} />
-          <Orb size="380px" style={{ bottom:'40px', left:'-100px',
-            background:'radial-gradient(circle,rgba(255,107,157,.18) 0%,transparent 70%)',
-            animation:'alOrbFloat 7s ease-in-out infinite reverse' }} />
-          <Orb size="220px" style={{ top:'38%', right:'8%',
-            background:'radial-gradient(circle,rgba(0,217,255,.12) 0%,transparent 70%)',
-            animation:'alOrbFloat 5s ease-in-out infinite' }} />
-
-          {/* Rotating rings */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-            {[600,480,360].map((s,i) => (
-              <div key={s} className="absolute rounded-full" style={{
-                width:s, height:s, top:'50%', left:'50%',
-                transform:'translate(-50%,-50%)',
-                border:'1px solid rgba(108,99,255,.07)',
-                animation:`alSpin ${20-i*4}s linear infinite ${i%2?'reverse':''}`,
-              }} />
-            ))}
-          </div>
-
-          {/* Dot grid */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            backgroundImage:'radial-gradient(circle,rgba(255,255,255,.04) 1px,transparent 1px)',
-            backgroundSize:'28px 28px',
-          }} />
-
-          {/* Vignette */}
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background:'radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.55) 100%)' }} />
-
-          {/* Logo */}
-          <div className="relative z-10 flex items-center gap-3">
-            <div className="relative">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-lg shadow-2xl"
-                style={{ background:'linear-gradient(135deg,#6C63FF,#FF6B9D)' }}>B</div>
-              <div className="absolute inset-0 rounded-2xl"
-                style={{ background:'linear-gradient(135deg,#6C63FF,#FF6B9D)', animation:'alPulse 2.5s ease-out infinite' }} />
-            </div>
-            <div>
-              <p className="text-xl font-black text-white tracking-tight leading-none">BIKA</p>
-              <p className="text-[10px] font-bold uppercase tracking-[.2em] leading-none mt-0.5" style={{ color:'#FF6B9D' }}>
-                Admin Panel
-              </p>
-            </div>
-          </div>
-
-          {/* Main copy */}
-          <div className="relative z-10 space-y-8 max-w-md">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
-              style={{ background:'rgba(108,99,255,.15)', border:'1px solid rgba(108,99,255,.3)', backdropFilter:'blur(8px)' }}>
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400" style={{ animation:'alBlink 2s ease-in-out infinite' }} />
-              <span className="text-[10px] font-black text-white/70 uppercase tracking-[.2em]">Sistem Aktif</span>
-            </div>
-
-            {/* Headline */}
-            <div>
-              <h1 className="text-5xl xl:text-6xl font-black text-white leading-[1.05] tracking-tight">
-                Pusat<br />Kendali<br />
-                <span style={{ background:'linear-gradient(135deg,#6C63FF,#FF6B9D)',
-                  WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>BIKA</span>
-              </h1>
-              <p className="text-slate-400 text-sm leading-relaxed mt-4 max-w-xs">
-                Kelola seluruh konten, pengguna, dan data platform dari satu dasbor terpusat.
-              </p>
-            </div>
-
-            {/* Feature chips */}
-            <div className="grid grid-cols-2 gap-3">
-              {adminFeatures.map((f) => (
-                <div key={f.label}
-                  className="flex items-center gap-2.5 rounded-2xl px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 cursor-default"
-                  style={{ background:'rgba(255,255,255,.05)', border:'1px solid rgba(255,255,255,.08)', backdropFilter:'blur(6px)' }}>
-                  <div className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background:`${f.color}30`, color:f.color }}>{f.icon}</div>
-                  <p className="text-xs font-semibold text-white/80">{f.label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Stats */}
-            <div className="flex items-center gap-8 pt-6 border-t border-white/10">
-              {[
-                { label:'Uptime',    value:'99.9%' },
-                { label:'Pengguna',  value:<><CountUp target={1200} />+</> },
-                { label:'Konten',    value:<><CountUp target={340} />+</> },
-              ].map((s) => (
-                <div key={s.label}>
-                  <p className="text-2xl font-black text-white">{s.value}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-0.5">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Tagline */}
-          <div className="relative z-10">
-            <p className="text-[11px] text-slate-600 font-medium">© 2025 BIKA — Bimbingan Karir Siswa SMK</p>
-          </div>
-        </div>
+        {/* Left admin branding removed for simplified admin login */}
 
         {/* ══════════════════════════════════════════
             RIGHT PANEL — Login Form
@@ -254,8 +142,7 @@ export default function AdminLoginPage() {
             • Desktop : w-[48%], flex-shrink-0
         ══════════════════════════════════════════ */}
         <div
-          className="w-full lg:w-[48%] flex-shrink-0 flex flex-col items-center justify-center
-                     min-h-screen lg:min-h-0 px-5 py-10 sm:px-8 relative"
+          className="w-full flex-1 flex flex-col items-center justify-center min-h-screen px-5 py-10 sm:px-8 relative"
           style={{ background:'var(--color-bg-body,#0F1123)' }}
         >
           {/* Bg glows */}
