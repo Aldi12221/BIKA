@@ -512,7 +512,6 @@ export default function ManageContentPage({ kategoriProp }) {
           <span className="text-text-muted">{selected.size} dari {filtered.length} dipilih</span>
         </div>
       )}
-      )}
 
       {/* Admin: Templates untuk Usaha */}
       {kategoriProp === 'usaha' && (
