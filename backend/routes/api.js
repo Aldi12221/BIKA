@@ -5,6 +5,7 @@ const authCtrl = require('../controllers/authController');
 const contentCtrl = require('../controllers/contentController');
 const quizCtrl = require('../controllers/quizController');
 const adminAuthCtrl = require('../controllers/adminAuthController');
+const templateCtrl = require('../controllers/templateController');
 const { isAdmin } = require('../config/authMiddleware');
 
 // Routes Auth & Profile (User)
@@ -18,6 +19,10 @@ router.get('/stats/public', contentCtrl.getPublicStats);
 router.post('/contents', isAdmin, contentCtrl.createContent);
 router.put('/contents/:id', isAdmin, contentCtrl.updateContent);
 router.delete('/contents/:id', isAdmin, contentCtrl.deleteContent);
+
+// Templates (public GET, admin POST)
+router.get('/templates', templateCtrl.getAllTemplates);
+router.post('/templates', isAdmin, templateCtrl.createOrUpdateTemplate);
 
 // Routes Quizzes
 router.get('/quizzes', quizCtrl.getAllQuiz);

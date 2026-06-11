@@ -5,6 +5,7 @@ const Job = require('./Job');
 const Tutorial = require('./Tutorial');
 const Business = require('./Business');
 const Finance = require('./Finance');
+const Template = require('./Template');
 
 module.exports = {
   User,
@@ -14,4 +15,5 @@ module.exports = {
   Tutorial,
   Business,
   Finance
+  ,Template
 };

@@ -1,19 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import { FiExternalLink, FiArrowRight, FiDownload, FiFileText, FiX } from 'react-icons/fi';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  FiExternalLink,
+  FiArrowRight,
+  FiDownload,
+  FiFileText,
+  FiX,
+  FiBookOpen,
+  FiFolder,
+  FiTool,
+  FiZap,
+  FiClipboard,
+  FiPrinter,
+  FiBarChart2,
+  FiEdit3,
+  FiGrid,
+} from 'react-icons/fi';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
+// Business templates are fetched from server (admin-managed)
+
+const RESOURCE_TOOLS = [
+  {
+    title: 'Canva',
+    description: 'Buat poster, katalog, dan konten promosi untuk produkmu.',
+    url: 'https://www.canva.com/',
+    Icon: FiEdit3,
+  },
+  {
+    title: 'Google Sheets',
+    description: 'Catat modal, stok, penjualan, dan arus kas usaha kecil.',
+    url: 'https://docs.google.com/spreadsheets/',
+    Icon: FiBarChart2,
+  },
+  {
+    title: 'Trello',
+    description: 'Atur daftar tugas produksi, pemasaran, dan follow-up pelanggan.',
+    url: 'https://trello.com/',
+    Icon: FiGrid,
+  },
+];
+
+const parseFiles = (value) => {
+  if (!value) return [];
+  try {
+    const files = JSON.parse(value);
+    return Array.isArray(files) ? files : [];
+  } catch {
+    return [];
+  }
+};
+
 export default function UsahaPage() {
   const [usahaItems, setUsahaItems] = useState([]);
+  const [businessTemplates, setBusinessTemplates] = useState([]);
   const [keuanganItems, setKeuanganItems] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
+  const [activeResourcePanel, setActiveResourcePanel] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Sync activeTab with URL hash
   const getTabFromHash = (hash) => {
     const map = { '#memulai': 'memulai', '#resources': 'resources', '#keuangan': 'keuangan' };
     return map[hash] || 'memulai';
@@ -25,8 +74,9 @@ export default function UsahaPage() {
   }, [location.hash]);
 
   useEffect(() => {
-    api.getContents('usaha').then(d => { if (Array.isArray(d)) setUsahaItems(d); }).catch(console.error);
-    api.getContents('keuangan').then(d => { if (Array.isArray(d)) setKeuanganItems(d); }).catch(console.error);
+    api.getContents('usaha').then((data) => { if (Array.isArray(data)) setUsahaItems(data); }).catch(console.error);
+    api.getContents('keuangan').then((data) => { if (Array.isArray(data)) setKeuanganItems(data); }).catch(console.error);
+    api.getTemplates().then((t) => { if (Array.isArray(t)) setBusinessTemplates(t); }).catch(() => setBusinessTemplates([]));
   }, []);
 
   useEffect(() => {
@@ -38,6 +88,8 @@ export default function UsahaPage() {
     return () => { document.body.style.overflow = 'unset'; };
   }, [selectedContent]);
 
+  // templates fetched from server
+
   const openContentDetail = (item) => {
     setSelectedContent(item);
   };
@@ -45,6 +97,78 @@ export default function UsahaPage() {
   const closeContentModal = () => {
     setSelectedContent(null);
   };
+
+  const downloadTemplateFile = (template) => {
+    if (template.data) {
+      // assume data is data URL
+      const link = document.createElement('a');
+      link.href = template.data;
+      link.download = template.file_name || template.fileName || (template.title || 'template') + '.txt';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success(`${template.title || template.key} berhasil diunduh`);
+      return;
+    }
+    // fallback: plain text content
+    if (template.content) {
+      const blob = new Blob([template.content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = template.fileName || 'template.txt';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast.success(`${template.title} berhasil diunduh`);
+      return;
+    }
+    toast.error('Template tidak tersedia untuk diunduh');
+  };
+
+  // download handled by downloadTemplateFile for templates
+
+  const openResourcePanel = (panel) => {
+    setActiveResourcePanel(panel);
+    window.setTimeout(() => {
+      document.getElementById(`resource-${panel}`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 0);
+  };
+
+  const openExternalResource = (url) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const resourceCards = [
+    {
+      key: 'articles',
+      title: 'Articles',
+      description: 'Kumpulan artikel menarik tentang merintis bisnis skala kecil.',
+      actionLabel: 'Buka Artikel',
+      Icon: FiBookOpen,
+      onClick: () => navigate('/usaha#memulai', { replace: true }),
+    },
+    {
+      key: 'templates',
+      title: 'Resources',
+      description: 'Dokumen template bisnis plan, invoice, dan laporan bulanan.',
+      actionLabel: 'Lihat Template',
+      Icon: FiFolder,
+      onClick: () => openResourcePanel('templates'),
+    },
+    {
+      key: 'tools',
+      title: 'Resource Tools',
+      description: 'Rekomendasi alat bantu produktivitas dan operasional.',
+      actionLabel: 'Lihat Tools',
+      Icon: FiTool,
+      onClick: () => openResourcePanel('tools'),
+    },
+  ];
 
   return (
     <div className="min-h-screen pb-24 overflow-x-hidden bg-[#F8FAFC] dark:bg-black transition-colors duration-300">
@@ -55,7 +179,7 @@ export default function UsahaPage() {
       {/* HEADER */}
       <section className="pt-32 pb-14 text-center relative z-10">
         <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md px-5 py-2 rounded-full shadow-sm border border-slate-100/50 dark:border-zinc-800 mb-5 hover:shadow-md transition-shadow">
-          <span className="text-blue-600 text-lg">🚀</span>
+          <FiZap className="text-blue-600" size={18} />
           <span className="text-[11px] font-black text-blue-900 dark:text-blue-400 uppercase tracking-[0.25em]">Mulai Langkah Pertamamu</span>
         </div>
         <h1 className="text-5xl md:text-6xl font-black text-blue-950 dark:text-white tracking-tight uppercase mb-3 drop-shadow-sm transition-colors">
@@ -96,10 +220,10 @@ export default function UsahaPage() {
         <section className="scroll-mt-32 animate-[slideUp_0.35s_ease-out]">
           <h2 className="text-xl font-black text-blue-950 dark:text-white mb-4 transition-colors">Tips Memulai Usaha</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {usahaItems.length > 0 ? usahaItems.map((item, idx) => (
+            {usahaItems.length > 0 ? usahaItems.map((item, index) => (
               <div key={item.id} onClick={() => openContentDetail(item)} className="bg-white dark:bg-zinc-900 rounded-[24px] p-5 shadow-sm border border-slate-50 dark:border-zinc-800 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group">
                 <div className="relative w-full h-36 mb-4 rounded-[16px] overflow-hidden">
-                  <img src={item.gambar || `https://images.unsplash.com/photo-${1522071820081 + idx}?w=400&q=80`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={item.judul} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80" }} />
+                  <img src={item.gambar || `https://images.unsplash.com/photo-${1522071820081 + index}?w=400&q=80`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={item.judul} onError={(event) => { event.target.src = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&q=80" }} />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
                 </div>
                 <h4 className="font-bold text-blue-950 dark:text-slate-100 text-[15px] mb-2 leading-snug group-hover:text-blue-600 transition-colors">{item.judul}</h4>
@@ -120,22 +244,100 @@ export default function UsahaPage() {
         {activeTab === 'resources' && (
         <section className="animate-[slideUp_0.35s_ease-out]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-red-50 dark:bg-zinc-900 rounded-[24px] p-6 text-center border border-red-100 dark:border-zinc-800 hover:shadow-md transition-all cursor-pointer">
-              <h4 className="font-bold text-red-600 dark:text-red-400 text-base mb-2">Articles</h4>
-              <p className="text-[12px] text-red-600/80 dark:text-slate-400 mb-5 font-medium leading-relaxed px-4">Kumpulan artikel menarik tentang merintis bisnis skala kecil.</p>
-              <div className="w-14 h-14 mx-auto bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-red-500 dark:text-red-400 text-2xl shadow-sm border border-red-50 dark:border-zinc-700 hover:scale-110 transition-transform">📰</div>
-            </div>
-            <div className="bg-red-50 dark:bg-zinc-900 rounded-[24px] p-6 text-center border border-red-100 dark:border-zinc-800 hover:shadow-md transition-all cursor-pointer">
-              <h4 className="font-bold text-red-600 dark:text-red-400 text-base mb-2">Resources</h4>
-              <p className="text-[12px] text-red-600/80 dark:text-slate-400 mb-5 font-medium leading-relaxed px-4">Dokumen template bisnis plan, invoice, dan laporan bulanan.</p>
-              <div className="w-14 h-14 mx-auto bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-red-500 dark:text-red-400 text-2xl shadow-sm border border-red-50 dark:border-zinc-700 hover:scale-110 transition-transform">📑</div>
-            </div>
-            <div className="bg-red-50 dark:bg-zinc-900 rounded-[24px] p-6 text-center border border-red-100 dark:border-zinc-800 hover:shadow-md transition-all cursor-pointer">
-              <h4 className="font-bold text-red-600 dark:text-red-400 text-base mb-2">Resource Tools</h4>
-              <p className="text-[12px] text-red-600/80 dark:text-slate-400 mb-5 font-medium leading-relaxed px-4">Rekomendasi alat bantu produktivitas dan operasional.</p>
-              <div className="w-14 h-14 mx-auto bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-red-500 dark:text-red-400 text-2xl shadow-sm border border-red-50 dark:border-zinc-700 hover:scale-110 transition-transform">▶️</div>
-            </div>
+            {resourceCards.map((card) => {
+              const Icon = card.Icon;
+              const isActive = activeResourcePanel === card.key;
+              return (
+                <button
+                  key={card.key}
+                  type="button"
+                  onClick={card.onClick}
+                  className={`bg-red-50 dark:bg-zinc-900 rounded-[24px] p-6 text-center border hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer group ${isActive ? 'border-red-300 dark:border-red-500/50 shadow-md shadow-red-500/10' : 'border-red-100 dark:border-zinc-800'}`}
+                  aria-label={`${card.actionLabel} ${card.title}`}
+                >
+                  <h4 className="font-bold text-red-600 dark:text-red-400 text-base mb-2">{card.title}</h4>
+                  <p className="text-[12px] text-red-600/80 dark:text-slate-400 mb-5 font-medium leading-relaxed px-4">{card.description}</p>
+                  <div className="w-14 h-14 mx-auto bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-red-500 dark:text-red-400 shadow-sm border border-red-50 dark:border-zinc-700 group-hover:scale-110 transition-transform">
+                    <Icon size={25} />
+                  </div>
+                  <span className="mt-5 inline-flex items-center justify-center gap-2 text-[11px] font-black text-red-600 dark:text-red-400 uppercase tracking-wider">
+                    {card.actionLabel}
+                    <FiArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </button>
+              );
+            })}
           </div>
+
+          {activeResourcePanel === 'templates' && (
+            <div id="resource-templates" className="mt-8 rounded-[28px] border border-red-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 p-6 shadow-sm scroll-mt-32">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5">
+                <div>
+                  <h3 className="text-lg font-black text-blue-950 dark:text-white">Template Dokumen Usaha</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Download template dasar yang bisa langsung kamu edit.</p>
+                </div>
+                <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">Resources</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {businessTemplates.length > 0 ? businessTemplates.map((template) => {
+                  const Icon = template.Icon || FiFolder;
+                  return (
+                    <div key={template.key || template.file_name} className="rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/30 p-4">
+                      <div className="w-11 h-11 rounded-xl bg-white dark:bg-zinc-800 text-red-500 dark:text-red-400 flex items-center justify-center shadow-sm mb-3">
+                        <Icon size={20} />
+                      </div>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white mb-2">{template.title || template.key}</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">{template.description}</p>
+                      <button
+                        type="button"
+                        onClick={() => downloadTemplateFile(template)}
+                        className="inline-flex items-center gap-2 text-[11px] font-black text-white bg-red-500 hover:bg-red-600 rounded-full px-4 py-2 border-none cursor-pointer transition-colors"
+                      >
+                        Download <FiDownload size={13} />
+                      </button>
+                    </div>
+                  );
+                }) : (
+                  <div className="col-span-full text-center text-slate-500">Template belum tersedia.</div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeResourcePanel === 'tools' && (
+            <div id="resource-tools" className="mt-8 rounded-[28px] border border-red-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 p-6 shadow-sm scroll-mt-32">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-5">
+                <div>
+                  <h3 className="text-lg font-black text-blue-950 dark:text-white">Resource Tools</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Pilih alat bantu sesuai kebutuhan operasional usahamu.</p>
+                </div>
+                <span className="text-[10px] font-black text-red-500 uppercase tracking-widest">Tools</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {RESOURCE_TOOLS.map((tool) => {
+                  const Icon = tool.Icon;
+                  return (
+                    <button
+                      key={tool.title}
+                      type="button"
+                      onClick={() => openExternalResource(tool.url)}
+                      className="rounded-2xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/30 p-4 text-left hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer group"
+                    >
+                      <div className="w-11 h-11 rounded-xl bg-white dark:bg-zinc-800 text-red-500 dark:text-red-400 flex items-center justify-center shadow-sm mb-3">
+                        <Icon size={20} />
+                      </div>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white mb-2">{tool.title}</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-4">{tool.description}</p>
+                      <span className="inline-flex items-center gap-2 text-[11px] font-black text-red-500 uppercase tracking-wider">
+                        Buka Tool
+                        <FiExternalLink size={13} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </section>
         )}
 
@@ -170,14 +372,16 @@ export default function UsahaPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={closeContentModal}>
           <div
             className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl animate-[slideUp_0.35s_ease-out] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
           >
             {/* Modal Header/Image */}
             <div className="relative w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 shrink-0">
               {selectedContent.gambar ? (
                 <img src={selectedContent.gambar} alt={selectedContent.judul} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-5xl opacity-30">📰</div>
+                <div className="w-full h-full flex items-center justify-center text-blue-500 opacity-30">
+                  <FiFileText size={56} />
+                </div>
               )}
               <button onClick={closeContentModal} className="absolute top-4 right-4 w-10 h-10 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-md border-none cursor-pointer transition-all">
                 <FiX size={20} />
@@ -207,7 +411,7 @@ export default function UsahaPage() {
               {selectedContent.link_eksternal && (
                 <div className="mt-10 pt-6 border-t border-slate-100 dark:border-white/5">
                   <button
-                    onClick={() => window.open(selectedContent.link_eksternal, '_blank')}
+                    onClick={() => window.open(selectedContent.link_eksternal, '_blank', 'noopener,noreferrer')}
                     className="flex items-center gap-2 text-blue-600 font-black text-sm hover:gap-3 transition-all cursor-pointer bg-transparent border-none"
                   >
                     Kunjungi Sumber Eksternal <FiExternalLink />
@@ -215,43 +419,7 @@ export default function UsahaPage() {
                 </div>
               )}
 
-              {/* File Tambahan */}
-              {selectedContent.file_tambahan && JSON.parse(selectedContent.file_tambahan).length > 0 && (
-                <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/5">
-                  <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider mb-4">File Lampiran</h4>
-                  <div className="flex flex-col gap-3">
-                    {JSON.parse(selectedContent.file_tambahan).map((file, i) => (
-                      <div key={i} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-black/40 rounded-2xl border border-slate-100 dark:border-white/5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-white dark:bg-zinc-800 rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
-                            <FiFileText size={20} />
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-slate-800 dark:text-white line-clamp-1">{file.name}</p>
-                            <p className="text-[10px] font-medium text-slate-400 uppercase">{file.type?.split('/')[1] || 'File'}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            if (!user) {
-                              toast.error('Silakan login untuk mendownload lampiran');
-                              navigate('/login');
-                              return;
-                            }
-                            const link = document.createElement('a');
-                            link.href = file.data;
-                            link.download = file.name;
-                            link.click();
-                          }}
-                          className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20 cursor-pointer border-none"
-                        >
-                          <FiDownload size={16} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* File lampiran dihapus sesuai permintaan */}
             </div>
           </div>
         </div>

@@ -125,6 +125,20 @@ const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     }).then(r => r.json()),
+
+  // Templates
+  getTemplates: () =>
+    fetch(`${API_BASE}/templates`).then(r => r.json()),
+
+  uploadTemplate: (data) =>
+    fetch(`${API_BASE}/templates`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
+      body: JSON.stringify(data)
+    }).then(r => r.json()),
 };
 
 export default api;

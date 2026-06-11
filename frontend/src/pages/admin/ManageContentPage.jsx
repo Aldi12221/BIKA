@@ -84,6 +84,7 @@ function confirmToast(message, onConfirm) {
 export default function ManageContentPage({ kategoriProp }) {
   const navigate = useNavigate();
   const [contents, setContents] = useState([]);
+  const [templates, setTemplates] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [form, setForm] = useState({ judul: '', deskripsi: '', kategori: kategoriProp, link_eksternal: '', gambar: '', perusahaan: '', lokasi: '', detail_lokasi: '', tipe_pekerjaan: 'Full-Time', is_magang: false, isi_konten: '', file_tambahan: '[]' });
@@ -115,6 +116,20 @@ export default function ManageContentPage({ kategoriProp }) {
     setSearch('');
     setFilterLokasi(''); setFilterTipe(''); setFilterPerusahaan('');
     setFilterMedia(''); setFilterLink('');
+  }, [kategoriProp]);
+
+  // Load templates for admin manage (only used for 'usaha')
+  const loadTemplates = async () => {
+    try {
+      const t = await api.getTemplates();
+      if (Array.isArray(t)) setTemplates(t);
+    } catch (err) {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    if (kategoriProp === 'usaha') loadTemplates();
   }, [kategoriProp]);
 
   useEffect(() => {
@@ -265,6 +280,26 @@ export default function ManageContentPage({ kategoriProp }) {
       });
       load();
     });
+  };
+
+  const handleUploadTemplate = async (key, fileData, title = '', description = '') => {
+    if (!fileData) return;
+    const payload = {
+      key,
+      title: title || key,
+      description: description || '',
+      file_name: fileData.name,
+      mime_type: fileData.type,
+      data: fileData.data
+    };
+    const toastId = toast.loading('Mengunggah template...');
+    try {
+      await api.uploadTemplate(payload);
+      toast.success('Template berhasil diunggah', { id: toastId });
+      await loadTemplates();
+    } catch (err) {
+      toast.error('Gagal mengunggah template', { id: toastId });
+    }
   };
 
   const getTitle = () => {
@@ -475,6 +510,70 @@ export default function ManageContentPage({ kategoriProp }) {
           </button>
           <span className="text-text-muted">·</span>
           <span className="text-text-muted">{selected.size} dari {filtered.length} dipilih</span>
+        </div>
+      )}
+      )}
+
+      {/* Admin: Templates untuk Usaha */}
+      {kategoriProp === 'usaha' && (
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-bold">Template Dokumen Usaha (Admin)</h3>
+              <p className="text-xs text-text-muted">Unggah atau ganti template Business Plan, Invoice, dan Laporan Bulanan di sini.</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {[
+              { key: 'business_plan', title: 'Template Business Plan' },
+              { key: 'invoice', title: 'Template Invoice' },
+              { key: 'monthly_report', title: 'Laporan Bulanan' }
+            ].map(t => {
+              const existing = templates.find(x => x.key === t.key) || {};
+              return (
+                <div key={t.key} className="rounded-2xl border border-border bg-bg-card p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h4 className="font-bold text-sm mb-1">{t.title}</h4>
+                      <p className="text-xs text-text-muted mb-3">{existing.description || 'Belum ada deskripsi'}</p>
+                      <div className="flex items-center gap-2">
+                        {existing.file_name ? (
+                          <>
+                            <span className="text-[12px] font-semibold">{existing.file_name}</span>
+                            <button onClick={() => {
+                              if (existing.data) {
+                                const a = document.createElement('a');
+                                a.href = existing.data;
+                                a.download = existing.file_name || 'template';
+                                document.body.appendChild(a); a.click(); a.remove();
+                              } else {
+                                toast('Tidak ada data file pada template');
+                              }
+                            }} className="ml-2 px-3 py-1 text-xs rounded-full bg-primary text-white">Download</button>
+                          </>
+                        ) : (
+                          <span className="text-xs text-text-muted">Belum diunggah</span>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-border text-xs">
+                        Unggah
+                        <input type="file" accept="*/*" style={{ display: 'none' }} onChange={async e => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const fileData = await validateAndReadFile(file);
+                            if (fileData) await handleUploadTemplate(t.key, fileData, t.title, '');
+                            e.target.value = '';
+                          }
+                        }} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -714,72 +813,7 @@ export default function ManageContentPage({ kategoriProp }) {
                   )}
                 </MField>
 
-                {/* File Tambahan */}
-                <MField label="File Tambahan (PDF, Excel, dll)">
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <label
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 10,
-                        padding: '12px 16px', borderRadius: 12,
-                        background: 'rgba(108,99,255,0.08)',
-                        border: '1px dashed rgba(108,99,255,0.3)',
-                        cursor: 'pointer', transition: 'all 0.2s',
-                        fontSize: 12, fontWeight: 700, color: '#6C63FF'
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = 'rgba(108,99,255,0.6)';
-                        e.currentTarget.style.background = 'rgba(108,99,255,0.12)';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = 'rgba(108,99,255,0.3)';
-                        e.currentTarget.style.background = 'rgba(108,99,255,0.08)';
-                      }}
-                    >
-                      <FiPaperclip size={16} />
-                      Tambah File Lampiran
-                      <input type="file" style={{ display: 'none' }} onChange={async e => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const fileData = await validateAndReadFile(file);
-                          if (fileData) {
-                            const currentFiles = JSON.parse(form.file_tambahan || '[]');
-                            setForm({ ...form, file_tambahan: JSON.stringify([...currentFiles, fileData]) });
-                          }
-                          e.target.value = '';
-                        }
-                      }} />
-                    </label>
-
-                    {/* List Files */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      {JSON.parse(form.file_tambahan || '[]').map((f, i) => (
-                        <div key={i} style={{
-                          display: 'flex', alignItems: 'center', justifyBetween: 'space-between',
-                          padding: '8px 12px', borderRadius: 10,
-                          background: 'var(--ad-input)', border: '1px solid var(--ad-border)',
-                          gap: 10
-                        }}>
-                          <FiFile size={14} style={{ color: 'var(--ad-text-muted)', flexShrink: 0 }} />
-                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ad-text-sec)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {f.name}
-                          </span>
-                          <button
-                            onClick={() => {
-                              const currentFiles = JSON.parse(form.file_tambahan);
-                              setForm({ ...form, file_tambahan: JSON.stringify(currentFiles.filter((_, idx) => idx !== i)) });
-                            }}
-                            style={{
-                              padding: 4, borderRadius: 6, background: 'none', border: 'none',
-                              color: '#FF5252', cursor: 'pointer', display: 'flex'
-                            }}
-                          >
-                            <FiTrash2 size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </MField>
+                {/* File lampiran dihapus — fitur tidak digunakan */}
               </div>
 
               {/* Right Column */}
