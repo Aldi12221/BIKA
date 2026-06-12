@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import api from '../utils/api';
 import siswa from '../assets/siswa.png';
+import logoBika from '../assets/loog.svg';
 import {
   FiArrowRight,
   FiPlayCircle,
@@ -38,9 +39,13 @@ export default function Beranda() {
 
       {/* HEADER GUEST */}
       <header className="absolute top-0 left-0 right-0 py-6 px-6 lg:px-12 z-50 flex items-center justify-between">
-        <div className="text-3xl font-black text-blue-950 dark:text-white tracking-tighter">
-          BIKA<span className="text-blue-600">.</span>
-        </div>
+        <NavLink to="/" className="no-underline">
+          <img
+            src={logoBika}
+            alt="BIKA Bisa SMK"
+            className="h-12 w-auto object-contain"
+          />
+        </NavLink>
         <NavLink to="/login">
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-blue-600/30 transition-all text-sm flex items-center gap-2">
             Login <FiUser size={16} />
