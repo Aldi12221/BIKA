@@ -22,6 +22,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import ManageContentPage from './pages/admin/ManageContentPage';
 import ManageQuizPage from './pages/admin/ManageQuizPage';
 import ManageUserPage from './pages/admin/ManageUserPage';
+import ManageAdminPage from './pages/admin/ManageAdminPage';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID';
 
@@ -98,6 +99,7 @@ function App() {
               <Route element={<AdminLayout />}>
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
                 <Route path="/admin/users" element={<ManageUserPage />} />
+                <Route path="/admin/admins" element={<ManageAdminPage />} />
                 <Route path="/admin/lowongan" element={<ManageContentPage kategoriProp="lowongan" />} />
                 <Route path="/admin/tutorial" element={<ManageContentPage kategoriProp="tutorial" />} />
                 <Route path="/admin/usaha" element={<ManageContentPage kategoriProp="usaha" />} />
