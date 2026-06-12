@@ -4,7 +4,7 @@ import { useAdminTheme } from '../context/AdminThemeContext';
 import {
   FiGrid, FiHelpCircle, FiLogOut,
   FiBriefcase, FiBookOpen, FiActivity, FiDollarSign, FiUsers,
-  FiChevronsLeft, FiChevronsRight, FiX, FiMessageCircle,
+  FiChevronsLeft, FiChevronsRight, FiX, FiMessageCircle, FiShield,
 } from 'react-icons/fi';
 
 /* ── Collapse toggle button (desktop) ── */
@@ -108,6 +108,7 @@ export default function AdminSidebar() {
   const menuItems = [
     { path: '/admin/dashboard', label: 'Dashboard',         icon: <FiGrid size={19} /> },
     { path: '/admin/users',     label: 'Kelola User',       icon: <FiUsers size={19} /> },
+    { path: '/admin/admins',    label: 'Kelola Admin',      icon: <FiShield size={19} /> },
     { path: '/admin/lowongan',  label: 'Kelola Lowongan',   icon: <FiBriefcase size={19} /> },
     { path: '/admin/tutorial',  label: 'Tips Wawancara',    icon: <FiBookOpen size={19} /> },
     { path: '/admin/usaha',     label: 'Tips Memulai Usaha',icon: <FiActivity size={19} /> },

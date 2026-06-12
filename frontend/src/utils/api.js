@@ -122,8 +122,38 @@ const api = {
   adminRegister: (data) =>
     fetch(`${API_BASE}/admin/register`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
       body: JSON.stringify(data)
+    }).then(r => r.json()),
+
+  // ===== Admin CRUD =====
+  getAdmins: () =>
+    fetch(`${API_BASE}/admin/admins`, {
+      headers: getAuthHeader()
+    }).then(r => r.json()),
+
+  getAdminById: (id) =>
+    fetch(`${API_BASE}/admin/admins/${id}`, {
+      headers: getAuthHeader()
+    }).then(r => r.json()),
+
+  updateAdminUser: (id, data) =>
+    fetch(`${API_BASE}/admin/admins/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
+      body: JSON.stringify(data)
+    }).then(r => r.json()),
+
+  deleteAdminAccount: (id) =>
+    fetch(`${API_BASE}/admin/admins/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeader()
     }).then(r => r.json()),
 
   // Templates

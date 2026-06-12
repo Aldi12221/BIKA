@@ -57,4 +57,10 @@ router.get('/admin/stats', isAdmin, adminAuthCtrl.getDashboardStats);
 router.get('/admin/users', isAdmin, adminAuthCtrl.getAllUsers);
 router.delete('/admin/users/:id', isAdmin, adminAuthCtrl.deleteUser);
 
+// Routes Admin CRUD (kelola akun admin)
+router.get('/admin/admins', isAdmin, adminAuthCtrl.getAllAdmins);
+router.get('/admin/admins/:id', isAdmin, adminAuthCtrl.getAdminById);
+router.put('/admin/admins/:id', isAdmin, adminAuthCtrl.updateAdmin);
+router.delete('/admin/admins/:id', isAdmin, adminAuthCtrl.deleteAdmin);
+
 module.exports = router;

@@ -187,3 +187,90 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// ══════════════════════════════════════════
+// CRUD Admin Management
+// ══════════════════════════════════════════
+
+// GetAllAdmins — list semua admin (tanpa password)
+exports.getAllAdmins = async (req, res) => {
+  try {
+    const admins = await Admin.findAll({
+      attributes: ['id', 'username', 'nama', 'role', 'createdAt', 'updatedAt'],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(admins);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// GetAdminById
+exports.getAdminById = async (req, res) => {
+  try {
+    const admin = await Admin.findByPk(req.params.id, {
+      attributes: ['id', 'username', 'nama', 'role', 'createdAt', 'updatedAt']
+    });
+    if (!admin) return res.status(404).json({ message: 'Admin tidak ditemukan' });
+    res.json(admin);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// UpdateAdmin — update nama, username, role, dan password (opsional)
+exports.updateAdmin = async (req, res) => {
+  try {
+    const admin = await Admin.findByPk(req.params.id);
+    if (!admin) return res.status(404).json({ message: 'Admin tidak ditemukan' });
+
+    const { username, nama, role, password } = req.body;
+
+    // Cek username unik jika diubah
+    if (username && username !== admin.username) {
+      const existing = await Admin.findOne({ where: { username } });
+      if (existing) return res.status(400).json({ message: 'Username sudah digunakan' });
+    }
+
+    if (username) admin.username = username;
+    if (nama) admin.nama = nama;
+    if (role) admin.role = role;
+    if (password && password.trim() !== '') {
+      admin.password = await bcrypt.hash(password, 10);
+    }
+
+    await admin.save();
+
+    res.json({
+      message: 'Admin berhasil diupdate',
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        nama: admin.nama,
+        role: admin.role
+      }
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+// DeleteAdmin — hapus admin (tidak bisa hapus diri sendiri)
+exports.deleteAdmin = async (req, res) => {
+  try {
+    const targetId = parseInt(req.params.id);
+    const currentAdminId = req.admin?.id;
+
+    if (targetId === currentAdminId) {
+      return res.status(400).json({ message: 'Tidak bisa menghapus akun sendiri' });
+    }
+
+    const admin = await Admin.findByPk(targetId);
+    if (!admin) return res.status(404).json({ message: 'Admin tidak ditemukan' });
+
+    await admin.destroy();
+    res.json({ message: 'Admin berhasil dihapus' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
