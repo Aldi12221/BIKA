@@ -133,6 +133,16 @@ export default function MasaDepanPage() {
     }).catch(console.error);
   }, []);
 
+  // Lock body scroll when any modal is open
+  useEffect(() => {
+    if (selectedJob || lightboxImg) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [selectedJob, lightboxImg]);
+
   // Derive unique filter options from data
   const lokasiOptions = useMemo(() => {
     const vals = lowongans.map(l => l.lokasi).filter(Boolean);
