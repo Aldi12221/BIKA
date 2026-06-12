@@ -64,7 +64,7 @@ export default function UsahaPage() {
   const location = useLocation();
 
   const getTabFromHash = (hash) => {
-    const map = { '#memulai': 'memulai', '#resources': 'resources', '#keuangan': 'keuangan' };
+    const map = { '#memulai': 'memulai', '#resources': 'resources', '#keuangan': 'keuangan', '#kalkulator': 'kalkulator' };
     return map[hash] || 'memulai';
   };
   const [activeTab, setActiveTab] = useState(() => getTabFromHash(location.hash));
@@ -79,14 +79,14 @@ export default function UsahaPage() {
     api.getTemplates().then((t) => { if (Array.isArray(t)) setBusinessTemplates(t); }).catch(() => setBusinessTemplates([]));
   }, []);
 
-  // Scroll to top and close on sidebar nav
   useEffect(() => {
-    if (selectedContent) window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (selectedContent) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
   }, [selectedContent]);
-
-  useEffect(() => {
-    setSelectedContent(null);
-  }, [location.pathname, location.hash]);
 
   // templates fetched from server
 
@@ -172,41 +172,6 @@ export default function UsahaPage() {
 
   return (
     <div className="min-h-screen pb-24 overflow-x-hidden bg-[#F8FAFC] dark:bg-black transition-colors duration-300">
-      {/* ===== INLINE ARTICLE DETAIL (replaces modal) ===== */}
-      {selectedContent && (
-        <div className="animate-[slideUp_0.35s_ease-out] w-full bg-white dark:bg-zinc-950 flex flex-col">
-          <div className="sticky top-0 z-30 flex items-center justify-between px-6 py-4 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-b border-slate-100 dark:border-white/5">
-            <button onClick={closeContentModal} className="flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-transparent border-none cursor-pointer">
-              <FiX size={20} /> Tutup Artikel
-            </button>
-            <span className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-sm capitalize">
-              {selectedContent.kategori || 'Tips Usaha'}
-            </span>
-          </div>
-          {selectedContent.gambar ? (
-            <div className="w-full bg-slate-100/50 dark:bg-zinc-900/50 flex justify-center items-center py-8">
-              <img src={selectedContent.gambar} alt={selectedContent.judul} className="max-w-full max-h-[60vh] object-contain shadow-sm rounded-lg" />
-            </div>
-          ) : (
-            <div className="w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 flex items-center justify-center text-6xl opacity-30">🚀</div>
-          )}
-          <div className="max-w-4xl mx-auto px-6 sm:px-10 py-12 pb-24 w-full flex-grow">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">{selectedContent.judul}</h1>
-            <p className="text-slate-500 dark:text-slate-400 font-bold text-sm sm:text-base mb-8 pb-6 border-b border-slate-100 dark:border-white/5">{selectedContent.deskripsi}</p>
-            <div className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap text-base sm:text-lg font-medium">
-              {selectedContent.isi_konten}
-            </div>
-            {selectedContent.link_eksternal && (
-              <div className="mt-10 pt-6 border-t border-slate-100 dark:border-white/5">
-                <button onClick={() => window.open(selectedContent.link_eksternal, '_blank', 'noopener,noreferrer')} className="flex items-center gap-2 text-blue-600 font-black text-sm hover:gap-3 transition-all cursor-pointer bg-transparent border-none">
-                  Kunjungi Sumber Eksternal <FiExternalLink />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      {!selectedContent && <>
       {/* Background Ornaments like Beranda */}
       <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"></div>
       <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-red-50/50 dark:bg-red-900/10 rounded-full blur-[100px] -z-10 -translate-x-1/2 translate-y-1/2"></div>
@@ -247,6 +212,12 @@ export default function UsahaPage() {
             className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'keuangan' ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-blue-200/50 dark:border-blue-900/30 hover:bg-blue-50 dark:hover:bg-blue-900/20'}`}
           >
             Tips Mengatur Keuangan
+          </button>
+          <button
+            onClick={() => navigate('/usaha#kalkulator', { replace: true })}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all border cursor-pointer ${activeTab === 'kalkulator' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-600 shadow-md shadow-blue-600/20' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-indigo-200/50 dark:border-indigo-900/30 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
+          >
+            🧮 Kalkulator Usaha
           </button>
         </div>
 
@@ -400,10 +371,68 @@ export default function UsahaPage() {
           </div>
         </section>
         )}
+        {/* ── Kalkulator Usaha ── */}
+        {activeTab === 'kalkulator' && (
+          <KalkulatorUsaha />
+        )}
+
       </div>
-      </>}
+      {selectedContent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md" onClick={closeContentModal}>
+          <div
+            className="bg-white dark:bg-zinc-900 rounded-[32px] w-full max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl animate-[slideUp_0.35s_ease-out] flex flex-col"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* Modal Header/Image */}
+            <div className="relative w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 shrink-0">
+              {selectedContent.gambar ? (
+                <img src={selectedContent.gambar} alt={selectedContent.judul} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-blue-500 opacity-30">
+                  <FiFileText size={56} />
+                </div>
+              )}
+              <button onClick={closeContentModal} className="absolute top-4 right-4 w-10 h-10 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center backdrop-blur-md border-none cursor-pointer transition-all">
+                <FiX size={20} />
+              </button>
+              <div className="absolute bottom-4 left-6">
+                <span className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full shadow-lg capitalize">
+                  {selectedContent.kategori}
+                </span>
+              </div>
+            </div>
 
+            {/* Modal Body */}
+            <div className="p-8 overflow-y-auto custom-scrollbar">
+              <h2 className="text-3xl font-black text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
+                {selectedContent.judul}
+              </h2>
+              <p className="text-slate-500 dark:text-slate-400 font-bold text-sm mb-8 pb-4 border-b border-slate-100 dark:border-white/5">
+                {selectedContent.deskripsi}
+              </p>
 
+              <div className="prose dark:prose-invert max-w-none">
+                <div className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap text-base font-medium">
+                  {selectedContent.isi_konten}
+                </div>
+              </div>
+
+              {selectedContent.link_eksternal && (
+                <div className="mt-10 pt-6 border-t border-slate-100 dark:border-white/5">
+                  <button
+                    onClick={() => window.open(selectedContent.link_eksternal, '_blank', 'noopener,noreferrer')}
+                    className="flex items-center gap-2 text-blue-600 font-black text-sm hover:gap-3 transition-all cursor-pointer bg-transparent border-none"
+                  >
+                    Kunjungi Sumber Eksternal <FiExternalLink />
+                  </button>
+                </div>
+              )}
+
+              {/* File lampiran dihapus sesuai permintaan */}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Inline animation keyframes */}
       <style>{`
@@ -416,6 +445,251 @@ export default function UsahaPage() {
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
       `}</style>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   KALKULATOR USAHA
+   Hitung modal, harga jual, dan keuntungan
+══════════════════════════════════════════ */
+function KalkulatorUsaha() {
+  const [biayaBahan, setBiayaBahan] = useState('');
+  const [biayaOperasional, setBiayaOperasional] = useState('');
+  const [biayaLain, setBiayaLain] = useState('');
+  const [unitProduksi, setUnitProduksi] = useState('');
+  const [persentaseProfit, setPersentaseProfit] = useState('30');
+  const [result, setResult] = useState(null);
+
+  const fmt = (n) => new Intl.NumberFormat('id-ID').format(Math.round(n));
+  const parse = (v) => parseFloat(String(v).replace(/[^0-9.]/g, '')) || 0;
+
+  const handleHitung = () => {
+    const bahan = parse(biayaBahan);
+    const ops   = parse(biayaOperasional);
+    const lain  = parse(biayaLain);
+    const unit  = parse(unitProduksi);
+    const pct   = parse(persentaseProfit);
+
+    if (unit <= 0) { alert('Unit produksi harus lebih dari 0'); return; }
+
+    const totalModal       = bahan + ops + lain;
+    const hppPerUnit       = totalModal / unit;
+    const profit           = hppPerUnit * (pct / 100);
+    const hargaJualPerUnit = hppPerUnit + profit;
+    const totalPendapatan  = hargaJualPerUnit * unit;
+    const totalProfit      = totalPendapatan - totalModal;
+    const bep              = totalModal / hargaJualPerUnit;
+
+    setResult({ totalModal, hppPerUnit, hargaJualPerUnit, totalPendapatan, totalProfit, bep, unit, pct });
+  };
+
+  const handleReset = () => {
+    setBiayaBahan(''); setBiayaOperasional(''); setBiayaLain('');
+    setUnitProduksi(''); setPersentaseProfit('30'); setResult(null);
+  };
+
+  const inputStyle = "w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white font-semibold text-sm placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all";
+  const labelStyle = "block text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5";
+
+  return (
+    <section className="animate-[slideUp_0.35s_ease-out]">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/40 px-4 py-1.5 rounded-full mb-4">
+          <span className="text-blue-600 text-sm">🧮</span>
+          <span className="text-[11px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">Kalkulator Bisnis</span>
+        </div>
+        <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">Kalkulator Modal & Harga Jual</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-md mx-auto">
+          Hitung modal produksi, tentukan harga jual yang tepat, dan lihat estimasi keuntunganmu.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        {/* ── Form Input ── */}
+        <div className="bg-white dark:bg-zinc-900 rounded-[28px] border border-slate-100 dark:border-zinc-800 shadow-sm p-7 space-y-5">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-9 h-9 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
+              <span className="text-base">📦</span>
+            </div>
+            <div>
+              <p className="text-sm font-black text-slate-900 dark:text-white">Data Produksi</p>
+              <p className="text-[11px] text-slate-400">Isi semua kolom biaya di bawah</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={labelStyle}>Biaya Bahan Baku (Rp)</label>
+              <input type="number" min="0" value={biayaBahan} onChange={e => setBiayaBahan(e.target.value)}
+                placeholder="Contoh: 500000" className={inputStyle} />
+            </div>
+            <div>
+              <label className={labelStyle}>Biaya Operasional (Rp)</label>
+              <input type="number" min="0" value={biayaOperasional} onChange={e => setBiayaOperasional(e.target.value)}
+                placeholder="Listrik, gas, dll" className={inputStyle} />
+            </div>
+            <div>
+              <label className={labelStyle}>Biaya Lain-lain (Rp)</label>
+              <input type="number" min="0" value={biayaLain} onChange={e => setBiayaLain(e.target.value)}
+                placeholder="Kemasan, ongkir, dll" className={inputStyle} />
+            </div>
+            <div>
+              <label className={labelStyle}>Jumlah Unit Produksi</label>
+              <input type="number" min="1" value={unitProduksi} onChange={e => setUnitProduksi(e.target.value)}
+                placeholder="Misal: 100 pcs" className={inputStyle} />
+            </div>
+          </div>
+
+          {/* Profit slider */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className={labelStyle + ' mb-0'}>Target Keuntungan</label>
+              <span className="text-sm font-black text-blue-600 dark:text-blue-400">{persentaseProfit}%</span>
+            </div>
+            <input
+              type="range" min="5" max="200" step="5"
+              value={persentaseProfit}
+              onChange={e => setPersentaseProfit(e.target.value)}
+              className="w-full accent-blue-600 cursor-pointer"
+            />
+            <div className="flex justify-between text-[10px] text-slate-400 mt-1 font-semibold">
+              <span>5%</span><span>50%</span><span>100%</span><span>200%</span>
+            </div>
+          </div>
+
+          {/* Tombol */}
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={handleHitung}
+              className="flex-1 py-3.5 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25 hover:-translate-y-0.5 active:scale-[0.98] transition-all border-none cursor-pointer"
+            >
+              Hitung Sekarang ✨
+            </button>
+            <button
+              onClick={handleReset}
+              className="px-5 py-3.5 rounded-2xl font-bold text-sm text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-all border-none cursor-pointer"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        {/* ── Hasil ── */}
+        <div className="bg-white dark:bg-zinc-900 rounded-[28px] border border-slate-100 dark:border-zinc-800 shadow-sm p-7">
+          {!result ? (
+            <div className="h-full flex flex-col items-center justify-center text-center py-12 gap-4">
+              <div className="text-5xl opacity-30">📊</div>
+              <p className="text-sm font-bold text-slate-400 dark:text-slate-600">
+                Isi data produksi lalu klik<br /><span className="text-blue-500">Hitung Sekarang</span>
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4 animate-[slideUp_0.3s_ease-out]">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-9 h-9 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <span className="text-base">📈</span>
+                </div>
+                <div>
+                  <p className="text-sm font-black text-slate-900 dark:text-white">Hasil Perhitungan</p>
+                  <p className="text-[11px] text-slate-400">{result.unit} unit · profit {result.pct}%</p>
+                </div>
+              </div>
+
+              {/* Kartu hasil utama */}
+              <div className="grid grid-cols-2 gap-3">
+                <ResultCard
+                  label="Total Modal"
+                  value={`Rp ${fmt(result.totalModal)}`}
+                  sub="Seluruh biaya produksi"
+                  color="blue"
+                  emoji="💰"
+                />
+                <ResultCard
+                  label="HPP / Unit"
+                  value={`Rp ${fmt(result.hppPerUnit)}`}
+                  sub="Harga Pokok Produksi"
+                  color="indigo"
+                  emoji="🏷️"
+                />
+                <ResultCard
+                  label="Harga Jual / Unit"
+                  value={`Rp ${fmt(result.hargaJualPerUnit)}`}
+                  sub={`Sudah termasuk profit ${result.pct}%`}
+                  color="emerald"
+                  emoji="🛒"
+                  highlight
+                />
+                <ResultCard
+                  label="Estimasi Profit"
+                  value={`Rp ${fmt(result.totalProfit)}`}
+                  sub={`Dari ${result.unit} unit terjual`}
+                  color="amber"
+                  emoji="✨"
+                />
+              </div>
+
+              {/* BEP */}
+              <div className="mt-2 p-4 rounded-2xl bg-slate-50 dark:bg-black/30 border border-slate-100 dark:border-zinc-800">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">Break Even Point (BEP)</p>
+                    <p className="text-xl font-black text-slate-900 dark:text-white mt-0.5">
+                      {fmt(result.bep)} <span className="text-sm font-semibold text-slate-400">unit</span>
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Kamu mulai untung setelah jual {Math.ceil(result.bep)} unit</p>
+                  </div>
+                  <div className="text-3xl">⚖️</div>
+                </div>
+                {/* BEP progress bar */}
+                <div className="mt-3 w-full bg-slate-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-700"
+                    style={{ width: `${Math.min((result.bep / result.unit) * 100, 100)}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1.5 text-right">
+                  BEP = {Math.round((result.bep / result.unit) * 100)}% dari total produksi
+                </p>
+              </div>
+
+              {/* Tips singkat */}
+              <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
+                <p className="text-[11px] font-bold text-blue-700 dark:text-blue-300 leading-relaxed">
+                  💡 <strong>Tips:</strong> Pastikan harga jualmu kompetitif dengan produk sejenis di pasaran. Jika terlalu tinggi, pertimbangkan efisiensi produksi.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ResultCard({ label, value, sub, color, emoji, highlight }) {
+  const colors = {
+    blue:    'bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30',
+    indigo:  'bg-indigo-50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/30',
+    emerald: 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30',
+    amber:   'bg-amber-50 dark:bg-amber-900/10 border-amber-100 dark:border-amber-900/30',
+  };
+  const textColors = {
+    blue: 'text-blue-700 dark:text-blue-300',
+    indigo: 'text-indigo-700 dark:text-indigo-300',
+    emerald: 'text-emerald-700 dark:text-emerald-300',
+    amber: 'text-amber-700 dark:text-amber-300',
+  };
+  return (
+    <div className={`p-4 rounded-2xl border ${colors[color]} ${highlight ? 'ring-2 ring-emerald-400/30' : ''}`}>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">{label}</span>
+        <span className="text-base">{emoji}</span>
+      </div>
+      <p className={`text-base font-black ${textColors[color]} leading-tight`}>{value}</p>
+      <p className="text-[10px] text-slate-400 mt-0.5 font-medium">{sub}</p>
     </div>
   );
 }

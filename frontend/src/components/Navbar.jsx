@@ -2,7 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggleButton from './ThemeToggleButton';
-import { FiHome, FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX, FiLogOut, FiTrendingUp, FiMessageCircle } from 'react-icons/fi';
+import {
+  FiHome, FiBookOpen, FiBriefcase, FiUser, FiMenu, FiX,
+  FiLogOut, FiTrendingUp, FiMessageCircle, FiZap,
+  FiChevronDown, FiArrowRight, FiDollarSign,
+} from 'react-icons/fi';
 import logoBika from '../assets/loog.svg';
 
 const navLinks = [
@@ -12,6 +16,93 @@ const navLinks = [
   { path: '/usaha',      label: 'Usaha',      icon: FiBriefcase },
   { path: '/profil',     label: 'Profil',     icon: FiUser },
 ];
+
+/* sub-menu items untuk "Usaha" */
+const usahaSubMenu = [
+  { path: '/usaha#memulai',    label: 'Tips Memulai Usaha',    icon: FiZap },
+  { path: '/usaha#resources',  label: 'Resources',             icon: FiBriefcase },
+  { path: '/usaha#keuangan',   label: 'Tips Mengatur Keuangan',icon: FiDollarSign },
+  { path: '/usaha#kalkulator', label: 'Kalkulator Usaha',      icon: FiArrowRight, highlight: true },
+];
+
+/* ─── Usaha dropdown nav item ────────────────────────────────── */
+function UsahaNavItem({ active, onClose, location }) {
+  const [open, setOpen] = useState(active);
+
+  return (
+    <div>
+      {/* Parent row */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 relative border-none cursor-pointer"
+        style={{
+          background: active ? 'rgba(37,99,235,0.08)' : 'transparent',
+          color: active ? '#2563eb' : 'var(--sidebar-text-sec, #64748b)',
+          fontWeight: active ? 700 : 500,
+          fontSize: 14,
+          textAlign: 'left',
+        }}
+      >
+        {active && (
+          <span className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-r-full"
+            style={{ background: '#2563eb' }} />
+        )}
+        <FiZap size={18} />
+        <span className="flex-1">Tips Usaha</span>
+        <FiChevronDown
+          size={14}
+          style={{
+            transition: 'transform 0.25s',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+          }}
+        />
+      </button>
+
+      {/* Sub-menu */}
+      {open && (
+        <div className="ml-4 pl-3 mt-0.5 flex flex-col gap-0.5"
+          style={{ borderLeft: '2px solid rgba(37,99,235,0.2)' }}>
+          {usahaSubMenu.map(({ path, label, icon: Icon, highlight }) => {
+            const subActive = location.hash
+              ? location.pathname + location.hash === path
+              : false;
+            return (
+              <Link
+                key={path}
+                to={path}
+                onClick={onClose}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl no-underline transition-all duration-200"
+                style={{
+                  background: subActive
+                    ? 'rgba(37,99,235,0.08)'
+                    : highlight
+                      ? 'rgba(37,99,235,0.04)'
+                      : 'transparent',
+                  color: highlight ? '#2563eb' : subActive ? '#2563eb' : 'var(--sidebar-text-sec, #64748b)',
+                  fontWeight: highlight || subActive ? 700 : 500,
+                  fontSize: 13,
+                }}
+              >
+                <Icon size={15} />
+                <span className="flex-1">{label}</span>
+                {highlight && (
+                  <span style={{
+                    fontSize: 9, fontWeight: 800, letterSpacing: '0.08em',
+                    textTransform: 'uppercase', color: '#2563eb',
+                    background: 'rgba(37,99,235,0.1)',
+                    borderRadius: 20, padding: '1px 7px',
+                  }}>
+                    Baru
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ─── Mobile Sidebar ─────────────────────────────────────────── */
 function MobileSidebar({ open, onClose, user, logoutUser, location }) {
@@ -121,7 +212,20 @@ function MobileSidebar({ open, onClose, user, logoutUser, location }) {
         {/* ── Nav links ── */}
         <nav className="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
           {navLinks.map(({ path, label, icon: Icon }) => {
-            const active = isActive(path);
+            const active = isActive(path) || (path === '/usaha' && location.pathname.startsWith('/usaha'));
+            const isUsaha = path === '/usaha';
+
+            if (isUsaha) {
+              return (
+                <UsahaNavItem
+                  key={path}
+                  active={active}
+                  onClose={onClose}
+                  location={location}
+                />
+              );
+            }
+
             return (
               <Link
                 key={path}
@@ -135,12 +239,9 @@ function MobileSidebar({ open, onClose, user, logoutUser, location }) {
                   fontSize: 14,
                 }}
               >
-                {/* Active left bar */}
                 {active && (
-                  <span
-                    className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-r-full"
-                    style={{ background: '#2563eb' }}
-                  />
+                  <span className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-r-full"
+                    style={{ background: '#2563eb' }} />
                 )}
                 <Icon size={18} />
                 {label}

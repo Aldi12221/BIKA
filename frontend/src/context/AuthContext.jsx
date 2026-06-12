@@ -47,6 +47,7 @@ export function AuthProvider({ children }) {
 
   const logoutUser = () => {
     setUser(null);
+    localStorage.removeItem('bika_token');
   };
 
   const loginAdmin = (adminData, token) => {

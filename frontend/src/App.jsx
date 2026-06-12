@@ -7,6 +7,7 @@ import Layout from './components/Layout';
 import AdminLayout from './components/AdminLayout';
 
 import LoginPage from './pages/LoginPage';
+import UserDashboard from './pages/UserDashboard';
 import MasaDepanPage from './pages/MasaDepanPage';
 import ProfilPage from './pages/ProfilPage';
 import TutorialPage from './pages/TutorialPage';
@@ -14,8 +15,8 @@ import QuizPlayPage from './pages/QuizPlayPage';
 import UsahaPage from './pages/UsahaPage';
 import TipsUsahaPage from './pages/TipsUsahaPage';
 import TipsKeuanganPage from './pages/TipsKeuanganPage';
+import KalkulatorUsahaPage from './pages/KalkulatorUsahaPage';
 import Beranda from './pages/beranda';
-import UserDashboard from './pages/UserDashboard';
 
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -32,9 +33,18 @@ function UserRouteGuard() {
   return <Layout />;
 }
 
+/* Redirect ke /dashboard jika sudah login, tampil Beranda jika belum */
 const Home = () => {
   const { user } = useAuth();
-  return user ? <UserDashboard /> : <Beranda />;
+  if (user) return <Navigate to="/dashboard" replace />;
+  return <Beranda />;
+};
+
+/* Redirect ke /dashboard jika sudah login, tampil login jika belum */
+const LoginGuard = () => {
+  const { user } = useAuth();
+  if (user) return <Navigate to="/dashboard" replace />;
+  return <LoginPage />;
 };
 
 function App() {
@@ -76,7 +86,7 @@ function App() {
             />
             <Routes>
               {/* Public */}
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginGuard />} />
               <Route path="/admin/login" element={<AdminLoginPage />} />
 
               {/* Public & Guest Access Pages */}
@@ -86,11 +96,13 @@ function App() {
 
               {/* Protected User Pages */}
               <Route element={<UserRouteGuard />}>
+                <Route path="/dashboard" element={<UserDashboard />} />
                 <Route path="/masa-depan" element={<MasaDepanPage />} />
                 <Route path="/tutorial" element={<TutorialPage />} />
                 <Route path="/usaha" element={<UsahaPage />} />
                 <Route path="/usaha/memulai" element={<TipsUsahaPage />} />
                 <Route path="/usaha/keuangan" element={<TipsKeuanganPage />} />
+                <Route path="/usaha/kalkulator" element={<KalkulatorUsahaPage />} />
                 <Route path="/profil" element={<ProfilPage />} />
                 <Route path="/quiz/:id" element={<QuizPlayPage />} />
               </Route>

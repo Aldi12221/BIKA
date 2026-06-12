@@ -1,7 +1,10 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 const getAuthHeader = () => {
-  const token = localStorage.getItem('bika_admin_token');
+  // Cek user token dulu, baru admin token
+  const userToken = localStorage.getItem('bika_token');
+  const adminToken = localStorage.getItem('bika_admin_token');
+  const token = userToken || adminToken;
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 };
 

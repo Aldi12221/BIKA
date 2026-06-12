@@ -35,7 +35,8 @@ const navLinks = [
         children: [
             { path: '/usaha#memulai', label: 'Tips Memulai Usaha' },
             { path: '/usaha#resources', label: 'Resources' },
-            { path: '/usaha#keuangan', label: 'Tips Mengatur Keuangan' }
+            { path: '/usaha#keuangan', label: 'Tips Mengatur Keuangan' },
+            { path: '/usaha/kalkulator', label: '🧮 Kalkulator Usaha' },
         ]
     },
     { path: '/profil', label: 'Profil Saya', icon: FiUser },
@@ -51,6 +52,15 @@ export default function UserSidebar({ collapsed, setCollapsed, mobileOpen, setMo
             return location.pathname + location.hash === path;
         }
         return location.pathname === path;
+    };
+
+    // Parent aktif jika salah satu child aktif
+    const isParentActive = (link) => {
+        if (isActive(link.path)) return true;
+        if (link.children) {
+            return link.children.some(child => isActive(child.path));
+        }
+        return false;
     };
 
     const toggleSubmenu = (label) => {
@@ -91,18 +101,19 @@ export default function UserSidebar({ collapsed, setCollapsed, mobileOpen, setMo
                     const hasChildren = link.children && link.children.length > 0;
                     const isSubOpen = openSubmenu === link.label;
                     const active = isActive(link.path);
+                    const parentActive = isParentActive(link);
 
                     if (hasChildren) {
                         return (
                             <div key={link.label} className="space-y-1">
                                 <button
                                     onClick={() => toggleSubmenu(link.label)}
-                                    className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 border-none cursor-pointer bg-transparent group ${active || isSubOpen
+                                    className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 border-none cursor-pointer bg-transparent group ${parentActive || isSubOpen
                                         ? 'bg-blue-600/5 text-blue-600'
                                         : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-zinc-900'
                                         }`}
                                 >
-                                    <span className={`text-lg ${active || isSubOpen ? 'text-blue-600' : 'group-hover:text-blue-600'}`}>
+                                    <span className={`text-lg ${parentActive || isSubOpen ? 'text-blue-600' : 'group-hover:text-blue-600'}`}>
                                         <link.icon />
                                     </span>
                                     {!collapsed && (
